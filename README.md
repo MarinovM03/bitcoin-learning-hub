@@ -42,7 +42,7 @@ The application relies on the standalone server provided in the course resources
 ### 2. The Frontend (This Application)
 1.  Clone this repository:
     ```bash
-    git clone [https://github.com/your-username/bitcoin-learning-hub.git](https://github.com/your-username/bitcoin-learning-hub.git)
+    git clone [https://github.com/MarinovM03/bitcoin-learning-hub.git](https://github.com/MarinovM03/bitcoin-learning-hub.git)
     ```
 2.  Navigate to the project directory:
     ```bash
@@ -54,7 +54,7 @@ The application relies on the standalone server provided in the course resources
     ```
 4.  Start the application:
     ```bash
-    npm start
+    npm run dev
     ```
 5.  Open your browser at `http://localhost:3000` (or `5173` if using Vite).
 
