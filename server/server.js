@@ -1345,6 +1345,36 @@
                 "_createdOn": 1764938242643,
                 "_id": "be7920ee-987b-4522-be1e-e66737c81c66"
             },
+            "4e555f04-f04b-406a-a11e-60a1f07c2add": {
+                "_ownerId": "35c62d76-8152-4626-8712-eeb96381bea8",
+                "title": "The Lightning Network",
+                "summary": "A layer 2 payment protocol designed to make Bitcoin transactions fast and cheap.",
+                "category": "Scalability",
+                "content": "The Lightning Network is a second layer added to Bitcoin's blockchain that allows off-chain transactions. It allows users to send satoshis instantly with near-zero fees, making Bitcoin viable for buying coffee or micropayments.",
+                "imageUrl": "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=800&q=80",
+                "_createdOn": 1764954597764,
+                "_id": "4e555f04-f04b-406a-a11e-60a1f07c2add"
+            },
+            "ffb0767b-cc5d-4bba-80a9-860b510bcb32": {
+                "_ownerId": "35c62d76-8152-4626-8712-eeb96381bea8",
+                "title": "Understanding Mining",
+                "summary": "Bitcoin mining is the process by which new bitcoins are entered into circulation.",
+                "category": "Technology",
+                "content": "Mining is performed using sophisticated hardware that solves an extremely complex computational math problem. The first computer to find the solution to the problem receives the next block of bitcoins and the process begins again. It also secures the network and processes every transaction.",
+                "imageUrl": "https://bisonapp.com/wp-content/uploads/2020/02/bitcoin-mining.jpg",
+                "_createdOn": 1764955198777,
+                "_id": "ffb0767b-cc5d-4bba-80a9-860b510bcb32"
+            },
+            "bbf0cbf6-fa45-4aad-8f4d-e48d5022d357": {
+                "_ownerId": "35c62d76-8152-4626-8712-eeb96381bea8",
+                "title": "The Bitcoin Halving",
+                "summary": "The Halving is a pre-programmed event that cuts the reward for mining new blocks in half.",
+                "category": "Economics",
+                "content": "Every 210,000 blocks, or roughly every four years, the block reward given to Bitcoin miners for processing transactions is cut in half. This cuts in half the rate at which new bitcoin is released into circulation. This ensures that Bitcoin remains deflationary and only 21 million will ever exist.",
+                "imageUrl": "https://www.cryptopolitan.com/wp-content/uploads/2023/11/1463.jpg",
+                "_createdOn": 1764955301749,
+                "_id": "bbf0cbf6-fa45-4aad-8f4d-e48d5022d357"
+            }
         },
         comments: {
         
