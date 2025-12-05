@@ -1,0 +1,12 @@
+{
+  "1234-test-id": {
+    "title": "What is Bitcoin?",
+    "summary": "A beginner guide to cryptocurrency.",
+    "category": "Basics",
+    "content": "Bitcoin is a decentralized digital currency...",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+    "_id": "1234-test-id",
+    "_ownerId": "35c62d76-8152-4626-8712-eeb96381bea8",
+    "_createdOn": 1617194350000
+  }
+}
