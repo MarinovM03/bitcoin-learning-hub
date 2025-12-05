@@ -1,0 +1,97 @@
+.details-page {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+    animation: fadeIn 0.5s ease-in-out;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.details-hero {
+    position: relative;
+    width: 100%;
+    height: 350px;
+}
+
+.details-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-bottom: 3px solid var(--btc-orange);
+}
+
+.details-container {
+    padding: 2.5rem;
+}
+
+.details-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 1.5rem;
+}
+
+.details-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.category-tag {
+    display: inline-block;
+    background-color: rgba(247, 147, 26, 0.15);
+    color: var(--btc-orange);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.details-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #d0d0d0;
+    margin-bottom: 3rem;
+    white-space: pre-wrap;
+}
+
+.details-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 2rem;
+    border-top: 1px solid #444;
+    padding-top: 1.5rem;
+}
+
+.btn-edit, .btn-delete {
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background-color: var(--btc-orange);
+    color: white;
+    border: none;
+}
+
+.btn-edit:hover {
+    background-color: #e08315;
+}
+
+.btn-delete {
+    background-color: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.btn-delete:hover {
+    background-color: #e74c3c;
+    color: white;
+}
