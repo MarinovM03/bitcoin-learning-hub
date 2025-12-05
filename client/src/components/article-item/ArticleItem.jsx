@@ -15,7 +15,7 @@ export default function ArticleItem({
             <div className="article-info">
                 <h3>{title}</h3>
                 <p>{summary}</p>
-                <Link to={`/articles/${_id}`} className="btn-details">Read More</Link>
+                <Link to={`/articles/${_id}/details`} className="btn-details">Read More</Link>
             </div>
         </div>
     );
