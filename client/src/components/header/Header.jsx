@@ -11,7 +11,7 @@ export default function Header() {
                 <Link to="/articles">All Articles</Link>
 
                 <div id="user">
-                    <Link to="/create">Create Article</Link>
+                    <Link to="/articles/create">Create Article</Link>
                     <Link to="/logout">Logout</Link>
                 </div>
 

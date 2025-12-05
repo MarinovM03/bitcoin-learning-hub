@@ -49,6 +49,15 @@
     letter-spacing: 1px;
 }
 
+.details-summary {
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+    border-left: 4px solid var(--btc-orange);
+    padding-left: 15px;
+}
+
 .details-content {
     font-size: 1.1rem;
     line-height: 1.8;

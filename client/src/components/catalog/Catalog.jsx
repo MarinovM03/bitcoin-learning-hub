@@ -17,7 +17,7 @@ export default function Catalog() {
 
     return (
         <section id="catalog-page" className="page-content catalog-page">
-            <h1>All Knowledge</h1>
+            <h1>All Articles</h1>
 
                 {articles.length === 0 && <h3 className="no-articles">No articles yet</h3>}
                 <div className="catalog-list">

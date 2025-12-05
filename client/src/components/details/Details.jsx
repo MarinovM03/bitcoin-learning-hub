@@ -22,9 +22,9 @@ export default function Details() {
             try {
                 await articleService.remove(articleId);
 
-                navigate('/articles');  
+                navigate('/articles');
             } catch (err) {
-                console.log("Delete failed");
+                console.log("Delete failed", err.message);
             }
         }
     };
@@ -48,6 +48,7 @@ export default function Details() {
                     <div className="details-header">
                         <span className="category-tag">{article.category}</span>
                         <h1>{article.title}</h1>
+                        <p className="details-summary">{article.summary}</p>
                     </div>
 
                     <div className="details-content">
