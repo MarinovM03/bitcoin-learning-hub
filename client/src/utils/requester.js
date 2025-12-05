@@ -12,7 +12,7 @@ async function request(method, url, data) {
         }
     }
 
-    // TODO: Add Auth Token logic here later
+    // TODO: Add Auth Token logic here later when we do Authentication
 
     try {
         const response = await fetch(url, options);

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import * as articleService from '../../services/articleService';
 
 export default function Details() {
+    const navigate = useNavigate();
     const [article, setArticle] = useState({});
     const { articleId } = useParams();
     
@@ -13,6 +14,20 @@ export default function Details() {
             })
             .catch(err => alert(err.message));
     }, [articleId]);
+
+    const deleteArticleClickHandler = async () => {
+        const hasConfirmed = confirm(`Are you sure you want to delete ${article.title}?`);
+
+        if (hasConfirmed) {
+            try {
+                await articleService.remove(articleId);
+
+                navigate('/articles');  
+            } catch (err) {
+                console.log("Delete failed");
+            }
+        }
+    };
 
     // TODO: Authentication
     const isOwner = true;
@@ -42,7 +57,7 @@ export default function Details() {
                     {isOwner && (
                         <div className="details-buttons">
                             <Link to={`/articles/${articleId}/edit`} className="btn-edit">Edit</Link>
-                            <button className="btn-delete">Delete</button>
+                            <button onClick={deleteArticleClickHandler} className="btn-delete">Delete</button>
                         </div>
                     )}
                 </div>
