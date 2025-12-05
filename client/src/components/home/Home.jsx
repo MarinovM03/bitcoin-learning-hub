@@ -1,6 +1,20 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import * as articleService from '../../services/articleService';
+import ArticleItem from "../article-item/ArticleItem";
 
 export default function Home() {
+    const [latestArticles, setLatestArticles] = useState([]);
+
+    useEffect(() => {
+        articleService.getAll()
+            .then(result => {
+                const latest = result.slice(-3).reverse();
+                setLatestArticles(latest);
+            })
+            .catch(err => alert(err.message));
+    }, []);
+    
     return (
         <section id="home-page" className="page-content">
             
@@ -18,17 +32,9 @@ export default function Home() {
 
                 <div className="latest-articles-list">
                     
-                    <div className="article-card">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png" 
-                             alt="Bitcoin" 
-                             className="article-image"/>
-                        
-                        <div className="article-info">
-                            <h3>Bitcoin Basics</h3>
-                            <p>Bitcoin is a decentralized digital currency without a central bank or single administrator.</p>
-                            <Link to="/articles/be7920ee-987b-4522-be1e-e66737c81c66" className="btn-details">Read More</Link>
-                        </div>
-                    </div>
+                    {latestArticles.map(article => <ArticleItem key={article._id} {...article} />)}
+
+                    {latestArticles.length === 0 && <p className="no-articles">No articles yet</p>}
                 </div>
             </div>
         </section>

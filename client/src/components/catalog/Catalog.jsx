@@ -19,15 +19,11 @@ export default function Catalog() {
         <section id="catalog-page" className="page-content catalog-page">
             <h1>All Knowledge</h1>
 
-                {articles.length > 0 ? (
-                    <div className="catalog-list">
-                        {articles.map(article => (
-                            <ArticleItem key={article._id} {...article} />
-                        ))}
-                    </div>
-                ) : (
-                    <h3 className="no-articles">No articles yet</h3>
-                )}
+                {articles.length === 0 && <h3 className="no-articles">No articles yet</h3>}
+                <div className="catalog-list">
+                    {articles.map(article => <ArticleItem key={article._id} {...article} />)}
+                </div>
+                
         </section>
     );
 }
