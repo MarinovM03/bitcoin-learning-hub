@@ -1,3 +1,8 @@
+@import "typography.css";
+@import "header.css";
+@import "footer.css";
+/* @import "home.css"; */
+
 :root {
     --btc-orange: #F7931A;
     --dark-bg: #1a1a1a;
@@ -5,9 +10,6 @@
     --text-color: #e0e0e0;
     --text-secondary: #a0a0a0;
 }
-
-@import "typography.css";
-@import "header.css";
 
 * {
     box-sizing: border-box;
@@ -31,7 +33,7 @@ ul {
     margin: 0;
 }
 
-#box {
+#root {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
