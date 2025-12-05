@@ -1,0 +1,46 @@
+:root {
+    --btc-orange: #F7931A;
+    --dark-bg: #1a1a1a;
+    --card-bg: #242424;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+}
+
+@import "typography.css";
+@import "header.css";
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #121212;
+    color: var(--text-color);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#box {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}

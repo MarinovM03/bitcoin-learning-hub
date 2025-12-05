@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;700&display=swap');
+
+html, body {
+    font-family: 'Exo 2', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: white;
+}
+
+h1 {
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+}
+
+h2 {
+    font-size: 2rem;
+    color: var(--btc-orange);
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+strong {
+    color: var(--btc-orange);
+}
+
+p a {
+    color: var(--btc-orange);
+    text-decoration: underline;
+}
+
+p a:hover {
+    color: #fff;
+}
