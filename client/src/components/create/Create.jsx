@@ -1,13 +1,23 @@
-export default function Create() {
+import { useNavigate } from 'react-router';
+import * as articleService from '../../services/articleService';
 
-    const createArticleHandler = (e) => {
+export default function Create() {
+    const navigate = useNavigate();
+
+    const createArticleHandler = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
 
-        const data = Object.fromEntries(formData);
+        const articleData = Object.fromEntries(formData);
 
-        console.log(data);
+        try {
+            await articleService.create(articleData);
+
+            navigate('/articles');
+        } catch (err) {
+            console.log("Error creating article:", err.message);
+        }
     };
 
     return (
