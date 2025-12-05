@@ -12,6 +12,11 @@ export const getOne = async (articleId) => {
     return result;
 };
 
+export const create = async (data) => {
+    const result = await request.post(baseUrl, data);
+    return result;
+};
+
 export const remove = async (articleId) => {
     const result = await request.del(`${baseUrl}/${articleId}`);
     return result;
