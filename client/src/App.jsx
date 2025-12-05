@@ -1,15 +1,16 @@
-import { Routes } from "react-router";
+import { Routes, Route } from "react-router";
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
+import Home from "./components/home/Home";
 
 function App() {
     return (
         <>
             <Header />
 
-            <main id="main-content">
-                <h1>Bitcoin Learning Hub</h1>
-            </main>
+            <Routes>
+                <Route path="/" element={<Home />} />
+            </Routes>
 
             <Footer />
         </>

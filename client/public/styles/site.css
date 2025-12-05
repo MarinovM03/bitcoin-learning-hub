@@ -1,7 +1,7 @@
 @import "typography.css";
 @import "header.css";
 @import "footer.css";
-/* @import "home.css"; */
+@import "home.css";
 
 :root {
     --btc-orange: #F7931A;
@@ -39,7 +39,7 @@ ul {
     min-height: 100vh;
 }
 
-main {
+.page-content {
     flex: 1;
     padding: 2rem;
     max-width: 1200px;
