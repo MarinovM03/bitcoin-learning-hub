@@ -11,3 +11,8 @@ export const getOne = async (articleId) => {
     const result = await request.get(`${baseUrl}/${articleId}`);
     return result;
 };
+
+export const remove = async (articleId) => {
+    const result = await request.del(`${baseUrl}/${articleId}`);
+    return result;
+};
