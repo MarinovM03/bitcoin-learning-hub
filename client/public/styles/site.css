@@ -2,6 +2,7 @@
 @import "header.css";
 @import "footer.css";
 @import "home.css";
+@import "catalog.css";
 
 :root {
     --btc-orange: #F7931A;
