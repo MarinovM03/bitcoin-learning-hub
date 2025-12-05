@@ -1,0 +1,79 @@
+.create-page {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.create-page h1 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--btc-orange);
+    font-size: 2.2rem;
+}
+
+.create-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.create-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.create-form input,
+.create-form textarea,
+.create-form select {
+    width: 100%;
+    padding: 12px;
+    background-color: #121212;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    font-family: 'Exo 2', sans-serif;
+    transition: border-color 0.3s;
+}
+
+.create-form input:focus,
+.create-form textarea:focus,
+.create-form select:focus {
+    outline: none;
+    border-color: var(--btc-orange);
+    background-color: #1a1a1a;
+}
+
+.create-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.create-form textarea.content-input {
+    min-height: 200px;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--btc-orange);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1rem;
+}
+
+.btn-submit:hover {
+    background-color: #e08315;
+    transform: translateY(-2px);
+}

@@ -4,6 +4,7 @@
 @import "home.css";
 @import "catalog.css";
 @import "details.css";
+@import "create.css";
 
 :root {
     --btc-orange: #F7931A;
