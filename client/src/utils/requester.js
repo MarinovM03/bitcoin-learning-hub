@@ -12,7 +12,18 @@ async function request(method, url, data) {
         }
     }
 
-    // TODO: Add Auth Token logic here later when we do Authentication
+    const serializedAuth = localStorage.getItem('auth');
+
+    if (serializedAuth) {
+        const auth = JSON.parse(serializedAuth);
+        
+        if (auth.accessToken) {
+            options.headers = {
+                ...options.headers,
+                'X-Authorization': auth.accessToken,
+            };
+        }
+    }
 
     try {
         const response = await fetch(url, options);
@@ -28,9 +39,8 @@ async function request(method, url, data) {
         }
 
         return result;
-        
     } catch (error) {
-        alert(error.message);
+        console.error(error.message); 
         throw error;
     }
 }
