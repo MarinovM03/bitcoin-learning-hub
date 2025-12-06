@@ -6,6 +6,7 @@
 @import "details.css";
 @import "create.css";
 @import "login.css";
+@import "register.css";
 
 :root {
     --btc-orange: #F7931A;

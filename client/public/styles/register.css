@@ -1,0 +1,46 @@
+.register-page {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.register-page h1 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--btc-orange);
+    font-size: 2.2rem;
+}
+
+.register-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.register-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.register-form input {
+    width: 100%;
+    padding: 12px;
+    background-color: #121212;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    font-family: 'Exo 2', sans-serif;
+    transition: border-color 0.3s;
+}
+
+.register-form input:focus {
+    outline: none;
+    border-color: var(--btc-orange);
+    background-color: #1a1a1a;
+}

@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-export default function Login({ onLoginSubmit }) {
+export default function Register({ onRegisterSubmit }) {
     const [formValues, setFormValues] = useState({
         email: '',
         password: '',
+        confirmPassword: '',
     });
 
     const changeHandler = (e) => {
@@ -15,15 +16,20 @@ export default function Login({ onLoginSubmit }) {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        onLoginSubmit(formValues);
+
+        if (formValues.password !== formValues.confirmPassword) {
+            return;
+        }
+
+        onRegisterSubmit(formValues);
     };
 
     return (
-        <section id="login-page" className="page-content">
-            <div className="login-page">
-                <h1>Login</h1>
+        <section id="register-page" className="page-content">
+            <div className="register-page">
+                <h1>Register</h1>
 
-                <form id="login" className="login-form" onSubmit={onSubmit}>
+                <form id="register" className="register-form" onSubmit={onSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input type="email" id="email" name="email" required value={formValues.email} onChange={changeHandler} />
@@ -34,7 +40,12 @@ export default function Login({ onLoginSubmit }) {
                         <input type="password" id="password" name="password" required value={formValues.password} onChange={changeHandler} />
                     </div>
 
-                    <input type="submit" value="Login" className="btn-submit" />
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required value={formValues.confirmPassword} onChange={changeHandler} />
+                    </div>
+
+                    <input type="submit" value="Register" className="btn-submit" />
                 </form>
             </div>
         </section>
