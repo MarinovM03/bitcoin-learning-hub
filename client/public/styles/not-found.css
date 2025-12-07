@@ -1,0 +1,36 @@
+.not-found-page {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.not-found-page h1 {
+    font-size: 6rem;
+    color: var(--btc-orange);
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.not-found-page p {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.btn-home {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: var(--btc-orange);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-home:hover {
+    background-color: #e08315;
+    transform: translateY(-3px);
+}

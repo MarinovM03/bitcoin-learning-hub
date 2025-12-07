@@ -13,6 +13,7 @@ import Register from "./components/register/Register";
 import AuthGuard from "./components/guards/AuthGuards";
 import GuestGuard from "./components/guards/GuestGuard";
 import Edit from "./components/edit/Edit";
+import NotFound from "./components/not-found/NotFound";
 
 function App() {
     const navigate = useNavigate();
@@ -26,21 +27,21 @@ function App() {
     }, []);
 
     const loginSubmitHandler = async (values) => {
-        try {
-            const result = await authService.login(values.email, values.password);
-            setAuth(result);
-            localStorage.setItem('auth', JSON.stringify(result));
-            navigate('/');
-        } catch (err) {
-            console.log("Login failed", err.message);
-        }
+        const result = await authService.login(values.email, values.password);
+
+        setAuth(result);
+        localStorage.setItem('auth', JSON.stringify(result));
+        
+        navigate('/');
     };
 
     const registerSubmitHandler = async (values) => {
         try {
             const result = await authService.register(values.email, values.password);
+
             setAuth(result);
             localStorage.setItem('auth', JSON.stringify(result));
+            
             navigate('/');
         } catch (err) {
             console.log("Register failed", err.message);
@@ -73,6 +74,8 @@ function App() {
                     <Route path="/login" element={<Login onLoginSubmit={loginSubmitHandler} />} />
                     <Route path="/register" element={<Register onRegisterSubmit={registerSubmitHandler} />} />
                 </Route>
+
+                <Route path="*" element={<NotFound />} />
             </Routes>
 
             <Footer />
