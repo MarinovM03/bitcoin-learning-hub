@@ -13,7 +13,6 @@ export const getAllForArticle = async (articleId) => {
 
     try {
         const result = await request.get(`${baseUrl}?${query}`);
-
         return result;
     } catch (err) {
         return [];
