@@ -21,3 +21,8 @@ export const remove = async (articleId) => {
     const result = await request.del(`${baseUrl}/${articleId}`);
     return result;
 };
+
+export const edit = async (articleId, data) => {
+    const result = await request.put(`${baseUrl}/${articleId}`, data);
+    return result;
+};
