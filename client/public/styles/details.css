@@ -104,3 +104,38 @@
     background-color: #e74c3c;
     color: white;
 }
+
+.likes-counter {
+    font-size: 1.2rem;
+    color: var(--btc-orange);
+    font-weight: bold;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.btn-like {
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+.btn-like:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.liked-text {
+    color: #2ecc71;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-left: 10px;
+    animation: fadeIn 0.5s ease-in;
+    vertical-align: middle;
+}
