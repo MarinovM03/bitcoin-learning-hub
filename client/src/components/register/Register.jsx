@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export default function Register({ onRegisterSubmit }) {
+    const [error, setError] = useState('');
     const [formValues, setFormValues] = useState({
         email: '',
         password: '',
@@ -18,9 +19,11 @@ export default function Register({ onRegisterSubmit }) {
         e.preventDefault();
 
         if (formValues.password !== formValues.confirmPassword) {
+            setError("Passwords do not match!");
             return;
         }
 
+        setError('');
         onRegisterSubmit(formValues);
     };
 
@@ -44,6 +47,10 @@ export default function Register({ onRegisterSubmit }) {
                         <label htmlFor="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" required value={formValues.confirmPassword} onChange={changeHandler} />
                     </div>
+
+                    {error && (
+                        <p className="field-error">{error}</p>
+                    )}
 
                     <input type="submit" value="Register" className="btn-submit" />
                 </form>

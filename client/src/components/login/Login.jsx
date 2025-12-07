@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-export default function Login({ onLoginSubmit }) {
+export default function Login({
+    onLoginSubmit,
+}) {
+    const [error, setError] = useState('');
     const [formValues, setFormValues] = useState({
         email: '',
         password: '',
@@ -10,12 +13,17 @@ export default function Login({ onLoginSubmit }) {
         setFormValues(state => ({
             ...state,
             [e.target.name]: e.target.value
-        }));
+    }));
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
-        onLoginSubmit(formValues);
+
+        try {
+            await onLoginSubmit(formValues);
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (
@@ -33,6 +41,10 @@ export default function Login({ onLoginSubmit }) {
                         <label htmlFor="password">Password</label>
                         <input type="password" id="password" name="password" required value={formValues.password} onChange={changeHandler} />
                     </div>
+
+                    {error && (
+                        <p className="field-error">{error}</p>
+                    )}
 
                     <input type="submit" value="Login" className="btn-submit" />
                 </form>
