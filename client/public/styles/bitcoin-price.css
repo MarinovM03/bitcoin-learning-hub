@@ -1,0 +1,51 @@
+.btc-ticker {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-right: 25px;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.btc-ticker:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.live-indicator {
+    height: 8px;
+    width: 8px;
+    background-color: var(--btc-orange);
+    border-radius: 50%;
+    margin-right: 12px;
+    box-shadow: 0 0 8px var(--btc-orange);
+    animation: pulse 2s infinite;
+}
+
+.btc-label {
+    color: #aaa;
+    margin-right: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 1px solid #444;
+    padding-right: 10px;
+}
+
+.btc-value {
+    color: #fff;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums; 
+    letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0.5; transform: scale(0.9); }
+}

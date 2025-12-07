@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import BitcoinPrice from "../common/BitcoinPrice";
 
 export default function Header({
     auth,
@@ -13,6 +14,8 @@ export default function Header({
             </h1>
 
             <nav>
+                <BitcoinPrice />
+
                 <Link to="/articles">All Articles</Link>
 
                 {isAuthenticated ? (
