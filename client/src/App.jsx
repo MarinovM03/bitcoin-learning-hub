@@ -12,6 +12,7 @@ import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import AuthGuard from "./components/guards/AuthGuards";
 import GuestGuard from "./components/guards/GuestGuard";
+import Edit from "./components/edit/Edit";
 
 function App() {
     const navigate = useNavigate();
@@ -59,11 +60,12 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/articles" element={<Catalog /> } />
-                <Route path="/articles/:articleId/details" element={<Details />} />
+                <Route path="/articles/:articleId/details" element={<Details auth={auth} />} />
 
                 {/* Only for Logged-in Users */}
                 <Route element={<AuthGuard auth={auth} />} >
                     <Route path="/articles/create" element={<Create />} />
+                    <Route path="/articles/:articleId/edit" element={<Edit />} />
                 </Route>
 
                 {/* Only for Non-Logged-in Users */}

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import * as articleService from '../../services/articleService';
 
-export default function Details() {
+export default function Details({
+    auth,
+}) {
     const navigate = useNavigate();
     const [article, setArticle] = useState({});
     const { articleId } = useParams();
@@ -29,8 +31,7 @@ export default function Details() {
         }
     };
 
-    // TODO: Authentication
-    const isOwner = true;
+    const isOwner = auth._id === article._ownerId;
 
     return (
         <section id="details-page" className="page-content">
