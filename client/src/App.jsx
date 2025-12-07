@@ -10,6 +10,8 @@ import Details from "./components/details/Details";
 import Create from "./components/create/Create";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
+import AuthGuard from "./components/guards/AuthGuards";
+import GuestGuard from "./components/guards/GuestGuard";
 
 function App() {
     const navigate = useNavigate();
@@ -58,10 +60,17 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/articles" element={<Catalog /> } />
                 <Route path="/articles/:articleId/details" element={<Details />} />
-                <Route path="/articles/create" element={<Create />} />
 
-                <Route path="/login" element={<Login onLoginSubmit={loginSubmitHandler} />} />
-                <Route path="/register" element={<Register onRegisterSubmit={registerSubmitHandler} />} />
+                {/* Only for Logged-in Users */}
+                <Route element={<AuthGuard auth={auth} />} >
+                    <Route path="/articles/create" element={<Create />} />
+                </Route>
+
+                {/* Only for Non-Logged-in Users */}
+                <Route element={<GuestGuard auth={auth} />} >
+                    <Route path="/login" element={<Login onLoginSubmit={loginSubmitHandler} />} />
+                    <Route path="/register" element={<Register onRegisterSubmit={registerSubmitHandler} />} />
+                </Route>
             </Routes>
 
             <Footer />
