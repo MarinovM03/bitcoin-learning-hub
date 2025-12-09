@@ -6,6 +6,7 @@ export default function Edit() {
     const navigate = useNavigate();
     const { articleId } = useParams();
 
+    const [error, setError] = useState('');
     const [formValues, setFormValues] = useState({
         title: '',
         category: '',
@@ -19,7 +20,10 @@ export default function Edit() {
             .then(result => {
                 setFormValues(result);
             })
-            .catch(err => console.log(err.message));
+            .catch(err => {
+                console.log(err.message);
+                navigate('/404');
+            })
     }, [articleId]);
 
     const changeHandler = (e) => {
@@ -27,16 +31,33 @@ export default function Edit() {
             ...state,
             [e.target.name]: e.target.value,
         }));
+        setError('');
     };
 
     const editArticleSubmitHandler = async (e) => {
         e.preventDefault();
+
+        if (formValues.title.length < 5) {
+            setError("Title must be at least 5 characters long!");
+            return;
+        }
+
+        if (formValues.summary.length < 10) {
+            setError("Summary must be at least 10 characters long!");
+            return;
+        }
+
+        if (formValues.content.length < 10) {
+            setError("Content must be at least 10 characters long!");
+            return;
+        }
 
         try {
             await articleService.edit(articleId, formValues);
             navigate(`/articles/${articleId}/details`);
         } catch (err) {
             console.log('Error editing article:', err.message);
+            setError(err.message);
         }
     };
     
@@ -110,6 +131,10 @@ export default function Edit() {
                             onChange={changeHandler}
                         ></textarea>
                     </div>
+
+                    {error && (
+                        <p className="field-error">{error}</p>
+                    )}
 
                     <input type="submit" value="Save Changes" className="btn-submit" />
                     
