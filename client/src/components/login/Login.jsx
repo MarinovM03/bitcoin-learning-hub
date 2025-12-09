@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
-export default function Login({
-    onLoginSubmit,
-}) {
+export default function Login() {
+    const { loginSubmitHandler } = useAuth();
     const [error, setError] = useState('');
     const [formValues, setFormValues] = useState({
         email: '',
@@ -20,7 +20,7 @@ export default function Login({
         e.preventDefault();
 
         try {
-            await onLoginSubmit(formValues);
+            await loginSubmitHandler(formValues);
         } catch (err) {
             setError(err.message);
         }

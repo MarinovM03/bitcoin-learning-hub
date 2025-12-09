@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
-export default function Register({ onRegisterSubmit }) {
+export default function Register() {
+    const { registerSubmitHandler } = useAuth();
     const [error, setError] = useState('');
     const [formValues, setFormValues] = useState({
         email: '',
@@ -15,7 +17,7 @@ export default function Register({ onRegisterSubmit }) {
         }));
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         if (formValues.password !== formValues.confirmPassword) {
@@ -23,8 +25,11 @@ export default function Register({ onRegisterSubmit }) {
             return;
         }
 
-        setError('');
-        onRegisterSubmit(formValues);
+        try {
+            await registerSubmitHandler(formValues);
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (

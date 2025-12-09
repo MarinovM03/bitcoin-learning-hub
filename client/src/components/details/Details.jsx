@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import * as articleService from '../../services/articleService';
+import { useAuth } from "../../contexts/AuthContext";
 
-export default function Details({ auth }) {
+export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
+    const { userId, isAuthenticated } = useAuth();
 
     const [article, setArticle] = useState({});
     const [totalLikes, setTotalLikes] = useState(0);
@@ -12,44 +14,33 @@ export default function Details({ auth }) {
 
     useEffect(() => {
         articleService.getOne(articleId)
-            .then(setArticle)
+            .then(result => setArticle(result))
             .catch(err => console.log(err));
 
         fetch(`http://localhost:3030/data/likes?where=articleId%3D"${articleId}"`)
             .then(res => {
-
-                if (res.status === 404) {
-                    return [];
-                }
-
-                if (!res.ok) {
-                    return [];
-                }
-
+                if (res.status === 404 || !res.ok) return [];
                 return res.json();
             })
             .then(likesArray => {
                 if (!Array.isArray(likesArray)) likesArray = [];
-
                 setTotalLikes(likesArray.length);
 
-                if (auth._id) {
-                    const isLiked = likesArray.some(like => like._ownerId === auth._id);
+                if (userId) {
+                    const isLiked = likesArray.some(like => like._ownerId === userId);
                     setHasLiked(isLiked);
                 }
             })
-            .catch(err => {
-                console.log("Likes system offline");
-            });
+            .catch(() => {});
 
-    }, [articleId, auth._id]);
+    }, [articleId, userId]);
 
-    const isOwner = auth._id === article._ownerId;
+    const isOwner = userId === article?._ownerId;
 
     const onDelete = async () => {
-        const confirmed = confirm("Are you sure?");
+        const confirmed = confirm(`Are you sure you want to delete: ${article.title}?`);
         if (confirmed) {
-            await articleService.del(articleId);
+            await articleService.remove(articleId);
             navigate('/articles');
         }
     };
@@ -58,11 +49,16 @@ export default function Details({ auth }) {
         if (hasLiked) return;
 
         try {
+            const authData = JSON.parse(localStorage.getItem('auth') || '{}');
+            const token = authData.accessToken;
+
+            if (!token) return;
+
             const response = await fetch('http://localhost:3030/data/likes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Authorization': auth.accessToken
+                    'X-Authorization': token
                 },
                 body: JSON.stringify({ articleId })
             });
@@ -80,15 +76,15 @@ export default function Details({ auth }) {
         <section id="details-page" className="page-content">
              <div className="details-page">
                 <div className="details-hero">
-                    <img className="details-img" src={article.imageUrl} alt={article.title} />
+                    <img className="details-img" src={article?.imageUrl} alt={article?.title} />
                 </div>
                 <div className="details-container">
                     <div className="details-header">
-                        <h1>{article.title} <span className="likes-counter">({totalLikes} likes)</span></h1>
-                        <span className="category-tag">{article.category}</span>
+                        <h1>{article?.title} <span className="likes-counter">({totalLikes} likes)</span></h1>
+                        <span className="category-tag">{article?.category}</span>
                     </div>
-                    <p className="details-summary">{article.summary}</p>
-                    <p className="details-content">{article.content}</p>
+                    <p className="details-summary">{article?.summary}</p>
+                    <p className="details-content">{article?.content}</p>
 
                     <div className="details-buttons">
                         {isOwner && (
@@ -97,7 +93,7 @@ export default function Details({ auth }) {
                                 <button className="btn-delete" onClick={onDelete}>Delete</button>
                             </>
                         )}
-                        {auth.accessToken && !isOwner && !hasLiked && (
+                        {isAuthenticated && !isOwner && !hasLiked && (
                             <button className="btn-like" onClick={onLike}>Like Article</button>
                         )}
                         {hasLiked && <span className="liked-text">You liked this!</span>}
