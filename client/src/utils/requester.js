@@ -39,9 +39,9 @@ async function request(method, url, data) {
         }
 
         return result;
-    } catch (error) {
-        console.error(error.message); 
-        throw error;
+    } catch (err) {
+        // console.error(err.message);
+        throw err;
     }
 }
 

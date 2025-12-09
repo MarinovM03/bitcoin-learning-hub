@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 export default function Create() {
     const navigate = useNavigate();
+    const [error, setError] = useState('');
 
     const [formValues, setFormValues] = useState({
         title: '',
@@ -18,16 +19,35 @@ export default function Create() {
             ...state,
             [e.target.name]: e.target.value,
         }));
+        setError('');
     };
 
     const createArticleSubmitHandler = async (e) => {
         e.preventDefault();
+
+        const articleData = Object.fromEntries(new FormData(e.currentTarget));
+
+        if (formValues.title.length < 5) {
+            setError("Title must be at least 5 characters long!"); 
+            return;
+        }
+
+        if (formValues.summary.length < 10) {
+            setError("Summary must be at least 10 characters long!"); 
+            return;
+        }
+
+        if (formValues.content.length < 10) {
+            setError("Content must be at least 10 characters long!"); 
+            return;
+        }
 
         try {
             await articleService.create(formValues);
             navigate('/articles');
         } catch (err) {
             console.log("Error creating article:", err.message);
+            setError(err.message);
         }
     };
 
@@ -62,6 +82,10 @@ export default function Create() {
                         <label htmlFor="content">Content</label>
                         <textarea id="content" name="content" className="content-input" placeholder="Full article content..." required value={formValues.content} onChange={changeHandler} ></textarea>
                     </div>
+
+                    {error && (
+                        <p className="field-error">{error}</p>
+                    )}
 
                     <input type="submit" value="Publish Article" className="btn-submit" />
                     

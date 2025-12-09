@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router";
 
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
     const [error, setError] = useState('');
+    
     const [formValues, setFormValues] = useState({
         email: '',
         password: '',
@@ -13,14 +15,14 @@ export default function Login() {
         setFormValues(state => ({
             ...state,
             [e.target.name]: e.target.value
-    }));
+        }));
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            await loginSubmitHandler(formValues);
+            await loginSubmitHandler(formValues); 
         } catch (err) {
             setError(err.message);
         }
@@ -34,12 +36,26 @@ export default function Login() {
                 <form id="login" className="login-form" onSubmit={onSubmit}>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" id="email" name="email" required value={formValues.email} onChange={changeHandler} />
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required
+                            value={formValues.email}
+                            onChange={changeHandler}
+                        />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" name="password" required value={formValues.password} onChange={changeHandler} />
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            required
+                            value={formValues.password}
+                            onChange={changeHandler}
+                        />
                     </div>
 
                     {error && (
@@ -47,6 +63,10 @@ export default function Login() {
                     )}
 
                     <input type="submit" value="Login" className="btn-submit" />
+                    
+                    <p className="field-text">
+                        Don't have an account? <Link to="/register">Register here</Link>
+                    </p>
                 </form>
             </div>
         </section>
