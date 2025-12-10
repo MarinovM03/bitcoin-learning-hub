@@ -62,7 +62,7 @@ export default function Edit() {
     };
     
     return (
-        <section id="edit-page" className="page-content">
+        <section id="create-page" className="page-content">
             <div className="create-page">
                 <h1>Edit Knowledge</h1>
 
