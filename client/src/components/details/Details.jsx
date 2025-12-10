@@ -15,7 +15,10 @@ export default function Details() {
     useEffect(() => {
         articleService.getOne(articleId)
             .then(result => setArticle(result))
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err);
+                navigate('/404');
+            });
 
         fetch(`http://localhost:3030/data/likes?where=articleId%3D"${articleId}"`)
             .then(res => {
@@ -39,9 +42,15 @@ export default function Details() {
 
     const onDelete = async () => {
         const confirmed = confirm(`Are you sure you want to delete: ${article.title}?`);
+
         if (confirmed) {
-            await articleService.remove(articleId);
-            navigate('/articles');
+            try {
+                await articleService.remove(articleId);
+                navigate('/articles');
+            } catch (err) {
+                console.log("Delete failed:", err.message);
+                alert("Failed to delete article. Please try again.");
+            }
         }
     };
 
