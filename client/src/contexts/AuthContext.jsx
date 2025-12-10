@@ -29,7 +29,13 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
-    const logoutHandler = () => {
+    const logoutHandler = async () => {
+        try {
+            await authService.logout();
+        } catch (err) {
+            console.log('Logout failed');
+        }
+
         setAuth({});
         localStorage.removeItem('auth');
         navigate('/');

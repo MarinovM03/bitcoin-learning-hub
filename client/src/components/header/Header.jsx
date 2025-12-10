@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import BitcoinPrice from '../common/BitcoinPrice';
 
 export default function Header() {
-    const { isAuthenticated, userEmail, logoutHandler } = useAuth();
+    const { isAuthenticated, logoutHandler } = useAuth();
 
     return (
         <header>
