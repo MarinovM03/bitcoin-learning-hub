@@ -1,6 +1,6 @@
 import * as request from "../utils/requester";
 
-const baseUrl = 'http://localhost:3030/data/articles';
+const baseUrl = 'http://localhost:5000/articles';
 
 export const getAll = async () => {
     const result = await request.get(baseUrl);

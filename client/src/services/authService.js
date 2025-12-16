@@ -1,6 +1,6 @@
 import * as request from "../utils/requester";
 
-const baseUrl = 'http://localhost:3030/users';
+const baseUrl = 'http://localhost:5000/users';
 
 export const login = async (email, password) => {
     const result = await request.post(`${baseUrl}/login`, {
