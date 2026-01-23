@@ -17,3 +17,18 @@ export const create = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+export const getOne = async (req, res) => {
+    try {
+        const articleId = req.params.articleId;
+        const article = await Article.findById(articleId);
+
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        res.json(article);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};

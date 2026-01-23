@@ -6,6 +6,7 @@ const router = Router();
 
 router.get('/articles', articleController.getAll);
 router.post('/articles', articleController.create);
+router.get('/articles/:articleId', articleController.getOne);
 
 router.post('/users/register', authController.register);
 router.post('/users/login', authController.login);
