@@ -11,7 +11,8 @@ export const authMiddleware = (req, res, next) => {
             req.user = decodedToken;
             next();
         } catch (err) {
-            res.status(401).json({ message: 'You are not authorized' });
+            req.user = undefined;
+            next();
         }
     } else {
         next();

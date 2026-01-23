@@ -4,12 +4,15 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import router from './routes.js';
 
+import { authMiddleware } from './middlewares/authMiddleware.js';
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(authMiddleware);
 
 const connectionString = process.env.MONGO_URI;
 
