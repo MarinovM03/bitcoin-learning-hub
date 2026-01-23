@@ -11,11 +11,15 @@ export const getAll = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({ message: "You must be logged in to post!" });
+        }
+
         const newArticle = await Article.create({
             ...req.body,
             _ownerId: req.user._id
         });
-        
+
         res.status(201).json(newArticle);
     } catch (error) {
         res.status(400).json({ message: error.message });
