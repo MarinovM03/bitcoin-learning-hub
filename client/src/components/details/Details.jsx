@@ -20,21 +20,21 @@ export default function Details() {
                 navigate('/404');
             });
 
-        fetch(`http://localhost:3030/data/likes?where=articleId%3D"${articleId}"`)
-            .then(res => {
-                if (res.status === 404 || !res.ok) return [];
-                return res.json();
-            })
-            .then(likesArray => {
-                if (!Array.isArray(likesArray)) likesArray = [];
-                setTotalLikes(likesArray.length);
+        // fetch(`http://localhost:3030/data/likes?where=articleId%3D"${articleId}"`)
+        //     .then(res => {
+        //         if (res.status === 404 || !res.ok) return [];
+        //         return res.json();
+        //     })
+        //     .then(likesArray => {
+        //         if (!Array.isArray(likesArray)) likesArray = [];
+        //         setTotalLikes(likesArray.length);
 
-                if (userId) {
-                    const isLiked = likesArray.some(like => like._ownerId === userId);
-                    setHasLiked(isLiked);
-                }
-            })
-            .catch(() => {});
+        //         if (userId) {
+        //             const isLiked = likesArray.some(like => like._ownerId === userId);
+        //             setHasLiked(isLiked);
+        //         }
+        //     })
+        //     .catch(() => {});
 
     }, [articleId, userId]);
 
