@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import * as articleService from '../../services/articleService';
+import * as likeService from '../../services/likeService';
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Details() {
@@ -15,27 +16,16 @@ export default function Details() {
     useEffect(() => {
         articleService.getOne(articleId)
             .then(result => setArticle(result))
-            .catch(err => {
-                console.log(err);
-                navigate('/404');
+            .catch(() => navigate('/404'));
+
+        likeService.getAllForArticle(articleId)
+            .then(likesArray => {
+                setTotalLikes(likesArray.length);
+                if (userId) {
+                    const isLiked = likesArray.some(like => like._ownerId === userId);
+                    setHasLiked(isLiked);
+                }
             });
-
-        // fetch(`http://localhost:3030/data/likes?where=articleId%3D"${articleId}"`)
-        //     .then(res => {
-        //         if (res.status === 404 || !res.ok) return [];
-        //         return res.json();
-        //     })
-        //     .then(likesArray => {
-        //         if (!Array.isArray(likesArray)) likesArray = [];
-        //         setTotalLikes(likesArray.length);
-
-        //         if (userId) {
-        //             const isLiked = likesArray.some(like => like._ownerId === userId);
-        //             setHasLiked(isLiked);
-        //         }
-        //     })
-        //     .catch(() => {});
-
     }, [articleId, userId]);
 
     const isOwner = userId === article?._ownerId;
@@ -58,24 +48,10 @@ export default function Details() {
         if (hasLiked) return;
 
         try {
-            const authData = JSON.parse(localStorage.getItem('auth') || '{}');
-            const token = authData.accessToken;
+            await likeService.like(articleId);
 
-            if (!token) return;
-
-            const response = await fetch('http://localhost:3030/data/likes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Authorization': token
-                },
-                body: JSON.stringify({ articleId })
-            });
-
-            if (response.ok) {
-                setTotalLikes(state => state + 1);
-                setHasLiked(true);
-            }
+            setTotalLikes(state => state + 1);
+            setHasLiked(true);
         } catch (err) {
             console.log("Like failed", err);
         }
@@ -105,7 +81,7 @@ export default function Details() {
                         {isAuthenticated && !isOwner && !hasLiked && (
                             <button className="btn-like" onClick={onLike}>Like Article</button>
                         )}
-                        {hasLiked && <span className="liked-text">You liked this!</span>}
+                        {hasLiked && <span className="liked-text">You have already liked this article!</span>}
                     </div>
                 </div>
             </div>
