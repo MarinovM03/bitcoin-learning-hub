@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -7,16 +6,14 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Email is required'],
         unique: true,
     },
+    profilePicture: { 
+        type: String,
+        default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+    },
     password: {
         type: String,
         required: [true, 'Password is required'],
     },
-});
-
-userSchema.pre('save', async function() {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
 });
 
 const User = mongoose.model('User', userSchema);

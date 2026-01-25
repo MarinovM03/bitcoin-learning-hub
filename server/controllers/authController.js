@@ -6,21 +6,38 @@ export const register = async (req, res) => {
     try {
         const SECRET = process.env.JWT_SECRET;
 
-        const { email, password, confirmPassword } = req.body;
+        const { email, password, confirmPassword, profilePicture } = req.body;
 
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: "User already exists!" });
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match!' });
         }
 
-        const user = await User.create({ email, password });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists!' });
+        }
 
-        const token = jwt.sign({ _id: user._id, email: user.email }, SECRET, { expiresIn: '2d' });
+        const hashPassword = await bcrypt.hash(password, 10);
 
-        res.status(201).json({
+        const user = await User.create({ 
+            email, 
+            password: hashPassword, 
+            profilePicture,
+        });
+
+        const payload = {
             _id: user._id,
             email: user.email,
+            profilePicture: user.profilePicture,
+        };
+
+        const token = jwt.sign(payload, SECRET, { expiresIn: '2d' });
+
+        res.json({
             accessToken: token,
+            _id: user._id,
+            email: user.email,
+            profilePicture: user.profilePicture,
         });
 
     } catch (error) {
