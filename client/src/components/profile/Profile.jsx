@@ -62,11 +62,13 @@ export default function Profile() {
                 <h1>Edit Profile</h1>
                 
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <img 
-                        src={user.profilePicture} 
-                        alt="Profile" 
-                        style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #f29c1f' }} 
-                    />
+                    {user.profilePicture && (
+                        <img 
+                            src={user.profilePicture} 
+                            alt="Profile" 
+                            style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #f29c1f' }} 
+                        />
+                    )}
                 </div>
 
                 <form className="register-form" onSubmit={onSubmit}>

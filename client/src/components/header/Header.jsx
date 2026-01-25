@@ -16,6 +16,7 @@ export default function Header() {
                 {isAuthenticated ? (
                     <div id="user">
                         <Link to="/articles/create">Create Article</Link>
+                        <Link to="/profile">Profile</Link>
                         <Link to="/" onClick={logoutHandler}>Logout</Link>
                     </div>
                 ) : (
