@@ -23,10 +23,7 @@ export default function Register() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        if (formValues.password.length < 4) {
-            setError("Password must be at least 4 characters long!");
-            return;
-        }
+        console.log("Form Values being submitted:", formValues);
 
         if (formValues.password !== formValues.confirmPassword) {
             setError("Passwords do not match!");
