@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
+import * as likeController from './controllers/likeController.js';
 
 const router = Router();
 
@@ -15,5 +16,8 @@ router.post('/users/register', authController.register);
 router.post('/users/login', authController.login);
 router.post('/users/logout', authController.logout);
 router.get('/users/logout', authController.logout);
+
+router.post('/likes', likeController.likeArticle);
+router.get('/likes/:articleId', likeController.getLikes);
 
 export default router;
