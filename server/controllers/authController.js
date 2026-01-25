@@ -77,3 +77,49 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
     res.json({ message: 'Logged out successfully' });
 };
+
+export const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { email, profilePicture, password, confirmPassword } = req.body;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (email) user.email = email;
+        if (profilePicture) user.profilePicture = profilePicture;
+
+        if (password) {
+            if (password !== confirmPassword) {
+                return res.status(400).json({ message: "Passwords do not match!" });
+            }
+            user.password = await bcrypt.hash(password, 10);
+        }
+
+        await user.save();
+
+        res.json({
+            _id: user._id,
+            email: user.email,
+            profilePicture: user.profilePicture,
+            accessToken: req.headers['x-authorization'],
+        });
+
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+export const getProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId).select('-password');
+        
+        res.json(user);
+    } catch (error) {
+        res.status(404).json({ message: "User not found" });
+    }
+}

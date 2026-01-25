@@ -13,6 +13,7 @@ import Register from "./components/register/Register";
 import AuthGuard from "./components/guards/AuthGuard";
 import GuestGuard from "./components/guards/GuestGuard";
 import Edit from "./components/edit/Edit";
+import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                 <Route element={<AuthGuard />} >
                     <Route path="/articles/create" element={<Create />} />
                     <Route path="/articles/:articleId/edit" element={<Edit />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Route>
 
                 {/* Only for Non-Logged-in Users */}

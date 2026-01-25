@@ -20,3 +20,13 @@ export const register = async (registerData) => {
 export const logout = async () => {
     await request.post(`${baseUrl}/logout`);
 };
+
+export const updateProfile = async (data) => {
+    const result = await request.put(`${baseUrl}/profile`, data);
+    return result;
+};
+
+export const getProfile = async () => {
+    const result = await request.get(`${baseUrl}/profile`);
+    return result;
+};

@@ -20,4 +20,7 @@ router.get('/users/logout', authController.logout);
 router.post('/likes', likeController.likeArticle);
 router.get('/likes/:articleId', likeController.getLikes);
 
+router.get('/users/profile', authController.getProfile);
+router.put('/users/profile', authController.updateProfile);
+
 export default router;

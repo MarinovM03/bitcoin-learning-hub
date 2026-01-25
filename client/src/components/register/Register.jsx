@@ -23,8 +23,6 @@ export default function Register() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        console.log("Form Values being submitted:", formValues);
-
         if (formValues.password !== formValues.confirmPassword) {
             setError("Passwords do not match!");
             return;
