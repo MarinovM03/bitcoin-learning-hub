@@ -5,8 +5,11 @@ import * as authController from './controllers/authController.js';
 const router = Router();
 
 router.get('/articles', articleController.getAll);
-router.post('/articles', articleController.create);
 router.get('/articles/:articleId', articleController.getOne);
+
+router.post('/articles', articleController.create);
+router.put('/articles/:articleId', articleController.update);
+router.delete('/articles/:articleId', articleController.remove);
 
 router.post('/users/register', authController.register);
 router.post('/users/login', authController.login);
