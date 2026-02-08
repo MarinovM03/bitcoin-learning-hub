@@ -5,7 +5,10 @@ import * as authService from "../../services/authService";
 export default function Profile() {
     const { setAuth } = useAuth();
     const [showSuccess, setShowSuccess] = useState(false);
-    
+    const [error, setError] = useState('');
+
+    const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
     const [user, setUser] = useState({
         email: '',
         profilePicture: '',
@@ -28,15 +31,29 @@ export default function Profile() {
 
     const onProfileChange = (e) => {
         setUser(state => ({ ...state, [e.target.name]: e.target.value }));
+        setError('');
     };
 
     const onPasswordChange = (e) => {
         setPasswords(state => ({ ...state, [e.target.name]: e.target.value }));
+        setError('');
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
         setShowSuccess(false);
+        setError('');
+
+        if (passwords.password) {
+            if (passwords.password.length < 4) {
+                setError("Password must be at least 4 characters long!");
+                return;
+            }
+            if (passwords.password !== passwords.confirmPassword) {
+                setError("Passwords do not match!");
+                return;
+            }
+        }
 
         try {
             const dataToUpdate = {
@@ -54,13 +71,15 @@ export default function Profile() {
             setAuth(newAuth);
 
             setShowSuccess(true);
+            setPasswords({ password: '', confirmPassword: '' });
+            
             setTimeout(() => {
                 setShowSuccess(false);
             }, 3000);
 
         } catch (err) {
             console.error(err);
-            alert(err.message || "Failed to update profile.");
+            setError(err.message || "Failed to update profile.");
         }
     };
 
@@ -70,20 +89,22 @@ export default function Profile() {
                 <h1>Edit Profile</h1>
                 
                 <div className="profile-avatar-container">
-                    {user.profilePicture ? (
-                        <img 
-                            src={user.profilePicture} 
-                            alt="Profile" 
-                            className="profile-avatar" 
-                        />
-                    ) : (
-                        <div className="profile-avatar-placeholder"></div>
-                    )}
+                    <img 
+                        src={user.profilePicture || defaultAvatar} 
+                        alt="Profile" 
+                        className="profile-avatar" 
+                    />
                 </div>
 
                 {showSuccess && (
                     <div className="profile-success-message">
                         ✅ Profile updated successfully!
+                    </div>
+                )}
+
+                {error && (
+                    <div style={{ color: 'red', textAlign: 'center', marginBottom: '15px', fontWeight: 'bold' }}>
+                        {error}
                     </div>
                 )}
 

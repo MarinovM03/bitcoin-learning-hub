@@ -93,9 +93,14 @@ export const updateProfile = async (req, res) => {
         if (profilePicture) user.profilePicture = profilePicture;
 
         if (password) {
+            if (password.length < 4) {
+                return res.status(400).json({ message: "Password must be at least 4 characters long!" });
+            }
+
             if (password !== confirmPassword) {
                 return res.status(400).json({ message: "Passwords do not match!" });
             }
+            
             user.password = await bcrypt.hash(password, 10);
         }
 
