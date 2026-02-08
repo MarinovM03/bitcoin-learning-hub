@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 
 export default function Profile() {
-    const { userId, setAuth } = useAuth();
+    const { setAuth } = useAuth();
     const [user, setUser] = useState({
         email: '',
         profilePicture: '',
@@ -61,12 +61,12 @@ export default function Profile() {
             <div className="register-page">
                 <h1>Edit Profile</h1>
                 
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                <div className="profile-avatar-container">
                     {user.profilePicture && (
                         <img 
                             src={user.profilePicture} 
                             alt="Profile" 
-                            style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #f29c1f' }} 
+                            className="profile-avatar" 
                         />
                     )}
                 </div>

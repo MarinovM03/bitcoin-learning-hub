@@ -28,7 +28,7 @@ export default function Details() {
             });
     }, [articleId, userId]);
 
-    const isOwner = userId === article?._ownerId;
+    const isOwner = userId && article._ownerId && userId === article._ownerId;
 
     const onDelete = async () => {
         const confirmed = confirm(`Are you sure you want to delete: ${article.title}?`);

@@ -9,6 +9,7 @@
 @import "register.css";
 @import "not-found.css";
 @import "bitcoin-price.css";
+@import "profile.css";
 
 :root {
     --btc-orange: #F7931A;
