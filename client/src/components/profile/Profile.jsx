@@ -44,6 +44,15 @@ export default function Profile() {
         setShowSuccess(false);
         setError('');
 
+        if (passwords.password && !passwords.confirmPassword) {
+             setError("Please re-enter your new password in the confirmation field.");
+             return;
+        }
+        if (!passwords.password && passwords.confirmPassword) {
+             setError("Please enter a value for the New Password field.");
+             return;
+        }
+
         if (passwords.password) {
             if (passwords.password.length < 4) {
                 setError("Password must be at least 4 characters long!");
