@@ -4,6 +4,8 @@ import * as authService from "../../services/authService";
 
 export default function Profile() {
     const { setAuth } = useAuth();
+    const [showSuccess, setShowSuccess] = useState(false);
+    
     const [user, setUser] = useState({
         email: '',
         profilePicture: '',
@@ -19,7 +21,7 @@ export default function Profile() {
             .then(result => {
                 setUser({
                     email: result.email,
-                    profilePicture: result.profilePicture,
+                    profilePicture: result.profilePicture || '', 
                 });
             });
     }, []);
@@ -34,6 +36,8 @@ export default function Profile() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        setShowSuccess(false);
+
         try {
             const dataToUpdate = {
                 email: user.email,
@@ -49,10 +53,14 @@ export default function Profile() {
             localStorage.setItem('auth', JSON.stringify(newAuth));
             setAuth(newAuth);
 
-            alert("Profile updated successfully!");
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 3000);
+
         } catch (err) {
             console.error(err);
-            alert("Failed to update profile.");
+            alert(err.message || "Failed to update profile.");
         }
     };
 
@@ -62,14 +70,22 @@ export default function Profile() {
                 <h1>Edit Profile</h1>
                 
                 <div className="profile-avatar-container">
-                    {user.profilePicture && (
+                    {user.profilePicture ? (
                         <img 
                             src={user.profilePicture} 
                             alt="Profile" 
                             className="profile-avatar" 
                         />
+                    ) : (
+                        <div className="profile-avatar-placeholder"></div>
                     )}
                 </div>
+
+                {showSuccess && (
+                    <div className="profile-success-message">
+                        ✅ Profile updated successfully!
+                    </div>
+                )}
 
                 <form className="register-form" onSubmit={onSubmit}>
                     <div className="form-group">
@@ -79,6 +95,7 @@ export default function Profile() {
                             name="profilePicture" 
                             value={user.profilePicture} 
                             onChange={onProfileChange} 
+                            placeholder="https://..."
                         />
                     </div>
 
@@ -92,7 +109,7 @@ export default function Profile() {
                         />
                     </div>
 
-                    <h3 style={{marginTop: '30px', color: '#fff'}}>Change Password (Optional)</h3>
+                    <h3 className="profile-password-heading">Change Password (Optional)</h3>
 
                     <div className="form-group">
                         <label>New Password</label>
