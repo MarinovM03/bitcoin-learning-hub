@@ -15,10 +15,13 @@ import GuestGuard from "./components/guards/GuestGuard";
 import Edit from "./components/edit/Edit";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
+import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 
 function App() {
     return (
         <AuthProvider>
+            <ScrollToTop />
+
             <Header />
 
             <Routes>
