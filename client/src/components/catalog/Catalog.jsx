@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import * as articleService from '../../services/articleService';
 import ArticleItem from "../article-item/ArticleItem";
+import Spinner from "../spinner/Spinner";
 
 export default function Catalog() {
     const [articles, setArticles] = useState([]);
     const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         articleService.getAll()
@@ -13,6 +15,9 @@ export default function Catalog() {
             })
             .catch(err => {
                 alert(err.message);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     }, []);
 
@@ -34,12 +39,17 @@ export default function Catalog() {
                 />
             </div>
 
-            {filteredArticles.length === 0 && <h3 className="no-articles">No articles found</h3>}
-            
-            <div className="catalog-list">
-                {filteredArticles.map(article => <ArticleItem key={article._id} {...article} />)}
-            </div>
-                
+            {isLoading ? (
+                <Spinner />
+            ) : (
+                <>
+                    {filteredArticles.length === 0 && <h3 className="no-articles">No articles found</h3>}
+                    
+                    <div className="catalog-list">
+                        {filteredArticles.map(article => <ArticleItem key={article._id} {...article} />)}
+                    </div>
+                </>
+            )}
         </section>
     );
 }
