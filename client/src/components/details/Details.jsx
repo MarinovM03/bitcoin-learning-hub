@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import { useAuth } from "../../contexts/AuthContext";
+import Spinner from "../spinner/Spinner";
 
 export default function Details() {
     const navigate = useNavigate();
@@ -12,21 +13,25 @@ export default function Details() {
     const [article, setArticle] = useState({});
     const [totalLikes, setTotalLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        articleService.getOne(articleId)
-            .then(result => setArticle(result))
-            .catch(() => navigate('/404'));
-
-        likeService.getAllForArticle(articleId)
-            .then(likesArray => {
-                setTotalLikes(likesArray.length);
-                if (userId) {
-                    const isLiked = likesArray.some(like => like._ownerId === userId);
-                    setHasLiked(isLiked);
-                }
-            });
-    }, [articleId, userId]);
+        Promise.all([
+            articleService.getOne(articleId),
+            likeService.getAllForArticle(articleId)
+        ])
+        .then(([articleData, likesArray]) => {
+            setArticle(articleData);
+            setTotalLikes(likesArray.length);
+            
+            if (userId) {
+                const isLiked = likesArray.some(like => like._ownerId === userId);
+                setHasLiked(isLiked);
+            }
+        })
+        .catch(() => navigate('/404'))
+        .finally(() => setIsLoading(false));
+    }, [articleId, userId, navigate]);
 
     const isOwner = userId && article._ownerId && userId === article._ownerId;
 
@@ -49,13 +54,16 @@ export default function Details() {
 
         try {
             await likeService.like(articleId);
-
             setTotalLikes(state => state + 1);
             setHasLiked(true);
         } catch (err) {
             console.log("Like failed", err);
         }
     };
+
+    if (isLoading) {
+        return <Spinner />;
+    }
 
     return (
         <section id="details-page" className="page-content">

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
+import Spinner from "../spinner/Spinner";
 
 export default function Profile() {
     const { setAuth } = useAuth();
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
@@ -26,7 +28,8 @@ export default function Profile() {
                     email: result.email,
                     profilePicture: result.profilePicture || '', 
                 });
-            });
+            })
+            .finally(() => setIsLoading(false));
     }, []);
 
     const onProfileChange = (e) => {
@@ -92,6 +95,10 @@ export default function Profile() {
         }
     };
 
+    if (isLoading) {
+        return <Spinner />;
+    }
+
     return (
         <section id="profile-page" className="page-content">
             <div className="register-page">
@@ -112,7 +119,7 @@ export default function Profile() {
                 )}
 
                 {error && (
-                    <div style={{ color: 'red', textAlign: 'center', marginBottom: '15px', fontWeight: 'bold' }}>
+                    <div className="profile-error-message">
                         {error}
                     </div>
                 )}
