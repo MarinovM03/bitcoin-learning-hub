@@ -1,6 +1,7 @@
 import { Routes, Route, useNavigate } from "react-router";
 import { AuthProvider } from './contexts/AuthContext';
 import * as authService from "./services/authService";
+import './styles/site.css';
 
 import Header from "./components/header/Header";
 import Footer from "./components/footer/Footer";
