@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router";
 import * as authService from '../services/authService';
 
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
-    const values = {
+    const values = useMemo(() => ({
         loginSubmitHandler,
         registerSubmitHandler,
         logoutHandler,
@@ -50,8 +50,9 @@ export const AuthProvider = ({ children }) => {
         email: auth.email,
         userId: auth._id,
         isAuthenticated: !!auth.accessToken,
+        profilePicture: auth.profilePicture,
         setAuth,
-    };
+    }), [auth]);
 
     return (
         <AuthContext.Provider value={values}>

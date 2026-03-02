@@ -30,8 +30,8 @@
 .register-form input {
     width: 100%;
     padding: 12px;
-    background-color: #121212;
-    border: 1px solid #444;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
     border-radius: 6px;
     color: white;
     font-size: 1rem;
@@ -42,5 +42,5 @@
 .register-form input:focus {
     outline: none;
     border-color: var(--btc-orange);
-    background-color: #1a1a1a;
+    background-color: var(--dark-bg);
 }

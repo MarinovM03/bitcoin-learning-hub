@@ -16,11 +16,17 @@
 
 :root {
     --btc-orange: #F7931A;
-    --btc-yellow: #f2a900;
     --dark-bg: #1a1a1a;
     --card-bg: #242424;
     --text-color: #e0e0e0;
     --text-secondary: #a0a0a0;
+    --border-color: #333;
+    --border-light: #444;
+    --input-bg: #121212;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --accent-blue: #3498db;
+    --accent-blue-hover: #2980b9;
 }
 
 * {
@@ -29,7 +35,7 @@
 
 body {
     margin: 0;
-    background-color: #121212;
+    background-color: var(--input-bg);
     color: var(--text-color);
 }
 

@@ -33,7 +33,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-right: 1px solid #444;
+    border-right: 1px solid var(--border-light);
     padding-right: 10px;
 }
 

@@ -17,14 +17,12 @@ export default function Edit() {
 
     useEffect(() => {
         articleService.getOne(articleId)
-            .then(result => {
-                setFormValues(result);
-            })
+            .then(result => setFormValues(result))
             .catch(err => {
                 console.log(err.message);
                 navigate('/404');
-            })
-    }, [articleId]);
+            });
+    }, [articleId, navigate]);
 
     const changeHandler = (e) => {
         setFormValues((state) => ({

@@ -27,7 +27,7 @@
 
 .details-header {
     margin-bottom: 2rem;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-light);
     padding-bottom: 1.5rem;
 }
 
@@ -61,7 +61,7 @@
 .details-content {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #d0d0d0;
+    color: var(--text-color);
     margin-bottom: 3rem;
     white-space: pre-wrap;
 }
@@ -70,7 +70,7 @@
     display: flex;
     gap: 15px;
     margin-top: 2rem;
-    border-top: 1px solid #444;
+    border-top: 1px solid var(--border-light);
     padding-top: 1.5rem;
 }
 
@@ -96,12 +96,12 @@
 
 .btn-delete {
     background-color: transparent;
-    color: #e74c3c;
-    border: 1px solid #e74c3c;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
 }
 
 .btn-delete:hover {
-    background-color: #e74c3c;
+    background-color: var(--danger-color);
     color: white;
 }
 
@@ -121,18 +121,18 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
-    background-color: #3498db;
+    background-color: var(--accent-blue);
     color: white;
     border: none;
 }
 
 .btn-like:hover {
-    background-color: #2980b9;
+    background-color: var(--accent-blue);
     transform: translateY(-2px);
 }
 
 .liked-text {
-    color: #2ecc71;
+    color: var(--success-color);
     font-weight: bold;
     font-size: 1rem;
     margin-left: 10px;
