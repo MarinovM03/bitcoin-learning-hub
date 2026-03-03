@@ -44,3 +44,19 @@
     border-color: var(--btc-orange);
     background-color: var(--dark-bg);
 }
+
+.field-text {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.field-text a {
+    color: var(--btc-orange);
+    font-weight: 600;
+}
+
+.field-text a:hover {
+    color: white;
+}
