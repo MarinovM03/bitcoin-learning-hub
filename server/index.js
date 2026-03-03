@@ -21,6 +21,7 @@ try {
     console.log("Database Connected!");
 } catch (err) {
     console.error("Database Error:", err);
+    process.exit(1);
 }
 
 app.use(router);
