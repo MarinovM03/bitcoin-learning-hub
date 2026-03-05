@@ -1,0 +1,54 @@
+.why-section {
+    margin-bottom: 4rem;
+    text-align: center;
+}
+
+.why-section h2 {
+    margin-bottom: 2.5rem;
+    font-size: 2rem;
+    border-bottom: 3px solid var(--btc-orange);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.why-cards {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.why-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    width: 300px;
+    text-align: left;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+    animation: fadeIn 0.7s ease-in-out;
+}
+
+.why-card:hover {
+    border-color: var(--btc-orange);
+    transform: translateY(-6px);
+}
+
+.why-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.why-card h3 {
+    font-size: 1.1rem;
+    color: white;
+    margin-bottom: 0.6rem;
+}
+
+.why-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+}

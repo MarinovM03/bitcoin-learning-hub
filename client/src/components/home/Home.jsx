@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import ArticleItem from "../article-item/ArticleItem";
+import WhySection from "../why-section/WhySection";
 
 export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
@@ -12,7 +13,7 @@ export default function Home() {
                 const latest = result.slice(-3).reverse();
                 setLatestArticles(latest);
             })
-            .catch(err => alert(err.message));
+            .catch(err => console.log(err.message));
     }, []);
     
     return (
@@ -27,14 +28,16 @@ export default function Home() {
                 <Link to="/articles" className="btn-home">Browse All Articles</Link>
             </div>
 
+            <WhySection />
             <div className="latest-articles">
                 <h2>Latest Knowledge</h2>
-
                 <div className="latest-articles-list">
-                    
-                    {latestArticles.map(article => <ArticleItem key={article._id} {...article} />)}
-
-                    {latestArticles.length === 0 && <p className="no-articles">No articles yet</p>}
+                    {latestArticles.map(article => (
+                        <ArticleItem key={article._id} {...article} />
+                    ))}
+                    {latestArticles.length === 0 && (
+                        <p className="no-articles">No articles yet</p>
+                    )}
                 </div>
             </div>
         </section>
