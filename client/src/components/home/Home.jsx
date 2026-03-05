@@ -4,6 +4,7 @@ import * as articleService from '../../services/articleService';
 import ArticleItem from "../article-item/ArticleItem";
 import StatsBar from "../stats-bar/StatsBar";
 import WhySection from "../why-section/WhySection";
+import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 
 export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
@@ -32,6 +33,8 @@ export default function Home() {
             <StatsBar />
 
             <WhySection />
+
+            <HalvingCountdown />
 
             <div className="latest-articles">
                 <h2>Latest Knowledge</h2>
