@@ -5,6 +5,8 @@ import * as likeController from './controllers/likeController.js';
 
 const router = Router();
 
+router.get('/articles/my', articleController.getMyArticles);
+
 router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId', articleController.getOne);
 

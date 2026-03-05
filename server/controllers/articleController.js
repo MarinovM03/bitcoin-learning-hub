@@ -9,6 +9,19 @@ export const getAll = async (req, res) => {
     }
 };
 
+export const getMyArticles = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "You must be logged in!" });
+        }
+
+        const articles = await Article.find({ _ownerId: req.user._id }).sort({ createdAt: -1 });
+        res.json(articles);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const create = async (req, res) => {
     try {
         if (!req.user) {

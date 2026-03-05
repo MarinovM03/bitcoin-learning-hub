@@ -7,6 +7,11 @@ export const getAll = async () => {
     return result;
 };
 
+export const getMyArticles = async () => {
+    const result = await request.get(`${baseUrl}/my`);
+    return result;
+};
+
 export const getOne = async (articleId) => {
     const result = await request.get(`${baseUrl}/${articleId}`);
     return result;
