@@ -13,21 +13,21 @@
 }
 
 .profile-success-message {
-    background-color: #4caf50;
+    background-color: var(--success-color);
     color: white;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
     margin-bottom: 15px;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .profile-avatar-placeholder {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background-color: #333;
+    background-color: var(--border-color);
     display: inline-block;
     border: 4px solid var(--btc-orange);
 }
@@ -35,14 +35,186 @@
 .profile-password-heading {
     margin-top: 30px;
     color: #fff;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
 .profile-error-message {
-    color: red;
+    color: var(--danger-color);
     text-align: center;
     margin-bottom: 15px;
     font-weight: bold;
+}
+
+.my-articles-section {
+    max-width: 900px;
+    margin: 3rem auto 0 auto;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.my-articles-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.my-articles-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--btc-orange);
+}
+
+.my-articles-count {
+    background-color: var(--btc-orange);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.my-articles-empty {
+    text-align: center;
+    padding: 3rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    border: 1px dashed var(--border-light);
+}
+
+.my-articles-empty p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.my-articles-cta {
+    display: inline-block;
+    width: auto;
+    padding: 12px 28px;
+    text-decoration: none;
+}
+
+.my-articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.my-article-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.my-article-card:hover {
+    border-color: var(--btc-orange);
+    transform: translateX(4px);
+}
+
+.my-article-card-img {
+    width: 90px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+}
+
+.my-article-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.my-article-category {
+    display: inline-block;
+    background-color: rgba(247, 147, 26, 0.12);
+    color: var(--btc-orange);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.my-article-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.my-article-summary {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.my-article-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.my-article-btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.my-article-btn--view {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.my-article-btn--view:hover {
+    border-color: white;
+    color: white;
+}
+
+.my-article-btn--edit {
+    background-color: var(--btc-orange);
+    color: white;
+}
+
+.my-article-btn--edit:hover {
+    background-color: #e08315;
+    transform: translateY(-1px);
+}
+
+.my-article-btn--delete {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.my-article-btn--delete:hover {
+    background-color: var(--danger-color);
+    color: white;
 }
