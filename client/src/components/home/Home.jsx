@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import ArticleItem from "../article-item/ArticleItem";
+import StatsBar from "../stats-bar/StatsBar";
 import WhySection from "../why-section/WhySection";
 
 export default function Home() {
@@ -28,7 +29,10 @@ export default function Home() {
                 <Link to="/articles" className="btn-home">Browse All Articles</Link>
             </div>
 
+            <StatsBar />
+
             <WhySection />
+
             <div className="latest-articles">
                 <h2>Latest Knowledge</h2>
                 <div className="latest-articles-list">
