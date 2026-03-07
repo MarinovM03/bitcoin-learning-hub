@@ -3,6 +3,7 @@ import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
 import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
+import * as commentController from './controllers/commentController.js';
 
 const router = Router();
 
@@ -30,5 +31,10 @@ router.get('/likes/:articleId', likeController.getLikes);
 router.get('/glossary', glossaryController.getAll);
 router.post('/glossary', glossaryController.create);
 router.delete('/glossary/:termId', glossaryController.remove);
+
+// Comment routes
+router.get('/comments/:articleId', commentController.getAllForArticle);
+router.post('/comments', commentController.create);
+router.delete('/comments/:commentId', commentController.remove);
 
 export default router;
