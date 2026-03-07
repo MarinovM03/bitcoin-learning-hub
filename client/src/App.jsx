@@ -16,6 +16,7 @@ import Edit from "./components/edit/Edit";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
 import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
+import Glossary from "./components/glossary/Glossary";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/articles" element={<Catalog /> } />
                 <Route path="/articles/:articleId/details" element={<Details />} />
+                <Route path="/glossary" element={<Glossary />} />
 
                 {/* Only for Logged-in Users */}
                 <Route element={<AuthGuard />} >

@@ -12,6 +12,7 @@ export default function Header() {
             <nav>
                 <BitcoinPrice />
                 <Link to="/articles">All Articles</Link>
+                <Link to="/glossary">Glossary</Link>
 
                 {isAuthenticated ? (
                     <div id="user">

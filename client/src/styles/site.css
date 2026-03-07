@@ -14,6 +14,7 @@
 @import "scroll-to-top.css";
 @import "spinner.css";
 @import "search.css";
+@import "glossary.css";
 
 :root {
     --btc-orange: #F7931A;
