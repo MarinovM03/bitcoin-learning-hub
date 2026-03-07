@@ -25,8 +25,6 @@ export default function Create() {
     const createArticleSubmitHandler = async (e) => {
         e.preventDefault();
 
-        const articleData = Object.fromEntries(new FormData(e.currentTarget));
-
         if (formValues.title.length < 5) {
             setError("Title must be at least 5 characters long!"); 
             return;
