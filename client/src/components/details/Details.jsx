@@ -4,6 +4,7 @@ import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
+import CommentsSection from "../comments/CommentsSection";
 
 export default function Details() {
     const navigate = useNavigate();
@@ -91,6 +92,8 @@ export default function Details() {
                         )}
                         {hasLiked && <span className="liked-text">You have already liked this article!</span>}
                     </div>
+
+                    <CommentsSection articleId={articleId} />
                 </div>
             </div>
         </section>

@@ -15,6 +15,7 @@
 @import "spinner.css";
 @import "search.css";
 @import "glossary.css";
+@import "comments.css";
 
 :root {
     --btc-orange: #F7931A;
