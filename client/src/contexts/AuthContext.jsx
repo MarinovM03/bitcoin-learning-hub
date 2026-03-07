@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useMemo } from "react";
+import { createContext, useState, useContext, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router";
 import * as authService from '../services/authService';
 
@@ -15,22 +15,21 @@ export const AuthProvider = ({ children }) => {
         return {};
     });
 
-    const loginSubmitHandler = async (values) => {
+    const loginSubmitHandler = useCallback(async (values) => {
         const result = await authService.login(values.email, values.password);
         setAuth(result);
         localStorage.setItem('auth', JSON.stringify(result));
         navigate('/');
-    };
+    }, [navigate]);
 
-    const registerSubmitHandler = async (values) => {
+    const registerSubmitHandler = useCallback(async (values) => {
         const result = await authService.register(values);
-        
         setAuth(result);
         localStorage.setItem('auth', JSON.stringify(result));
         navigate('/');
-    };
+    }, [navigate]);
 
-    const logoutHandler = async () => {
+    const logoutHandler = useCallback(async () => {
         try {
             await authService.logout();
         } catch (err) {
@@ -40,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         setAuth({});
         localStorage.removeItem('auth');
         navigate('/');
-    };
+    }, [navigate]);
 
     const values = useMemo(() => ({
         loginSubmitHandler,
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!auth.accessToken,
         profilePicture: auth.profilePicture,
         setAuth,
-    }), [auth]);
+    }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler]);
 
     return (
         <AuthContext.Provider value={values}>
