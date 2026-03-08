@@ -1,0 +1,102 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeInOverlay 0.2s ease;
+    padding: 1rem;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal-box {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    animation: modalSlideIn 0.25s ease;
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-icon {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.modal-title {
+    font-size: 1.4rem;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+
+.modal-message {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.modal-sub-message {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.modal-btn {
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Exo 2', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 110px;
+}
+
+.modal-btn--cancel {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.modal-btn--cancel:hover {
+    border-color: white;
+    color: white;
+}
+
+.modal-btn--confirm {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+}
+
+.modal-btn--confirm:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}

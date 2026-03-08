@@ -16,6 +16,7 @@
 @import "search.css";
 @import "glossary.css";
 @import "comments.css";
+@import "modal.css";
 
 :root {
     --btc-orange: #F7931A;
