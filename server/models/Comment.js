@@ -11,7 +11,7 @@ const commentSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    ownerEmail: {
+    ownerUsername: {
         type: String,
         required: true,
     },
@@ -32,4 +32,4 @@ const commentSchema = new mongoose.Schema({
 
 const Comment = mongoose.model('Comment', commentSchema);
 
-export default Comment;
+export default Comment; 
