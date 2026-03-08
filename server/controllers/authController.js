@@ -2,6 +2,20 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const USERNAME_COOLDOWN_DAYS = 30;
+
+const isUsernameLocked = (usernameChangedAt) => {
+    if (!usernameChangedAt) return false;
+    const daysSinceChange = (Date.now() - new Date(usernameChangedAt).getTime()) / (1000 * 60 * 60 * 24);
+    return daysSinceChange < USERNAME_COOLDOWN_DAYS;
+};
+
+const daysUntilUnlock = (usernameChangedAt) => {
+    if (!usernameChangedAt) return 0;
+    const daysSinceChange = (Date.now() - new Date(usernameChangedAt).getTime()) / (1000 * 60 * 60 * 24);
+    return Math.ceil(USERNAME_COOLDOWN_DAYS - daysSinceChange);
+};
+
 const generateToken = (user, SECRET) => {
     return jwt.sign(
         {
@@ -9,11 +23,21 @@ const generateToken = (user, SECRET) => {
             username: user.username,
             email: user.email,
             profilePicture: user.profilePicture,
+            usernameChangedAt: user.usernameChangedAt,
         },
         SECRET,
         { expiresIn: '2d' }
     );
 };
+
+const buildUserResponse = (user, token) => ({
+    accessToken: token,
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    profilePicture: user.profilePicture,
+    usernameChangedAt: user.usernameChangedAt,
+});
 
 export const register = async (req, res) => {
     try {
@@ -23,11 +47,9 @@ export const register = async (req, res) => {
         if (!username || username.trim().length < 3) {
             return res.status(400).json({ message: 'Username must be at least 3 characters long!' });
         }
-
         if (!/^[a-zA-Z0-9]+$/.test(username)) {
             return res.status(400).json({ message: 'Username can only contain letters and numbers!' });
         }
-
         if (password !== confirmPassword) {
             return res.status(400).json({ message: 'Passwords do not match!' });
         }
@@ -43,7 +65,6 @@ export const register = async (req, res) => {
         }
 
         const hashPassword = await bcrypt.hash(password, 10);
-
         const user = await User.create({
             username: username.trim(),
             email,
@@ -52,15 +73,7 @@ export const register = async (req, res) => {
         });
 
         const token = generateToken(user, SECRET);
-
-        res.json({
-            accessToken: token,
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture,
-            usernameChanged: user.usernameChanged,
-        });
+        res.json(buildUserResponse(user, token));
 
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -91,15 +104,7 @@ export const login = async (req, res) => {
         }
 
         const token = generateToken(user, SECRET);
-
-        res.json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture,
-            usernameChanged: user.usernameChanged,
-            accessToken: token,
-        });
+        res.json(buildUserResponse(user, token));
 
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -122,14 +127,15 @@ export const updateProfile = async (req, res) => {
         }
 
         if (username && username.trim() !== user.username) {
-            if (user.usernameChanged) {
-                return res.status(400).json({ message: "You can only change your username once!" });
+            if (isUsernameLocked(user.usernameChangedAt)) {
+                const days = daysUntilUnlock(user.usernameChangedAt);
+                return res.status(400).json({
+                    message: `You can change your username again in ${days} day${days === 1 ? '' : 's'}.`
+                });
             }
-
             if (!/^[a-zA-Z0-9]+$/.test(username)) {
                 return res.status(400).json({ message: "Username can only contain letters and numbers!" });
             }
-
             if (username.trim().length < 3) {
                 return res.status(400).json({ message: "Username must be at least 3 characters long!" });
             }
@@ -140,7 +146,7 @@ export const updateProfile = async (req, res) => {
             }
 
             user.username = username.trim();
-            user.usernameChanged = true;
+            user.usernameChangedAt = new Date();
         }
 
         if (email) user.email = email;
@@ -159,15 +165,7 @@ export const updateProfile = async (req, res) => {
         await user.save();
 
         const freshToken = generateToken(user, SECRET);
-
-        res.json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture,
-            usernameChanged: user.usernameChanged,
-            accessToken: freshToken,
-        });
+        res.json(buildUserResponse(user, freshToken));
 
     } catch (error) {
         res.status(400).json({ message: error.message });
