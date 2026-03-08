@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
+import ConfirmModal from "../common/ConfirmModal";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 export default function Glossary() {
     const { isAuthenticated, userId } = useAuth();
@@ -17,6 +16,7 @@ export default function Glossary() {
     const [showForm, setShowForm] = useState(false);
     const [formError, setFormError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     const [formValues, setFormValues] = useState({
         term: '',
@@ -38,7 +38,6 @@ export default function Glossary() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
         if (formValues.term.trim().length < 2) {
             setFormError("Term must be at least 2 characters long!");
             return;
@@ -47,7 +46,6 @@ export default function Glossary() {
             setFormError("Definition must be at least 10 characters long!");
             return;
         }
-
         setIsSubmitting(true);
         try {
             const newTerm = await glossaryService.create(formValues);
@@ -61,16 +59,14 @@ export default function Glossary() {
         }
     };
 
-    const onDelete = async (termId, termName) => {
-        const confirmed = confirm(`Delete "${termName}" from the glossary?`);
-        if (!confirmed) return;
-
+    const confirmDelete = async () => {
         try {
-            await glossaryService.remove(termId);
-            setTerms(state => state.filter(t => t._id !== termId));
+            await glossaryService.remove(deleteTarget.id);
+            setTerms(state => state.filter(t => t._id !== deleteTarget.id));
         } catch (err) {
             console.log("Delete failed:", err.message);
-            alert("Failed to delete term. Please try again.");
+        } finally {
+            setDeleteTarget(null);
         }
     };
 
@@ -91,8 +87,19 @@ export default function Glossary() {
 
     return (
         <section id="glossary-page" className="page-content">
-            <div className="glossary-page">
+            {deleteTarget && (
+                <ConfirmModal
+                    icon="📖"
+                    title="Remove Glossary Term?"
+                    message={`You are about to remove "${deleteTarget.name}" from the glossary.`}
+                    subMessage="This action cannot be undone."
+                    confirmLabel="Remove Term"
+                    onConfirm={confirmDelete}
+                    onCancel={() => setDeleteTarget(null)}
+                />
+            )}
 
+            <div className="glossary-page">
                 <div className="glossary-header">
                     <div>
                         <h1>Bitcoin Glossary</h1>
@@ -126,7 +133,6 @@ export default function Glossary() {
                                     required
                                 />
                             </div>
-
                             <div className="form-group">
                                 <label htmlFor="category">Category</label>
                                 <select
@@ -140,7 +146,6 @@ export default function Glossary() {
                                     ))}
                                 </select>
                             </div>
-
                             <div className="form-group">
                                 <label htmlFor="definition">Definition</label>
                                 <textarea
@@ -152,9 +157,7 @@ export default function Glossary() {
                                     required
                                 ></textarea>
                             </div>
-
                             {formError && <p className="field-error">{formError}</p>}
-
                             <input
                                 type="submit"
                                 value={isSubmitting ? "Adding..." : "Add to Glossary"}
@@ -169,11 +172,10 @@ export default function Glossary() {
                     <input
                         type="text"
                         className="search-input glossary-search"
-                        placeholder="Search terms or definitions..."
+                        placeholder="Search terms..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
-
                     <div className="glossary-filter-tabs">
                         {["All", ...CATEGORIES].map(cat => (
                             <button
@@ -206,7 +208,7 @@ export default function Glossary() {
                                             {userId && term._ownerId === userId && (
                                                 <button
                                                     className="glossary-delete-btn"
-                                                    onClick={() => onDelete(term._id, term.term)}
+                                                    onClick={() => setDeleteTarget({ id: term._id, name: term.term })}
                                                     title="Delete term"
                                                 >
                                                     ✕
