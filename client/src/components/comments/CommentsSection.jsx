@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
+import ConfirmModal from "../common/ConfirmModal";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
@@ -24,6 +25,7 @@ export default function CommentsSection({ articleId }) {
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
     useEffect(() => {
         commentService.getAllForArticle(articleId)
@@ -34,12 +36,10 @@ export default function CommentsSection({ articleId }) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
         if (text.trim().length < 2) {
             setError("Comment must be at least 2 characters.");
             return;
         }
-
         setIsSubmitting(true);
         try {
             const newComment = await commentService.create(articleId, text.trim());
@@ -53,21 +53,31 @@ export default function CommentsSection({ articleId }) {
         }
     };
 
-    const onDelete = async (commentId) => {
-        const confirmed = confirm("Delete this comment?");
-        if (!confirmed) return;
-
+    const confirmDelete = async () => {
         try {
-            await commentService.remove(commentId);
-            setComments(state => state.filter(c => c._id !== commentId));
+            await commentService.remove(deleteTarget);
+            setComments(state => state.filter(c => c._id !== deleteTarget));
         } catch (err) {
             console.log("Delete failed:", err.message);
-            alert("Failed to delete comment.");
+        } finally {
+            setDeleteTarget(null);
         }
     };
 
     return (
         <div className="comments-section">
+            {deleteTarget && (
+                <ConfirmModal
+                    icon="💬"
+                    title="Delete Comment?"
+                    message="You are about to delete your comment."
+                    subMessage="This action cannot be undone."
+                    confirmLabel="Delete Comment"
+                    onConfirm={confirmDelete}
+                    onCancel={() => setDeleteTarget(null)}
+                />
+            )}
+
             <h3 className="comments-heading">
                 Discussion <span className="comments-count">({comments.length})</span>
             </h3>
@@ -84,10 +94,7 @@ export default function CommentsSection({ articleId }) {
                             className="comment-textarea"
                             placeholder="Share your thoughts..."
                             value={text}
-                            onChange={(e) => {
-                                setText(e.target.value);
-                                setError("");
-                            }}
+                            onChange={(e) => { setText(e.target.value); setError(""); }}
                             rows={3}
                             maxLength={500}
                         />
@@ -121,17 +128,17 @@ export default function CommentsSection({ articleId }) {
                             <div key={comment._id} className="comment-card">
                                 <img
                                     src={comment.ownerProfilePicture || defaultAvatar}
-                                    alt={comment.ownerEmail}
+                                    alt={comment.ownerUsername}
                                     className="comment-avatar"
                                 />
                                 <div className="comment-body">
                                     <div className="comment-meta">
-                                        <span className="comment-author">{comment.ownerEmail}</span>
+                                        <span className="comment-author">{comment.ownerUsername}</span>
                                         <span className="comment-time">{timeAgo(comment.createdAt)}</span>
                                         {userId && comment._ownerId === userId && (
                                             <button
                                                 className="comment-delete-btn"
-                                                onClick={() => onDelete(comment._id)}
+                                                onClick={() => setDeleteTarget(comment._id)}
                                                 title="Delete comment"
                                             >
                                                 ✕

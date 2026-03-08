@@ -5,6 +5,7 @@ import * as likeService from '../../services/likeService';
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
+import ConfirmModal from "../common/ConfirmModal";
 
 export default function Details() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Details() {
     const [totalLikes, setTotalLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
         Promise.all([
@@ -24,7 +26,6 @@ export default function Details() {
         .then(([articleData, likesArray]) => {
             setArticle(articleData);
             setTotalLikes(likesArray.length);
-            
             if (userId) {
                 const isLiked = likesArray.some(like => like._ownerId === userId);
                 setHasLiked(isLiked);
@@ -36,23 +37,18 @@ export default function Details() {
 
     const isOwner = userId && article._ownerId && userId === article._ownerId;
 
-    const onDelete = async () => {
-        const confirmed = confirm(`Are you sure you want to delete: ${article.title}?`);
-
-        if (confirmed) {
-            try {
-                await articleService.remove(articleId);
-                navigate('/articles');
-            } catch (err) {
-                console.log("Delete failed:", err.message);
-                alert("Failed to delete article. Please try again.");
-            }
+    const confirmDelete = async () => {
+        try {
+            await articleService.remove(articleId);
+            navigate('/articles');
+        } catch (err) {
+            console.log("Delete failed:", err.message);
+            setShowDeleteModal(false);
         }
     };
 
     const onLike = async () => {
         if (hasLiked) return;
-
         try {
             await likeService.like(articleId);
             setTotalLikes(state => state + 1);
@@ -68,7 +64,19 @@ export default function Details() {
 
     return (
         <section id="details-page" className="page-content">
-             <div className="details-page">
+            {showDeleteModal && (
+                <ConfirmModal
+                    icon="📄"
+                    title="Delete Article?"
+                    message={`You are about to delete "${article.title}".`}
+                    subMessage="This will permanently remove the article and cannot be undone."
+                    confirmLabel="Delete Article"
+                    onConfirm={confirmDelete}
+                    onCancel={() => setShowDeleteModal(false)}
+                />
+            )}
+
+            <div className="details-page">
                 <div className="details-hero">
                     <img className="details-img" src={article?.imageUrl} alt={article?.title} />
                 </div>
@@ -84,7 +92,7 @@ export default function Details() {
                         {isOwner && (
                             <>
                                 <Link to={`/articles/${articleId}/edit`} className="btn-edit">Edit</Link>
-                                <button className="btn-delete" onClick={onDelete}>Delete</button>
+                                <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
                             </>
                         )}
                         {isAuthenticated && !isOwner && !hasLiked && (
