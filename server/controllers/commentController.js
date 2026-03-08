@@ -26,7 +26,7 @@ export const create = async (req, res) => {
             articleId,
             text: text.trim(),
             _ownerId: req.user._id,
-            ownerEmail: req.user.email,
+            ownerUsername: req.user.username,
             ownerProfilePicture: req.user.profilePicture || '',
         });
 
