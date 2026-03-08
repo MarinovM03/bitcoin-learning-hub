@@ -2,18 +2,16 @@ import * as request from "../utils/requester";
 
 const baseUrl = 'http://localhost:5000/users';
 
-export const login = async (email, password) => {
+export const login = async (identifier, password) => {
     const result = await request.post(`${baseUrl}/login`, {
-        email,
+        identifier,
         password,
     });
-
     return result;
 };
 
 export const register = async (registerData) => {
     const result = await request.post(`${baseUrl}/register`, registerData);
-    
     return result;
 };
 

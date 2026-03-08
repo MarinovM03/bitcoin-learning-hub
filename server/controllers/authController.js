@@ -2,6 +2,19 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const generateToken = (user, SECRET) => {
+    return jwt.sign(
+        {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            profilePicture: user.profilePicture,
+        },
+        SECRET,
+        { expiresIn: '2d' }
+    );
+};
+
 export const register = async (req, res) => {
     try {
         const SECRET = process.env.JWT_SECRET;
@@ -11,12 +24,16 @@ export const register = async (req, res) => {
             return res.status(400).json({ message: 'Username must be at least 3 characters long!' });
         }
 
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            return res.status(400).json({ message: 'Username can only contain letters and numbers!' });
+        }
+
         if (password !== confirmPassword) {
             return res.status(400).json({ message: 'Passwords do not match!' });
         }
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
             return res.status(400).json({ message: 'User already exists!' });
         }
 
@@ -34,14 +51,7 @@ export const register = async (req, res) => {
             profilePicture,
         });
 
-        const payload = {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture,
-        };
-
-        const token = jwt.sign(payload, SECRET, { expiresIn: '2d' });
+        const token = generateToken(user, SECRET);
 
         res.json({
             accessToken: token,
@@ -49,6 +59,7 @@ export const register = async (req, res) => {
             username: user.username,
             email: user.email,
             profilePicture: user.profilePicture,
+            usernameChanged: user.usernameChanged,
         });
 
     } catch (error) {
@@ -59,34 +70,34 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const SECRET = process.env.JWT_SECRET;
-        const { email, password } = req.body;
+        const { identifier, password } = req.body;
 
-        const user = await User.findOne({ email });
+        if (!identifier) {
+            return res.status(400).json({ message: "Please enter your email or username!" });
+        }
+
+        const isEmail = identifier.includes('@');
+        const user = isEmail
+            ? await User.findOne({ email: identifier })
+            : await User.findOne({ username: identifier });
+
         if (!user) {
-            return res.status(403).json({ message: "Invalid email or password" });
+            return res.status(403).json({ message: "Invalid credentials" });
         }
 
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
-            return res.status(403).json({ message: "Invalid email or password" });
+            return res.status(403).json({ message: "Invalid credentials" });
         }
 
-        const token = jwt.sign(
-            {
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                profilePicture: user.profilePicture,
-            },
-            SECRET,
-            { expiresIn: '2d' }
-        );
+        const token = generateToken(user, SECRET);
 
         res.json({
             _id: user._id,
             username: user.username,
             email: user.email,
             profilePicture: user.profilePicture,
+            usernameChanged: user.usernameChanged,
             accessToken: token,
         });
 
@@ -101,6 +112,7 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
+        const SECRET = process.env.JWT_SECRET;
         const userId = req.user._id;
         const { username, email, profilePicture, password, confirmPassword } = req.body;
 
@@ -110,11 +122,25 @@ export const updateProfile = async (req, res) => {
         }
 
         if (username && username.trim() !== user.username) {
+            if (user.usernameChanged) {
+                return res.status(400).json({ message: "You can only change your username once!" });
+            }
+
+            if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                return res.status(400).json({ message: "Username can only contain letters and numbers!" });
+            }
+
+            if (username.trim().length < 3) {
+                return res.status(400).json({ message: "Username must be at least 3 characters long!" });
+            }
+
             const existingUsername = await User.findOne({ username: username.trim() });
             if (existingUsername) {
                 return res.status(400).json({ message: "Username is already taken!" });
             }
+
             user.username = username.trim();
+            user.usernameChanged = true;
         }
 
         if (email) user.email = email;
@@ -132,12 +158,15 @@ export const updateProfile = async (req, res) => {
 
         await user.save();
 
+        const freshToken = generateToken(user, SECRET);
+
         res.json({
             _id: user._id,
             username: user.username,
             email: user.email,
             profilePicture: user.profilePicture,
-            accessToken: req.headers['x-authorization'],
+            usernameChanged: user.usernameChanged,
+            accessToken: freshToken,
         });
 
     } catch (error) {
