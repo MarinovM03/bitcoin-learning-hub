@@ -5,9 +5,9 @@ import { Link } from "react-router";
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
     const [error, setError] = useState('');
-    
+
     const [formValues, setFormValues] = useState({
-        email: '',
+        identifier: '',
         password: '',
     });
 
@@ -16,13 +16,13 @@ export default function Login() {
             ...state,
             [e.target.name]: e.target.value
         }));
+        setError('');
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            await loginSubmitHandler(formValues); 
+            await loginSubmitHandler(formValues);
         } catch (err) {
             setError(err.message);
         }
@@ -35,22 +35,23 @@ export default function Login() {
 
                 <form id="login" className="login-form" onSubmit={onSubmit}>
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
+                        <label htmlFor="identifier">Email or Username</label>
+                        <input
+                            type="text"
+                            id="identifier"
+                            name="identifier"
+                            placeholder="Enter email or username..."
                             required
-                            value={formValues.email}
+                            value={formValues.identifier}
                             onChange={changeHandler}
                         />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input 
-                            type="password" 
-                            id="password" 
+                        <input
+                            type="password"
+                            id="password"
                             name="password"
                             required
                             value={formValues.password}
@@ -63,7 +64,7 @@ export default function Login() {
                     )}
 
                     <input type="submit" value="Login" className="btn-submit" />
-                    
+
                     <p className="field-text">
                         Don't have an account? <Link to="/register">Register here</Link>
                     </p>
