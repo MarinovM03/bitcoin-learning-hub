@@ -1,6 +1,6 @@
 import * as request from '../utils/requester';
 
-const baseUrl = 'http://localhost:5000/comments';
+const baseUrl = `${import.meta.env.VITE_API_URL}/comments`;
 
 export const getAllForArticle = async (articleId) => {
     try {

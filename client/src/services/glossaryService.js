@@ -1,6 +1,6 @@
 import * as request from '../utils/requester';
 
-const baseUrl = 'http://localhost:5000/glossary';
+const baseUrl = `${import.meta.env.VITE_API_URL}/glossary`;
 
 export const getAll = async () => {
     const result = await request.get(baseUrl);

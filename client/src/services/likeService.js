@@ -1,6 +1,6 @@
 import * as request from '../utils/requester';
 
-const baseUrl = 'http://localhost:5000/likes';
+const baseUrl = `${import.meta.env.VITE_API_URL}/likes`;
 
 export const like = async (articleId) => {
     return request.post(baseUrl, { articleId });
