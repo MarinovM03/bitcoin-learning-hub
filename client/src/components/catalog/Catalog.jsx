@@ -7,6 +7,7 @@ export default function Catalog() {
     const [articles, setArticles] = useState([]);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         articleService.getAll()
@@ -14,7 +15,8 @@ export default function Catalog() {
                 setArticles(result);
             })
             .catch(err => {
-                alert(err.message);
+                setError("Failed to load articles. Please try again later.");
+                console.error(err.message);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -39,14 +41,19 @@ export default function Catalog() {
                 />
             </div>
 
+            {error && <p className="catalog-error">{error}</p>}
+
             {isLoading ? (
                 <Spinner />
             ) : (
                 <>
-                    {filteredArticles.length === 0 && <h3 className="no-articles">No articles found</h3>}
-                    
+                    {filteredArticles.length === 0 && !error && (
+                        <h3 className="no-articles">No articles found</h3>
+                    )}
                     <div className="catalog-list">
-                        {filteredArticles.map(article => <ArticleItem key={article._id} {...article} />)}
+                        {filteredArticles.map(article => (
+                            <ArticleItem key={article._id} {...article} />
+                        ))}
                     </div>
                 </>
             )}
