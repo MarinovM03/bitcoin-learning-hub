@@ -10,14 +10,11 @@ export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
 
     useEffect(() => {
-        articleService.getAll()
-            .then(result => {
-                const latest = result.slice(-3).reverse();
-                setLatestArticles(latest);
-            })
+        articleService.getLatest(3)
+            .then(result => setLatestArticles(result))
             .catch(err => console.log(err.message));
     }, []);
-    
+
     return (
         <section id="home-page" className="page-content">
             

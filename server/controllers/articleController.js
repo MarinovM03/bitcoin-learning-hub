@@ -2,7 +2,19 @@ import Article from '../models/Article.js';
 
 export const getAll = async (req, res) => {
     try {
-        const articles = await Article.find();
+        const { limit, sort } = req.query;
+
+        let query = Article.find();
+
+        if (sort === 'latest') {
+            query = query.sort({ createdAt: -1 });
+        }
+
+        if (limit) {
+            query = query.limit(parseInt(limit));
+        }
+
+        const articles = await query;
         res.json(articles);
     } catch (error) {
         res.status(500).json({ message: error.message });
