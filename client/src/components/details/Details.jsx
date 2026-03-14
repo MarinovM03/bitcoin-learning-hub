@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
+import * as bookmarkService from '../../services/bookmarkService';
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
@@ -23,24 +24,34 @@ export default function Details() {
     const [article, setArticle] = useState({});
     const [totalLikes, setTotalLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        Promise.all([
+        const fetches = [
             articleService.getOne(articleId),
-            likeService.getAllForArticle(articleId)
-        ])
-        .then(([articleData, likesArray]) => {
-            setArticle(articleData);
-            setTotalLikes(likesArray.length);
-            if (userId) {
-                setHasLiked(likesArray.some(like => like._ownerId === userId));
-            }
-        })
-        .catch(() => navigate('/404'))
-        .finally(() => setIsLoading(false));
-    }, [articleId, userId, navigate]);
+            likeService.getAllForArticle(articleId),
+        ];
+
+        if (isAuthenticated) {
+            fetches.push(bookmarkService.getMyBookmarks());
+        }
+
+        Promise.all(fetches)
+            .then(([articleData, likesArray, bookmarks]) => {
+                setArticle(articleData);
+                setTotalLikes(likesArray.length);
+                if (userId) {
+                    setHasLiked(likesArray.some(like => like._ownerId === userId));
+                }
+                if (bookmarks) {
+                    setIsBookmarked(bookmarks.some(a => a._id === articleId));
+                }
+            })
+            .catch(() => navigate('/404'))
+            .finally(() => setIsLoading(false));
+    }, [articleId, userId, isAuthenticated, navigate]);
 
     const isOwner = userId && article._ownerId && userId === article._ownerId;
 
@@ -65,6 +76,15 @@ export default function Details() {
         }
     };
 
+    const onBookmark = async () => {
+        try {
+            const result = await bookmarkService.toggle(articleId);
+            setIsBookmarked(result.bookmarked);
+        } catch (err) {
+            console.log("Bookmark failed", err);
+        }
+    };
+
     if (isLoading) return <Spinner />;
 
     return (
@@ -82,32 +102,36 @@ export default function Details() {
             )}
 
             <div className="details-page">
-
                 <div className="details-hero">
                     <img className="details-img" src={article.imageUrl} alt={article.title} />
                     <div className="details-hero-overlay" />
                     <div className="details-hero-meta">
                         <h1 className="details-hero-title">{article.title}</h1>
+                        {isAuthenticated && (
+                            <button
+                                className={`bookmark-btn ${isBookmarked ? 'bookmark-btn--active' : ''}`}
+                                onClick={onBookmark}
+                                title={isBookmarked ? 'Remove bookmark' : 'Save article'}
+                            >
+                                {isBookmarked ? '🔖' : '🏷️'}
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 <div className="details-body">
-
                     <div className="details-main">
                         <div className="details-meta-row">
                             <span className="category-tag">{article.category}</span>
                         </div>
 
                         <p className="details-summary">{article.summary}</p>
-
                         <p className="details-content">{article.content}</p>
 
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
                                 {hasLiked ? (
-                                    <div className="liked-badge">
-                                        ❤️ Liked
-                                    </div>
+                                    <div className="liked-badge">❤️ Liked</div>
                                 ) : (
                                     <button className="btn-like" onClick={onLike}>
                                         🤍 Like this article
@@ -120,7 +144,6 @@ export default function Details() {
                     </div>
 
                     <div className="details-sidebar">
-
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>
@@ -152,7 +175,6 @@ export default function Details() {
                                 </span>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
