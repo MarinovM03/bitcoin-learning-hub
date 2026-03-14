@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
 import { Link } from "react-router";
+import { ARTICLE_CATEGORIES } from '../../utils/categories';
 
 export default function Catalog() {
     const [articles, setArticles] = useState([]);
     const [search, setSearch] = useState("");
+    const [activeCategory, setActiveCategory] = useState("All");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -19,9 +21,11 @@ export default function Catalog() {
             .finally(() => setIsLoading(false));
     }, []);
 
-    const filteredArticles = articles.filter(article =>
-        article.title.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredArticles = articles.filter(article => {
+        const matchesSearch = article.title.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = activeCategory === "All" || article.category === activeCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <section id="catalog-page" className="page-content catalog-page">
@@ -42,6 +46,18 @@ export default function Catalog() {
                 <span className="catalog-count">
                     <span>{filteredArticles.length}</span> {filteredArticles.length === 1 ? 'article' : 'articles'} found
                 </span>
+            </div>
+
+            <div className="catalog-filter-tabs">
+                {["All", ...ARTICLE_CATEGORIES].map(cat => (
+                    <button
+                        key={cat}
+                        className={`catalog-tab ${activeCategory === cat ? 'catalog-tab--active' : ''}`}
+                        onClick={() => setActiveCategory(cat)}
+                    >
+                        {cat}
+                    </button>
+                ))}
             </div>
 
             {error && <p className="catalog-error">{error}</p>}

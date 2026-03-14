@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 import * as articleService from '../../services/articleService';
 import { useState } from 'react';
+import { ARTICLE_CATEGORIES } from '../../utils/categories';
 
 export default function Create() {
     const navigate = useNavigate();
@@ -27,6 +28,10 @@ export default function Create() {
 
         if (formValues.title.length < 5) {
             setError("Title must be at least 5 characters long!");
+            return;
+        }
+        if (!formValues.category) {
+            setError("Please select a category!");
             return;
         }
         if (formValues.summary.length < 10) {
@@ -61,7 +66,18 @@ export default function Create() {
 
                     <div className="form-group">
                         <label htmlFor="category">Category</label>
-                        <input type="text" id="category" name="category" placeholder="e.g. Technology, Economics..." required value={formValues.category} onChange={changeHandler} />
+                        <select
+                            id="category"
+                            name="category"
+                            value={formValues.category}
+                            onChange={changeHandler}
+                            required
+                        >
+                            <option value="" disabled>Select a category...</option>
+                            {ARTICLE_CATEGORIES.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="form-group">

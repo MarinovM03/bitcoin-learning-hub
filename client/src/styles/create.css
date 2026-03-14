@@ -76,4 +76,9 @@
 
 .create-form select option {
     background-color: var(--card-bg);
+    color: white;
+}
+
+.create-form select option[value=""] {
+    color: var(--text-muted);
 }
