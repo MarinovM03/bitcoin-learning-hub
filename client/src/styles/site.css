@@ -17,6 +17,7 @@
 @import "glossary.css";
 @import "comments.css";
 @import "modal.css";
+@import "bookmarks.css";
 
 :root {
     --btc-orange: #F7931A;

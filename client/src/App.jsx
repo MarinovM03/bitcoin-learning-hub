@@ -17,6 +17,7 @@ import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
 import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 import Glossary from "./components/glossary/Glossary";
+import Bookmarks from "./components/bookmarks/Bookmarks";
 
 function App() {
     return (
@@ -36,6 +37,7 @@ function App() {
                         <Route path="/articles/create" element={<Create />} />
                         <Route path="/articles/:articleId/edit" element={<Edit />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/bookmarks" element={<Bookmarks />} />
                     </Route>
 
                     <Route element={<GuestGuard />}>

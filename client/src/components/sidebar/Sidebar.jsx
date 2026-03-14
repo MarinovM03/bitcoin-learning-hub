@@ -74,6 +74,11 @@ export default function Sidebar() {
                                 Write Article
                             </Link>
 
+                            <Link to="/bookmarks" className={isActive("/bookmarks")} onClick={closeSidebar}>
+                                <span className="sidebar-link-icon">🔖</span>
+                                Bookmarks
+                            </Link>
+
                             <Link to="/profile" className={isActive("/profile")} onClick={closeSidebar}>
                                 <span className="sidebar-link-icon">👤</span>
                                 Profile
