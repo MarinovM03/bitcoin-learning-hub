@@ -4,6 +4,7 @@ import * as authController from './controllers/authController.js';
 import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
+import * as bookmarkController from './controllers/bookmarkController.js';
 
 const router = Router();
 
@@ -26,6 +27,10 @@ router.put('/users/profile', authController.updateProfile);
 // Like routes
 router.post('/likes', likeController.likeArticle);
 router.get('/likes/:articleId', likeController.getLikes);
+
+// Bookmark routes
+router.post('/bookmarks', bookmarkController.toggle);
+router.get('/bookmarks', bookmarkController.getMyBookmarks);
 
 // Glossary routes
 router.get('/glossary', glossaryController.getAll);
