@@ -16,6 +16,8 @@ function formatDate(dateString) {
     });
 }
 
+const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
 export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
@@ -53,7 +55,10 @@ export default function Details() {
             .finally(() => setIsLoading(false));
     }, [articleId, userId, isAuthenticated, navigate]);
 
-    const isOwner = userId && article._ownerId && userId === article._ownerId;
+    const ownerId = article._ownerId?._id;
+    const ownerUsername = article._ownerId?.username;
+    const ownerProfilePicture = article._ownerId?.profilePicture;
+    const isOwner = userId && ownerId && userId === String(ownerId);
 
     const confirmDelete = async () => {
         try {
@@ -140,7 +145,10 @@ export default function Details() {
                             </div>
                         )}
 
-                        <CommentsSection articleId={articleId} />
+                        <CommentsSection
+                            articleId={articleId}
+                            articleOwnerId={String(ownerId)}
+                        />
                     </div>
 
                     <div className="details-sidebar">
@@ -158,6 +166,23 @@ export default function Details() {
                                 </button>
                             </div>
                         )}
+
+                        <div className="details-author-panel">
+                            <span className="details-action-panel-title">Written by</span>
+                            <div className="details-author">
+                                <img
+                                    src={ownerProfilePicture || defaultAvatar}
+                                    alt={ownerUsername}
+                                    className="details-author-avatar"
+                                />
+                                <div className="details-author-info">
+                                    <span className="details-author-name">
+                                        {ownerUsername}
+                                    </span>
+                                    <span className="details-author-role">Author</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="details-info-panel">
                             <div className="details-info-row">

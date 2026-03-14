@@ -17,7 +17,7 @@ function timeAgo(dateString) {
     return new Date(dateString).toLocaleDateString();
 }
 
-export default function CommentsSection({ articleId }) {
+export default function CommentsSection({ articleId, articleOwnerId }) {
     const { isAuthenticated, userId, profilePicture } = useAuth();
 
     const [comments, setComments] = useState([]);
@@ -134,6 +134,9 @@ export default function CommentsSection({ articleId }) {
                                 <div className="comment-body">
                                     <div className="comment-meta">
                                         <span className="comment-author">{comment.ownerUsername}</span>
+                                        {String(comment._ownerId) === String(articleOwnerId) && (
+                                            <span className="comment-author-badge">Author</span>
+                                        )}
                                         <span className="comment-time">{timeAgo(comment.createdAt)}</span>
                                         {userId && comment._ownerId === userId && (
                                             <button
