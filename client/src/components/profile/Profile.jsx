@@ -34,11 +34,13 @@ export default function Profile() {
 
             <ProfileForm onSaveSuccess={handleSaveSuccess} />
 
-            <MyArticlesList
-                articles={myArticles}
-                isLoading={articlesLoading}
-                onArticleDeleted={handleArticleDeleted}
-            />
+            <div className="profile-articles-section">
+                <MyArticlesList
+                    articles={myArticles}
+                    isLoading={articlesLoading}
+                    onArticleDeleted={handleArticleDeleted}
+                />
+            </div>
         </section>
     );
 }

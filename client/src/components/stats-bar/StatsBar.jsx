@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 
+function formatLargeNumber(value) {
+    if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
+    if (value >= 1e9)  return `$${(value / 1e9).toFixed(2)}B`;
+    if (value >= 1e6)  return `$${(value / 1e6).toFixed(2)}M`;
+    return `$${value.toLocaleString()}`;
+}
+
 export default function StatsBar() {
     const [stats, setStats] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +33,6 @@ export default function StatsBar() {
         return () => clearInterval(interval);
     }, []);
 
-    // CoinGecko — refresh every 60 seconds
     useEffect(() => {
         const fetchDominance = () => {
             fetch("https://api.coingecko.com/api/v3/global")
@@ -62,8 +68,6 @@ export default function StatsBar() {
                 </span>
             </div>
 
-            <div className="stat-divider" />
-
             <div className="stat-item">
                 <span className="stat-label">24h Change</span>
                 <span className={`stat-value ${stats.change24h >= 0 ? 'stat-positive' : 'stat-negative'}`}>
@@ -71,16 +75,12 @@ export default function StatsBar() {
                 </span>
             </div>
 
-            <div className="stat-divider" />
-
             <div className="stat-item">
                 <span className="stat-label">Market Cap</span>
                 <span className="stat-value">
-                    ${(stats.marketCap / 1e9).toFixed(2)}B
+                    {formatLargeNumber(stats.marketCap)}
                 </span>
             </div>
-
-            <div className="stat-divider" />
 
             <div className="stat-item">
                 <span className="stat-label">BTC Dominance</span>
@@ -89,12 +89,10 @@ export default function StatsBar() {
                 </span>
             </div>
 
-            <div className="stat-divider" />
-
             <div className="stat-item">
                 <span className="stat-label">24h Volume</span>
                 <span className="stat-value">
-                    ${(stats.volume / 1e9).toFixed(2)}B
+                    {formatLargeNumber(stats.volume)}
                 </span>
             </div>
         </div>

@@ -28,12 +28,10 @@ export default function Register() {
             setError("Username must be at least 3 characters long!");
             return;
         }
-
         if (!/^[a-zA-Z0-9]+$/.test(formValues.username)) {
             setError("Username can only contain letters and numbers!");
             return;
         }
-
         if (formValues.password !== formValues.confirmPassword) {
             setError("Passwords do not match!");
             return;
@@ -49,10 +47,10 @@ export default function Register() {
     return (
         <section id="register-page" className="page-content">
             <div className="register-page">
-                <h1>Register</h1>
+                <h1>Create Account</h1>
+                <p className="register-subtitle">Join the Bitcoin Learning Hub community</p>
 
                 <form id="register" className="register-form" onSubmit={onSubmit}>
-
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
                         <input
@@ -72,6 +70,7 @@ export default function Register() {
                             type="email"
                             id="email"
                             name="email"
+                            placeholder="your@email.com"
                             required
                             value={formValues.email}
                             onChange={changeHandler}
@@ -84,6 +83,7 @@ export default function Register() {
                             type="password"
                             id="password"
                             name="password"
+                            placeholder="Min. 4 characters"
                             required
                             value={formValues.password}
                             onChange={changeHandler}
@@ -96,17 +96,16 @@ export default function Register() {
                             type="password"
                             id="confirmPassword"
                             name="confirmPassword"
+                            placeholder="Repeat your password"
                             required
                             value={formValues.confirmPassword}
                             onChange={changeHandler}
                         />
                     </div>
 
-                    {error && (
-                        <p className="field-error">{error}</p>
-                    )}
+                    {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Register" className="btn-submit" />
+                    <input type="submit" value="Create Account" className="btn-submit" />
 
                     <p className="field-text">
                         Already have an account? <Link to="/login">Login here</Link>

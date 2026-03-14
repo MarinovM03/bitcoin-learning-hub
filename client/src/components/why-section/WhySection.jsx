@@ -19,7 +19,10 @@ const features = [
 export default function WhySection() {
     return (
         <div className="why-section">
-            <h2>Why Bitcoin Learning Hub?</h2>
+            <div className="why-section-heading">
+                <h2>Why Bitcoin Learning Hub?</h2>
+                <div className="section-heading-line" />
+            </div>
             <div className="why-cards">
                 {features.map((f, i) => (
                     <div className="why-card" key={i}>

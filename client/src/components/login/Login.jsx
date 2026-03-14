@@ -31,7 +31,8 @@ export default function Login() {
     return (
         <section id="login-page" className="page-content">
             <div className="login-page">
-                <h1>Login</h1>
+                <h1>Welcome Back</h1>
+                <p className="login-subtitle">Sign in to your account to continue</p>
 
                 <form id="login" className="login-form" onSubmit={onSubmit}>
                     <div className="form-group">
@@ -53,17 +54,16 @@ export default function Login() {
                             type="password"
                             id="password"
                             name="password"
+                            placeholder="Enter your password..."
                             required
                             value={formValues.password}
                             onChange={changeHandler}
                         />
                     </div>
 
-                    {error && (
-                        <p className="field-error">{error}</p>
-                    )}
+                    {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Login" className="btn-submit" />
+                    <input type="submit" value="Sign In" className="btn-submit" />
 
                     <p className="field-text">
                         Don't have an account? <Link to="/register">Register here</Link>

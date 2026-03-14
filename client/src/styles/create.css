@@ -1,79 +1,79 @@
 .create-page {
-    max-width: 600px;
+    max-width: 640px;
     margin: 0 auto;
     background-color: var(--card-bg);
-    padding: 3rem;
-    border-radius: 12px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: fadeIn 0.5s ease-in-out;
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.4s ease-in-out;
 }
 
 .create-page h1 {
     text-align: center;
-    margin-bottom: 2.5rem;
-    color: var(--btc-orange);
-    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.create-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    margin-top: 0;
 }
 
 .create-form .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .create-form label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 600;
-    color: var(--text-color);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .create-form input,
 .create-form textarea,
 .create-form select {
     width: 100%;
-    padding: 12px;
+    padding: 11px 14px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-light);
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-family: 'Exo 2', sans-serif;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s;
+    outline: none;
 }
 
 .create-form input:focus,
 .create-form textarea:focus,
 .create-form select:focus {
-    outline: none;
     border-color: var(--btc-orange);
-    background-color: var(--dark-bg);
+}
+
+.create-form input::placeholder,
+.create-form textarea::placeholder {
+    color: var(--text-muted);
 }
 
 .create-form textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 110px;
 }
 
 .create-form textarea.content-input {
     min-height: 200px;
 }
 
-.btn-submit {
-    width: 100%;
-    padding: 14px;
-    background-color: var(--btc-orange);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 1rem;
-}
-
-.btn-submit:hover {
-    background-color: #e08315;
-    transform: translateY(-2px);
+.create-form select option {
+    background-color: var(--card-bg);
 }

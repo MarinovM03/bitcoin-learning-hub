@@ -7,6 +7,14 @@ import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    });
+}
+
 export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
@@ -27,8 +35,7 @@ export default function Details() {
             setArticle(articleData);
             setTotalLikes(likesArray.length);
             if (userId) {
-                const isLiked = likesArray.some(like => like._ownerId === userId);
-                setHasLiked(isLiked);
+                setHasLiked(likesArray.some(like => like._ownerId === userId));
             }
         })
         .catch(() => navigate('/404'))
@@ -58,9 +65,7 @@ export default function Details() {
         }
     };
 
-    if (isLoading) {
-        return <Spinner />;
-    }
+    if (isLoading) return <Spinner />;
 
     return (
         <section id="details-page" className="page-content">
@@ -77,31 +82,78 @@ export default function Details() {
             )}
 
             <div className="details-page">
+
                 <div className="details-hero">
-                    <img className="details-img" src={article?.imageUrl} alt={article?.title} />
+                    <img className="details-img" src={article.imageUrl} alt={article.title} />
+                    <div className="details-hero-overlay" />
+                    <div className="details-hero-meta">
+                        <h1 className="details-hero-title">{article.title}</h1>
+                    </div>
                 </div>
-                <div className="details-container">
-                    <div className="details-header">
-                        <h1>{article?.title} <span className="likes-counter">({totalLikes} likes)</span></h1>
-                        <span className="category-tag">{article?.category}</span>
-                    </div>
-                    <p className="details-summary">{article?.summary}</p>
-                    <p className="details-content">{article?.content}</p>
 
-                    <div className="details-buttons">
+                <div className="details-body">
+
+                    <div className="details-main">
+                        <div className="details-meta-row">
+                            <span className="category-tag">{article.category}</span>
+                        </div>
+
+                        <p className="details-summary">{article.summary}</p>
+
+                        <p className="details-content">{article.content}</p>
+
+                        {isAuthenticated && !isOwner && (
+                            <div className="details-like-row">
+                                {hasLiked ? (
+                                    <div className="liked-badge">
+                                        ❤️ Liked
+                                    </div>
+                                ) : (
+                                    <button className="btn-like" onClick={onLike}>
+                                        🤍 Like this article
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        <CommentsSection articleId={articleId} />
+                    </div>
+
+                    <div className="details-sidebar">
+
                         {isOwner && (
-                            <>
-                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">Edit</Link>
-                                <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>Delete</button>
-                            </>
+                            <div className="details-action-panel">
+                                <span className="details-action-panel-title">Actions</span>
+                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">
+                                    ✏️ Edit Article
+                                </Link>
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => setShowDeleteModal(true)}
+                                >
+                                    🗑️ Delete Article
+                                </button>
+                            </div>
                         )}
-                        {isAuthenticated && !isOwner && !hasLiked && (
-                            <button className="btn-like" onClick={onLike}>Like Article</button>
-                        )}
-                        {hasLiked && <span className="liked-text">You have already liked this article!</span>}
-                    </div>
 
-                    <CommentsSection articleId={articleId} />
+                        <div className="details-info-panel">
+                            <div className="details-info-row">
+                                <span className="details-info-label">Category</span>
+                                <span className="details-info-value">{article.category}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label">Likes</span>
+                                <span className="details-info-value">{totalLikes}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label">Published</span>
+                                <span className="details-info-value">
+                                    {article.createdAt ? formatDate(article.createdAt) : '—'}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </section>

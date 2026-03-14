@@ -1,5 +1,5 @@
 @import "typography.css";
-@import "header.css";
+@import "sidebar.css";
 @import "footer.css";
 @import "home.css";
 @import "home-extensions.css";
@@ -20,17 +20,25 @@
 
 :root {
     --btc-orange: #F7931A;
-    --dark-bg: #1a1a1a;
-    --card-bg: #242424;
+    --btc-orange-dim: rgba(247, 147, 26, 0.12);
+    --btc-orange-glow: rgba(247, 147, 26, 0.25);
+    --dark-bg: #0f0f0f;
+    --sidebar-bg: #141414;
+    --card-bg: #1a1a1a;
+    --card-bg-hover: #1f1f1f;
     --text-color: #e0e0e0;
-    --text-secondary: #a0a0a0;
-    --border-color: #333;
-    --border-light: #444;
-    --input-bg: #121212;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --border-color: #222;
+    --border-light: #2a2a2a;
+    --input-bg: #0a0a0a;
     --danger-color: #e74c3c;
+    --danger-dim: rgba(231, 76, 60, 0.12);
     --success-color: #2ecc71;
     --accent-blue: #3498db;
     --accent-blue-hover: #2980b9;
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 0px;
 }
 
 * {
@@ -39,14 +47,14 @@
 
 body {
     margin: 0;
-    background-color: var(--input-bg);
+    background-color: var(--dark-bg);
     color: var(--text-color);
 }
 
 a {
     text-decoration: none;
     color: inherit;
-    transition: color 0.3s;
+    transition: color 0.2s;
 }
 
 ul {
@@ -57,14 +65,28 @@ ul {
 
 #root {
     display: flex;
+    min-height: 100vh;
+}
+
+.main-area {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: margin-left 0.3s ease;
 }
 
 .page-content {
     flex: 1;
-    padding: 2rem;
-    max-width: 1200px;
+    padding: 2.5rem;
+    max-width: 1100px;
     margin: 0 auto;
     width: 100%;
+}
+
+@media (max-width: 768px) {
+    .main-area {
+        margin-left: 0;
+    }
 }

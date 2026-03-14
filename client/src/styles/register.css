@@ -1,62 +1,61 @@
 .register-page {
-    max-width: 500px;
+    max-width: 440px;
     margin: 0 auto;
     background-color: var(--card-bg);
-    padding: 3rem;
-    border-radius: 12px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: fadeIn 0.5s ease-in-out;
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.4s ease-in-out;
 }
 
 .register-page h1 {
     text-align: center;
-    margin-bottom: 2.5rem;
-    color: var(--btc-orange);
-    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.register-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    margin-top: 0;
 }
 
 .register-form .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .register-form label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 600;
-    color: var(--text-color);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .register-form input {
     width: 100%;
-    padding: 12px;
+    padding: 11px 14px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-light);
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-family: 'Exo 2', sans-serif;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s;
+    outline: none;
 }
 
 .register-form input:focus {
-    outline: none;
     border-color: var(--btc-orange);
-    background-color: var(--dark-bg);
 }
 
-.field-text {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.field-text a {
-    color: var(--btc-orange);
-    font-weight: 600;
-}
-
-.field-text a:hover {
-    color: white;
+.register-form input::placeholder {
+    color: var(--text-muted);
 }

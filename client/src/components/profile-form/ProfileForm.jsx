@@ -103,9 +103,7 @@ export default function ProfileForm({ onSaveSuccess }) {
     };
 
     return (
-        <div className="register-page">
-            <h1>Edit Profile</h1>
-
+        <div className="profile-card">
             <div className="profile-avatar-container">
                 <img
                     src={user.profilePicture || defaultAvatar}
@@ -114,14 +112,19 @@ export default function ProfileForm({ onSaveSuccess }) {
                 />
             </div>
 
+            <h1>Edit Profile</h1>
+            <p className="profile-card-subtitle">Manage your account details</p>
+
             {error && <div className="profile-error-message">{error}</div>}
 
             <form className="register-form" onSubmit={onSubmit}>
+                <p className="profile-section-label">Account Info</p>
+
                 <div className="form-group">
                     <label>
                         Username
                         {usernameLocked && (
-                            <span className="username-locked-badge">🔒 {daysLeft}d remaining</span>
+                            <span className="username-locked-badge">🔒 {daysLeft}d</span>
                         )}
                     </label>
                     <input
@@ -137,13 +140,23 @@ export default function ProfileForm({ onSaveSuccess }) {
                     />
                     {usernameLocked ? (
                         <p className="username-locked-hint">
-                            Your username is locked for {daysLeft} more day{daysLeft === 1 ? '' : 's'}.
+                            Locked for {daysLeft} more day{daysLeft === 1 ? '' : 's'}.
                         </p>
                     ) : usernameWarningVisible ? (
                         <p className="username-change-warning">
-                            ⚠️ Changing your username will lock it for <strong>30 days</strong>. Your current username will become available for others to claim.
+                            ⚠️ Changing locks username for <strong>30 days</strong>.
                         </p>
                     ) : null}
+                </div>
+
+                <div className="form-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={user.email}
+                        onChange={onProfileChange}
+                    />
                 </div>
 
                 <div className="form-group">
@@ -157,17 +170,7 @@ export default function ProfileForm({ onSaveSuccess }) {
                     />
                 </div>
 
-                <div className="form-group">
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={user.email}
-                        onChange={onProfileChange}
-                    />
-                </div>
-
-                <h3 className="profile-password-heading">Change Password (Optional)</h3>
+                <p className="profile-password-heading">Change Password</p>
 
                 <div className="form-group">
                     <label>New Password</label>
@@ -187,6 +190,7 @@ export default function ProfileForm({ onSaveSuccess }) {
                         name="confirmPassword"
                         value={passwords.confirmPassword}
                         onChange={onPasswordChange}
+                        placeholder="Repeat new password"
                     />
                 </div>
 

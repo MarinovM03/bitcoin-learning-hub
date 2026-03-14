@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router";
 import { AuthProvider } from './contexts/AuthContext';
 import './styles/site.css';
 
-import Header from "./components/header/Header";
+import Sidebar from "./components/sidebar/Sidebar";
 import Footer from "./components/footer/Footer";
 import Home from "./components/home/Home";
 import Catalog from "./components/catalog/Catalog";
@@ -21,35 +21,35 @@ import Glossary from "./components/glossary/Glossary";
 function App() {
     return (
         <AuthProvider>
-            <ScrollToTop />
+            <Sidebar />
 
-            <Header />
+            <div className="main-area">
+                <ScrollToTop />
 
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/articles" element={<Catalog /> } />
-                <Route path="/articles/:articleId/details" element={<Details />} />
-                <Route path="/glossary" element={<Glossary />} />
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/articles" element={<Catalog />} />
+                    <Route path="/articles/:articleId/details" element={<Details />} />
+                    <Route path="/glossary" element={<Glossary />} />
 
-                {/* Only for Logged-in Users */}
-                <Route element={<AuthGuard />} >
-                    <Route path="/articles/create" element={<Create />} />
-                    <Route path="/articles/:articleId/edit" element={<Edit />} />
-                    <Route path="/profile" element={<Profile />} />
-                </Route>
+                    <Route element={<AuthGuard />}>
+                        <Route path="/articles/create" element={<Create />} />
+                        <Route path="/articles/:articleId/edit" element={<Edit />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </Route>
 
-                {/* Only for Non-Logged-in Users */}
-                <Route element={<GuestGuard />} >
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                </Route>
+                    <Route element={<GuestGuard />}>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                    </Route>
 
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
 
-            <Footer />
+                <Footer />
+            </div>
         </AuthProvider>
     );
 }
 
-export default App
+export default App;

@@ -1,11 +1,11 @@
 footer {
-    background-color: var(--dark-bg);
-    padding: 1.5rem;
+    background-color: var(--sidebar-bg);
+    padding: 1.2rem 2.5rem;
     text-align: center;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border-light);
     margin-top: auto;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
 footer p {

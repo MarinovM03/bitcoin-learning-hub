@@ -1,81 +1,101 @@
 .login-page {
-    max-width: 500px;
+    max-width: 440px;
     margin: 0 auto;
     background-color: var(--card-bg);
-    padding: 3rem;
-    border-radius: 12px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: fadeIn 0.5s ease-in-out;
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.4s ease-in-out;
 }
 
 .login-page h1 {
     text-align: center;
-    margin-bottom: 2.5rem;
-    color: var(--btc-orange);
-    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    margin-top: 0;
 }
 
 .login-form .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .login-form label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 600;
-    color: var(--text-color);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .login-form input {
     width: 100%;
-    padding: 12px;
+    padding: 11px 14px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-light);
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-family: 'Exo 2', sans-serif;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s;
+    outline: none;
 }
 
 .login-form input:focus {
-    outline: none;
     border-color: var(--btc-orange);
-    background-color: var(--dark-bg);
+}
+
+.login-form input::placeholder {
+    color: var(--text-muted);
 }
 
 .btn-submit {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     background-color: var(--btc-orange);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    font-family: 'Exo 2', sans-serif;
 }
 
 .btn-submit:hover {
     background-color: #e08315;
     transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--btc-orange-glow);
 }
 
 .field-error {
     color: var(--danger-color);
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     margin-top: 5px;
+    margin-bottom: 0;
 }
 
 .field-text {
     text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    margin-top: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
 }
 
 .field-text a {
@@ -85,4 +105,10 @@
 
 .field-text a:hover {
     color: white;
+}
+
+.form-divider {
+    height: 1px;
+    background-color: var(--border-light);
+    margin: 1.5rem 0;
 }
