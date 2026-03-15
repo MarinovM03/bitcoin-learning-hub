@@ -140,7 +140,7 @@
 
 .dashboard-row {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr 280px 280px;
     gap: 1.5rem;
     margin-bottom: 3rem;
     align-items: stretch;

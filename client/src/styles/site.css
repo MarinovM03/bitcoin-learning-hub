@@ -18,6 +18,7 @@
 @import "comments.css";
 @import "modal.css";
 @import "bookmarks.css";
+@import './fear-greed-widget.css';
 
 :root {
     --btc-orange: #F7931A;

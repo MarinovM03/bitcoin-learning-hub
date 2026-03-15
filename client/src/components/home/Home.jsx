@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
+import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 
 export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
@@ -54,6 +55,9 @@ export default function Home() {
                 </div>
                 <div className="dashboard-side">
                     <HalvingCountdown />
+                </div>
+                <div className="dashboard-side">
+                    <FearGreedWidget />
                 </div>
             </div>
 

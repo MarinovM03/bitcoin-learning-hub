@@ -1,0 +1,83 @@
+.fg-widget {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.5rem 1rem 1.25rem;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.fg-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--text-secondary);
+    margin: 0 0 0.5rem;
+}
+
+.fg-gauge-wrap {
+    width: 100%;
+    max-width: 160px;
+}
+
+.fg-gauge-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.fg-arc-bg {
+    stroke: var(--border-light);
+}
+
+.fg-arc-fill--extreme-fear  { stroke: #e05252; }
+.fg-arc-fill--fear          { stroke: #e07c2a; }
+.fg-arc-fill--neutral       { stroke: #d4a017; }
+.fg-arc-fill--greed         { stroke: #8db83f; }
+.fg-arc-fill--extreme-greed { stroke: var(--success-color); }
+
+.fg-needle--extreme-fear  { stroke: #e05252; }
+.fg-needle--fear          { stroke: #e07c2a; }
+.fg-needle--neutral       { stroke: #d4a017; }
+.fg-needle--greed         { stroke: #8db83f; }
+.fg-needle--extreme-greed { stroke: var(--success-color); }
+
+.fg-needle-dot--extreme-fear  { fill: #e05252; }
+.fg-needle-dot--fear          { fill: #e07c2a; }
+.fg-needle-dot--neutral       { fill: #d4a017; }
+.fg-needle-dot--greed         { fill: #8db83f; }
+.fg-needle-dot--extreme-greed { fill: var(--success-color); }
+
+.fg-gauge-number {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    fill: white;
+}
+
+.fg-sentiment {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0.1rem 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.fg-sentiment--extreme-fear  { color: #e05252; }
+.fg-sentiment--fear          { color: #e07c2a; }
+.fg-sentiment--neutral       { color: #d4a017; }
+.fg-sentiment--greed         { color: #8db83f; }
+.fg-sentiment--extreme-greed { color: var(--success-color); }
+
+.fg-loading {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-style: italic;
+}
