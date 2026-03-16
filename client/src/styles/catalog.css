@@ -156,7 +156,7 @@
 .catalog-card-footer {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border-light);
     margin-top: auto;
@@ -217,4 +217,12 @@
     background-color: var(--btc-orange);
     border-color: var(--btc-orange);
     color: white;
+}
+
+.catalog-card-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }

@@ -3,6 +3,7 @@ import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
 import { Link } from "react-router";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
+import { getReadingTime } from '../../utils/readingTime';
 
 export default function Catalog() {
     const [articles, setArticles] = useState([]);
@@ -87,6 +88,7 @@ export default function Catalog() {
                                 <h3 className="catalog-card-title">{article.title}</h3>
                                 <p className="catalog-card-summary">{article.summary}</p>
                                 <div className="catalog-card-footer">
+                                    <span className="catalog-card-meta">{getReadingTime(article.content)} min read</span>
                                     <span className="catalog-card-read">Read Article →</span>
                                 </div>
                             </div>
