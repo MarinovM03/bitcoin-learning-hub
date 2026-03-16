@@ -7,6 +7,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
+import { getReadingTime } from '../../utils/readingTime';
+import { formatViews } from '../../utils/formatters';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -128,6 +130,9 @@ export default function Details() {
                     <div className="details-main">
                         <div className="details-meta-row">
                             <span className="category-tag">{article.category}</span>
+                            <span className="details-reading-time">
+                                {getReadingTime(article.content)} min read
+                            </span>
                         </div>
 
                         <p className="details-summary">{article.summary}</p>
@@ -188,6 +193,10 @@ export default function Details() {
                             <div className="details-info-row">
                                 <span className="details-info-label">Category</span>
                                 <span className="details-info-value">{article.category}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label">Views</span>
+                                <span className="details-info-value">{formatViews(article.views ?? 0)}</span>
                             </div>
                             <div className="details-info-row">
                                 <span className="details-info-label">Likes</span>
