@@ -60,8 +60,12 @@ export const create = async (req, res) => {
 export const getOne = async (req, res) => {
     try {
         const articleId = req.params.articleId;
-        const article = await Article.findById(articleId)
-            .populate('_ownerId', 'username profilePicture');
+
+        const article = await Article.findByIdAndUpdate(
+            articleId,
+            { $inc: { views: 1 } },
+            { new: true }
+        ).populate('_ownerId', 'username profilePicture');
 
         if (!article) {
             return res.status(404).json({ message: "Article not found" });

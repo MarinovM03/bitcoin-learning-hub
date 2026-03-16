@@ -25,6 +25,10 @@ const articleSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    views: {
+        type: Number,
+        default: 0,
+    },
     _ownerId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
