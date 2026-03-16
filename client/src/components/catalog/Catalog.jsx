@@ -4,6 +4,7 @@ import Spinner from "../spinner/Spinner";
 import { Link } from "react-router";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { getReadingTime } from '../../utils/readingTime';
+import { formatViews } from '../../utils/formatters';
 
 export default function Catalog() {
     const [articles, setArticles] = useState([]);
@@ -89,6 +90,7 @@ export default function Catalog() {
                                 <p className="catalog-card-summary">{article.summary}</p>
                                 <div className="catalog-card-footer">
                                     <span className="catalog-card-meta">{getReadingTime(article.content)} min read</span>
+                                    <span className="catalog-card-meta">{formatViews(article.views ?? 0)} views</span>
                                     <span className="catalog-card-read">Read Article →</span>
                                 </div>
                             </div>
