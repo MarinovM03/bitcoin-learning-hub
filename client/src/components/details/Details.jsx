@@ -22,8 +22,7 @@ const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-prof
 
 const handleImgError = (e) => {
     e.target.onerror = null;
-    e.target.classList.add('img-fallback');
-    e.target.removeAttribute('src');
+    e.target.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
 };
 
 export default function Details() {
@@ -37,6 +36,7 @@ export default function Details() {
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [relatedArticles, setRelatedArticles] = useState([]);
 
     useEffect(() => {
         const fetches = [
@@ -58,7 +58,9 @@ export default function Details() {
                 if (bookmarks) {
                     setIsBookmarked(bookmarks.some(a => a._id === articleId));
                 }
+                return articleService.getRelated(articleId);
             })
+            .then(related => setRelatedArticles(related))
             .catch(() => navigate('/not-found'))
             .finally(() => setIsLoading(false));
     }, [articleId, userId, isAuthenticated, navigate]);
@@ -176,21 +178,14 @@ export default function Details() {
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>
-                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">
-                                    ✏️ Edit Article
-                                </Link>
-                                <button
-                                    className="btn-delete"
-                                    onClick={() => setShowDeleteModal(true)}
-                                >
-                                    🗑️ Delete Article
-                                </button>
+                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">✏️ Edit Article</Link>
+                                <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>🗑️ Delete Article</button>
                             </div>
                         )}
 
                         <div className="details-author-panel">
                             <span className="details-action-panel-title">Written by</span>
-                            <div className="details-author">
+                            <Link to={`/users/${ownerId}`} className="details-author details-author--link">
                                 <img
                                     src={ownerProfilePicture || defaultAvatar}
                                     alt={ownerUsername}
@@ -198,12 +193,10 @@ export default function Details() {
                                     onError={handleImgError}
                                 />
                                 <div className="details-author-info">
-                                    <span className="details-author-name">
-                                        {ownerUsername}
-                                    </span>
-                                    <span className="details-author-role">Author</span>
+                                    <span className="details-author-name">{ownerUsername}</span>
+                                    <span className="details-author-role">View profile →</span>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
 
                         <div className="details-info-panel">
@@ -226,6 +219,32 @@ export default function Details() {
                                 </span>
                             </div>
                         </div>
+
+                        {relatedArticles.length > 0 && (
+                            <div className="details-related-panel">
+                                <span className="details-action-panel-title">Related Articles</span>
+                                <div className="details-related-list">
+                                    {relatedArticles.map(rel => (
+                                        <Link
+                                            key={rel._id}
+                                            to={`/articles/${rel._id}/details`}
+                                            className="details-related-card"
+                                        >
+                                            <img
+                                                src={rel.imageUrl}
+                                                alt={rel.title}
+                                                className="details-related-img"
+                                                onError={handleImgError}
+                                            />
+                                            <div className="details-related-body">
+                                                <span className="details-related-category">{rel.category}</span>
+                                                <p className="details-related-title">{rel.title}</p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
