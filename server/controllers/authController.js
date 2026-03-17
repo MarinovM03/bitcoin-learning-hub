@@ -50,6 +50,9 @@ export const register = async (req, res) => {
         if (!/^[a-zA-Z0-9]+$/.test(username)) {
             return res.status(400).json({ message: 'Username can only contain letters and numbers!' });
         }
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long!' });
+        }
         if (password !== confirmPassword) {
             return res.status(400).json({ message: 'Passwords do not match!' });
         }
@@ -153,8 +156,8 @@ export const updateProfile = async (req, res) => {
         if (profilePicture !== undefined) user.profilePicture = profilePicture;
 
         if (password) {
-            if (password.length < 4) {
-                return res.status(400).json({ message: "Password must be at least 4 characters long!" });
+            if (password.length < 8) {
+                return res.status(400).json({ message: "Password must be at least 8 characters long!" });
             }
             if (password !== confirmPassword) {
                 return res.status(400).json({ message: "Passwords do not match!" });
