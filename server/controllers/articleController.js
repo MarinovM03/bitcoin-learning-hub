@@ -58,15 +58,18 @@ export const getOne = async (req, res) => {
             return res.status(404).json({ message: "Article not found" });
         }
 
-        const article = await Article.findByIdAndUpdate(
-            articleId,
-            { $inc: { views: 1 } },
-            { new: true }
-        ).populate('_ownerId', 'username profilePicture');
-
-        if (!article) {
+        const existing = await Article.findById(articleId);
+        if (!existing) {
             return res.status(404).json({ message: "Article not found" });
         }
+
+        const isOwner = req.user && String(req.user._id) === String(existing._ownerId);
+
+        const article = await Article.findByIdAndUpdate(
+            articleId,
+            isOwner ? {} : { $inc: { views: 1 } },
+            { new: true }
+        ).populate('_ownerId', 'username profilePicture');
 
         res.json(article);
     } catch (error) {

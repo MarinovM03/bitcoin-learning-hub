@@ -32,6 +32,10 @@ export default function Register() {
             setError("Username can only contain letters and numbers!");
             return;
         }
+        if (formValues.password.length < 8) {
+            setError("Password must be at least 8 characters long!");
+            return;
+        }
         if (formValues.password !== formValues.confirmPassword) {
             setError("Passwords do not match!");
             return;
@@ -83,7 +87,7 @@ export default function Register() {
                             type="password"
                             id="password"
                             name="password"
-                            placeholder="Min. 4 characters"
+                            placeholder="Min. 8 characters"
                             required
                             value={formValues.password}
                             onChange={changeHandler}
