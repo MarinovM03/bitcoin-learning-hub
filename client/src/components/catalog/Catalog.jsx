@@ -10,8 +10,7 @@ const ITEMS_PER_PAGE = 12;
 
 const handleImgError = (e) => {
     e.target.onerror = null;
-    e.target.classList.add('img-fallback');
-    e.target.removeAttribute('src');
+    e.target.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
 };
 
 export default function Catalog() {
