@@ -20,6 +20,12 @@ function formatDate(dateString) {
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
+const handleImgError = (e) => {
+    e.target.onerror = null;
+    e.target.classList.add('img-fallback');
+    e.target.removeAttribute('src');
+};
+
 export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
@@ -53,7 +59,7 @@ export default function Details() {
                     setIsBookmarked(bookmarks.some(a => a._id === articleId));
                 }
             })
-            .catch(() => navigate('/404'))
+            .catch(() => navigate('/not-found'))
             .finally(() => setIsLoading(false));
     }, [articleId, userId, isAuthenticated, navigate]);
 
@@ -110,7 +116,12 @@ export default function Details() {
 
             <div className="details-page">
                 <div className="details-hero">
-                    <img className="details-img" src={article.imageUrl} alt={article.title} />
+                    <img
+                        className="details-img"
+                        src={article.imageUrl}
+                        alt={article.title}
+                        onError={handleImgError}
+                    />
                     <div className="details-hero-overlay" />
                     <div className="details-hero-meta">
                         <h1 className="details-hero-title">{article.title}</h1>
@@ -136,7 +147,12 @@ export default function Details() {
                         </div>
 
                         <p className="details-summary">{article.summary}</p>
-                        <p className="details-content">{article.content}</p>
+
+                        <div className="details-content">
+                            {article.content?.split('\n').filter(Boolean).map((paragraph, i) => (
+                                <p key={i}>{paragraph}</p>
+                            ))}
+                        </div>
 
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
@@ -179,6 +195,7 @@ export default function Details() {
                                     src={ownerProfilePicture || defaultAvatar}
                                     alt={ownerUsername}
                                     className="details-author-avatar"
+                                    onError={handleImgError}
                                 />
                                 <div className="details-author-info">
                                     <span className="details-author-name">

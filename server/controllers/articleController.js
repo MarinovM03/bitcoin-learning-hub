@@ -1,4 +1,5 @@
 import Article from '../models/Article.js';
+import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
     try {
@@ -23,10 +24,6 @@ export const getAll = async (req, res) => {
 
 export const getMyArticles = async (req, res) => {
     try {
-        if (!req.user) {
-            return res.status(401).json({ message: "You must be logged in!" });
-        }
-
         const articles = await Article.find({ _ownerId: req.user._id }).sort({ createdAt: -1 });
         res.json(articles);
     } catch (error) {
@@ -36,10 +33,6 @@ export const getMyArticles = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        if (!req.user) {
-            return res.status(401).json({ message: "You must be logged in to post!" });
-        }
-
         const { title, category, imageUrl, summary, content } = req.body;
 
         const newArticle = await Article.create({
@@ -59,7 +52,11 @@ export const create = async (req, res) => {
 
 export const getOne = async (req, res) => {
     try {
-        const articleId = req.params.articleId;
+        const { articleId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: "Article not found" });
+        }
 
         const article = await Article.findByIdAndUpdate(
             articleId,
@@ -79,8 +76,12 @@ export const getOne = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const articleId = req.params.articleId;
+        const { articleId } = req.params;
         const { title, category, imageUrl, summary, content } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: "Article not found" });
+        }
 
         const updatedArticle = await Article.findOneAndUpdate(
             { _id: articleId, _ownerId: req.user._id },
@@ -100,7 +101,11 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
     try {
-        const articleId = req.params.articleId;
+        const { articleId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: "Article not found" });
+        }
 
         const deletedArticle = await Article.findOneAndDelete({
             _id: articleId,

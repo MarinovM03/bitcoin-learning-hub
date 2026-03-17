@@ -5,6 +5,12 @@ import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 
+const handleImgError = (e) => {
+    e.target.onerror = null;
+    e.target.classList.add('img-fallback');
+    e.target.removeAttribute('src');
+};
+
 export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
 
@@ -80,6 +86,7 @@ export default function Home() {
                                     src={featured.imageUrl}
                                     alt={featured.title}
                                     className="magazine-featured-img"
+                                    onError={handleImgError}
                                 />
                                 <div className="magazine-featured-overlay">
                                     <span className="magazine-tag">{featured.category}</span>
@@ -102,6 +109,7 @@ export default function Home() {
                                             src={article.imageUrl}
                                             alt={article.title}
                                             className="magazine-small-img"
+                                            onError={handleImgError}
                                         />
                                         <div className="magazine-small-body">
                                             <span className="magazine-tag">{article.category}</span>

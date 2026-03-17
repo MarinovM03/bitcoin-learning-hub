@@ -6,6 +6,12 @@ import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { getReadingTime } from '../../utils/readingTime';
 import { formatViews } from '../../utils/formatters';
 
+const handleImgError = (e) => {
+    e.target.onerror = null;
+    e.target.classList.add('img-fallback');
+    e.target.removeAttribute('src');
+};
+
 export default function Catalog() {
     const [articles, setArticles] = useState([]);
     const [search, setSearch] = useState("");
@@ -82,6 +88,7 @@ export default function Catalog() {
                                     src={article.imageUrl}
                                     alt={article.title}
                                     className="catalog-card-img"
+                                    onError={handleImgError}
                                 />
                                 <span className="catalog-card-category">{article.category}</span>
                             </div>
