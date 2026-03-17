@@ -1,9 +1,10 @@
 import * as request from "../utils/requester";
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/articles`;
+const usersUrl = `${import.meta.env.VITE_API_URL}/users`;
 
-export const getAll = async () => {
-    const result = await request.get(baseUrl);
+export const getAll = async ({ page = 1, limit = 12, sort = 'latest' } = {}) => {
+    const result = await request.get(`${baseUrl}?page=${page}&limit=${limit}&sort=${sort}`);
     return result;
 };
 
@@ -14,6 +15,16 @@ export const getMyArticles = async () => {
 
 export const getOne = async (articleId) => {
     const result = await request.get(`${baseUrl}/${articleId}`);
+    return result;
+};
+
+export const getRelated = async (articleId) => {
+    const result = await request.get(`${baseUrl}/${articleId}/related`);
+    return result;
+};
+
+export const getPublicProfile = async (userId) => {
+    const result = await request.get(`${usersUrl}/${userId}/public`);
     return result;
 };
 
@@ -34,5 +45,5 @@ export const edit = async (articleId, data) => {
 
 export const getLatest = async (limit = 3) => {
     const result = await request.get(`${baseUrl}?limit=${limit}&sort=latest`);
-    return result;
+    return result.articles ?? result;
 };

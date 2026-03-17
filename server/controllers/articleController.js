@@ -1,22 +1,24 @@
 import Article from '../models/Article.js';
+import Like from '../models/Like.js';
 import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
     try {
-        const { limit, sort } = req.query;
+        const { limit, sort, page } = req.query;
 
-        let query = Article.find();
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 12;
+        const skip = (pageNum - 1) * limitNum;
 
-        if (sort === 'latest') {
-            query = query.sort({ createdAt: -1 });
-        }
+        let sortOption = { createdAt: -1 };
+        if (sort === 'views') sortOption = { views: -1 };
 
-        if (limit) {
-            query = query.limit(parseInt(limit));
-        }
+        const [articles, total] = await Promise.all([
+            Article.find().sort(sortOption).skip(skip).limit(limitNum),
+            Article.countDocuments()
+        ]);
 
-        const articles = await query;
-        res.json(articles);
+        res.json({ articles, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -74,6 +76,67 @@ export const getOne = async (req, res) => {
         res.json(article);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+export const getRelated = async (req, res) => {
+    try {
+        const { articleId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        const article = await Article.findById(articleId);
+        if (!article) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        const related = await Article.find({
+            category: article.category,
+            _id: { $ne: article._id }
+        })
+            .sort({ createdAt: -1 })
+            .limit(3)
+            .select('title summary imageUrl category _id');
+
+        res.json(related);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getPublicProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const articles = await Article.find({ _ownerId: userId }).sort({ createdAt: -1 });
+
+        if (articles.length === 0) {
+            const anyUser = await mongoose.model('User').findById(userId).select('username profilePicture');
+            if (!anyUser) return res.status(404).json({ message: "User not found" });
+            return res.json({ username: anyUser.username, profilePicture: anyUser.profilePicture, articles: [], totalLikes: 0 });
+        }
+
+        const articleIds = articles.map(a => a._id);
+        const totalLikes = await Like.countDocuments({ articleId: { $in: articleIds } });
+
+        const owner = articles[0]._ownerId;
+        const User = mongoose.model('User');
+        const user = await User.findById(userId).select('username profilePicture');
+
+        res.json({
+            username: user.username,
+            profilePicture: user.profilePicture,
+            articles,
+            totalLikes
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 

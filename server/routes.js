@@ -12,6 +12,7 @@ const router = Router();
 // Article routes
 router.get('/articles/my', requireAuth, articleController.getMyArticles);
 router.get('/articles', articleController.getAll);
+router.get('/articles/:articleId/related', articleController.getRelated);
 router.get('/articles/:articleId', articleController.getOne);
 router.post('/articles', requireAuth, articleController.create);
 router.put('/articles/:articleId', requireAuth, articleController.update);
@@ -23,6 +24,7 @@ router.post('/users/login', authController.login);
 router.post('/users/logout', authController.logout);
 router.get('/users/profile', requireAuth, authController.getProfile);
 router.put('/users/profile', requireAuth, authController.updateProfile);
+router.get('/users/:userId/public', articleController.getPublicProfile);
 
 // Like routes
 router.post('/likes', requireAuth, likeController.likeArticle);
