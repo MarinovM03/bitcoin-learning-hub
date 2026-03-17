@@ -18,6 +18,7 @@ import NotFound from "./components/not-found/NotFound";
 import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 import Glossary from "./components/glossary/Glossary";
 import Bookmarks from "./components/bookmarks/Bookmarks";
+import AuthorProfile from "./components/author-profile/AuthorProfile";
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/articles" element={<Catalog />} />
                     <Route path="/articles/:articleId/details" element={<Details />} />
+                    <Route path="/users/:userId" element={<AuthorProfile />} />
                     <Route path="/glossary" element={<Glossary />} />
 
                     <Route element={<AuthGuard />}>
