@@ -40,18 +40,23 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     }, [navigate]);
 
+    const updateAuthState = useCallback((newAuth) => {
+        setAuth(newAuth);
+        localStorage.setItem('auth', JSON.stringify(newAuth));
+    }, []);
+
     const values = useMemo(() => ({
         loginSubmitHandler,
         registerSubmitHandler,
         logoutHandler,
+        updateAuthState,
         username: auth.username,
         email: auth.email,
         userId: auth._id,
         isAuthenticated: !!auth.accessToken,
         profilePicture: auth.profilePicture,
         usernameChangedAt: auth.usernameChangedAt || null,
-        setAuth,
-    }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler]);
+    }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler, updateAuthState]);
 
     return (
         <AuthContext.Provider value={values}>

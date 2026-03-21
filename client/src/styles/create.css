@@ -30,13 +30,9 @@
 }
 
 .create-form label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .create-form input,
@@ -81,4 +77,13 @@
 
 .create-form select option[value=""] {
     color: var(--text-muted);
+}
+
+.summary-char-count {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-left: auto;
 }
