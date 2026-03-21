@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
 
 const isUsernameLocked = (usernameChangedAt) => {
@@ -16,7 +17,7 @@ const daysUntilUnlock = (usernameChangedAt) => {
     return Math.ceil(USERNAME_COOLDOWN_DAYS - daysSinceChange);
 };
 
-const generateToken = (user, SECRET) => {
+const generateToken = (user) => {
     return jwt.sign(
         {
             _id: user._id,
@@ -41,7 +42,6 @@ const buildUserResponse = (user, token) => ({
 
 export const register = async (req, res) => {
     try {
-        const SECRET = process.env.JWT_SECRET;
         const { username, email, password, confirmPassword, profilePicture } = req.body;
 
         if (!username || username.trim().length < 3) {
@@ -75,7 +75,7 @@ export const register = async (req, res) => {
             profilePicture,
         });
 
-        const token = generateToken(user, SECRET);
+        const token = generateToken(user);
         res.json(buildUserResponse(user, token));
 
     } catch (error) {
@@ -85,7 +85,6 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const SECRET = process.env.JWT_SECRET;
         const { identifier, password } = req.body;
 
         if (!identifier) {
@@ -106,7 +105,7 @@ export const login = async (req, res) => {
             return res.status(403).json({ message: "Invalid credentials" });
         }
 
-        const token = generateToken(user, SECRET);
+        const token = generateToken(user);
         res.json(buildUserResponse(user, token));
 
     } catch (error) {
@@ -118,9 +117,18 @@ export const logout = (req, res) => {
     res.json({ message: 'Logged out successfully' });
 };
 
+export const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const updateProfile = async (req, res) => {
     try {
-        const SECRET = process.env.JWT_SECRET;
         const userId = req.user._id;
         const { username, email, profilePicture, password, confirmPassword } = req.body;
 
@@ -142,18 +150,25 @@ export const updateProfile = async (req, res) => {
             if (username.trim().length < 3) {
                 return res.status(400).json({ message: "Username must be at least 3 characters long!" });
             }
-
-            const existingUsername = await User.findOne({ username: username.trim() });
-            if (existingUsername) {
+            const taken = await User.findOne({ username: username.trim(), _id: { $ne: userId } });
+            if (taken) {
                 return res.status(400).json({ message: "Username is already taken!" });
             }
-
             user.username = username.trim();
             user.usernameChangedAt = new Date();
         }
 
-        if (email) user.email = email;
-        if (profilePicture !== undefined) user.profilePicture = profilePicture;
+        if (email && email !== user.email) {
+            const taken = await User.findOne({ email, _id: { $ne: userId } });
+            if (taken) {
+                return res.status(400).json({ message: "Email is already in use!" });
+            }
+            user.email = email;
+        }
+
+        if (profilePicture !== undefined) {
+            user.profilePicture = profilePicture;
+        }
 
         if (password) {
             if (password.length < 8) {
@@ -167,20 +182,10 @@ export const updateProfile = async (req, res) => {
 
         await user.save();
 
-        const freshToken = generateToken(user, SECRET);
-        res.json(buildUserResponse(user, freshToken));
+        const token = generateToken(user);
+        res.json(buildUserResponse(user, token));
 
     } catch (error) {
         res.status(400).json({ message: error.message });
-    }
-};
-
-export const getProfile = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const user = await User.findById(userId).select('-password');
-        res.json(user);
-    } catch (error) {
-        res.status(404).json({ message: "User not found" });
     }
 };
