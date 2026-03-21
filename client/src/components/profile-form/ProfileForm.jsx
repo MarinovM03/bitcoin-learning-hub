@@ -14,7 +14,7 @@ const getUsernameStatus = (usernameChangedAt) => {
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 export default function ProfileForm({ onSaveSuccess }) {
-    const { setAuth, usernameChangedAt } = useAuth();
+    const { updateAuthState, usernameChangedAt } = useAuth();
     const [error, setError] = useState('');
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
 
@@ -72,8 +72,8 @@ export default function ProfileForm({ onSaveSuccess }) {
             return;
         }
         if (passwords.password) {
-            if (passwords.password.length < 4) {
-                setError("Password must be at least 4 characters long!");
+            if (passwords.password.length < 8) {
+                setError("Password must be at least 8 characters long!");
                 return;
             }
             if (passwords.password !== passwords.confirmPassword) {
@@ -90,10 +90,7 @@ export default function ProfileForm({ onSaveSuccess }) {
                 ...passwords,
             });
 
-            const oldAuth = JSON.parse(localStorage.getItem('auth'));
-            const newAuth = { ...oldAuth, ...updatedUser };
-            localStorage.setItem('auth', JSON.stringify(newAuth));
-            setAuth(newAuth);
+            updateAuthState(updatedUser);
 
             setPasswords({ password: '', confirmPassword: '' });
             onSaveSuccess();

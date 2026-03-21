@@ -1,12 +1,11 @@
+import 'dotenv/config';
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import router from './routes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
-
-dotenv.config();
 
 const app = express();
 
