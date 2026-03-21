@@ -114,27 +114,23 @@ export const getPublicProfile = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const articles = await Article.find({ _ownerId: userId }).sort({ createdAt: -1 });
+        const User = mongoose.model('User');
 
-        if (articles.length === 0) {
-            const anyUser = await mongoose.model('User').findById(userId).select('username profilePicture');
-            if (!anyUser) return res.status(404).json({ message: "User not found" });
-            return res.json({ username: anyUser.username, profilePicture: anyUser.profilePicture, articles: [], totalLikes: 0 });
+        const [user, articles] = await Promise.all([
+            User.findById(userId).select('username profilePicture'),
+            Article.find({ _ownerId: userId }).sort({ createdAt: -1 })
+        ]);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
         const articleIds = articles.map(a => a._id);
-        const totalLikes = await Like.countDocuments({ articleId: { $in: articleIds } });
+        const totalLikes = articleIds.length > 0
+            ? await Like.countDocuments({ articleId: { $in: articleIds } })
+            : 0;
 
-        const owner = articles[0]._ownerId;
-        const User = mongoose.model('User');
-        const user = await User.findById(userId).select('username profilePicture');
-
-        res.json({
-            username: user.username,
-            profilePicture: user.profilePicture,
-            articles,
-            totalLikes
-        });
+        res.json({ username: user.username, profilePicture: user.profilePicture, articles, totalLikes });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
