@@ -1,3 +1,5 @@
+import { parseApiError } from './parseApiError';
+
 async function request(method, url, data) {
     const options = {};
 
@@ -16,7 +18,7 @@ async function request(method, url, data) {
 
     if (serializedAuth) {
         const auth = JSON.parse(serializedAuth);
-        
+
         if (auth.accessToken) {
             options.headers = {
                 ...options.headers,
@@ -25,24 +27,19 @@ async function request(method, url, data) {
         }
     }
 
-    try {
-        const response = await fetch(url, options);
+    const response = await fetch(url, options);
 
-        if (response.status === 204) {
-            return {};
-        }
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw result;
-        }
-
-        return result;
-    } catch (err) {
-        // console.error(err.message);
-        throw err;
+    if (response.status === 204) {
+        return {};
     }
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(parseApiError(result));
+    }
+
+    return result;
 }
 
 export const get = request.bind(null, 'GET');
