@@ -42,8 +42,3 @@ export const edit = async (articleId, data) => {
     const result = await request.put(`${baseUrl}/${articleId}`, data);
     return result;
 };
-
-export const getLatest = async (limit = 3) => {
-    const result = await request.get(`${baseUrl}?limit=${limit}&sort=latest`);
-    return result.articles ?? result;
-};
