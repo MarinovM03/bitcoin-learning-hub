@@ -32,7 +32,9 @@ export const create = async (req, res) => {
             ownerProfilePicture: req.user.profilePicture || '',
         });
 
-        res.status(201).json(comment);
+        const populated = await comment.populate('_ownerId', 'username profilePicture');
+
+        res.status(201).json(populated);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
