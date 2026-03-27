@@ -127,18 +127,18 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
                         comments.map(comment => (
                             <div key={comment._id} className="comment-card">
                                 <img
-                                    src={comment.ownerProfilePicture || defaultAvatar}
-                                    alt={comment.ownerUsername}
+                                    src={comment._ownerId?.profilePicture || defaultAvatar}
+                                    alt={comment._ownerId?.username}
                                     className="comment-avatar"
                                 />
                                 <div className="comment-body">
                                     <div className="comment-meta">
-                                        <span className="comment-author">{comment.ownerUsername}</span>
-                                        {String(comment._ownerId) === String(articleOwnerId) && (
+                                        <span className="comment-author">{comment._ownerId?.username}</span>
+                                        {String(comment._ownerId?._id) === String(articleOwnerId) && (
                                             <span className="comment-author-badge">Author</span>
                                         )}
                                         <span className="comment-time">{timeAgo(comment.createdAt)}</span>
-                                        {userId && comment._ownerId === userId && (
+                                        {userId && String(comment._ownerId?._id) === String(userId) && (
                                             <button
                                                 className="comment-delete-btn"
                                                 onClick={() => setDeleteTarget(comment._id)}

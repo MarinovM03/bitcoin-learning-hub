@@ -3,12 +3,14 @@ import Comment from '../models/Comment.js';
 export const getAllForArticle = async (req, res) => {
     try {
         const { articleId } = req.params;
-        const comments = await Comment.find({ articleId }).sort({ createdAt: -1 });
+        const comments = await Comment.find({ articleId })
+            .populate('_ownerId', 'username profilePicture')
+            .sort({ createdAt: -1 });
         res.json(comments);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
+};;
 
 export const create = async (req, res) => {
     try {
