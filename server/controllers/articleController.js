@@ -1,5 +1,6 @@
 import Article from '../models/Article.js';
 import Like from '../models/Like.js';
+import User from '../models/User.js';
 import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
@@ -121,8 +122,6 @@ export const getPublicProfile = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(404).json({ message: "User not found" });
         }
-
-        const User = mongoose.model('User');
 
         const [user, articles] = await Promise.all([
             User.findById(userId).select('username profilePicture'),

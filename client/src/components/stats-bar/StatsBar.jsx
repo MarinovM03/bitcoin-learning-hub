@@ -21,7 +21,6 @@ export default function StatsBar() {
                         price:     parseFloat(data.lastPrice),
                         change24h: parseFloat(data.priceChangePercent),
                         volume:    parseFloat(data.quoteVolume),
-                        marketCap: parseFloat(data.lastPrice) * 19700000,
                     }));
                     setIsLoading(false);
                 })
@@ -41,6 +40,7 @@ export default function StatsBar() {
                     setStats(prev => ({
                         ...prev,
                         dominance: data.data.market_cap_percentage.btc,
+                        marketCap: (data.data.total_market_cap.usd * data.data.market_cap_percentage.btc) / 100,
                     }));
                 })
                 .catch(err => console.log("Dominance fetch failed:", err));
