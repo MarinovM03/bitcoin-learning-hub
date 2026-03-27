@@ -39,14 +39,17 @@ export const remove = async (req, res) => {
     try {
         const { termId } = req.params;
 
-        const deleted = await GlossaryTerm.findOneAndDelete({
-            _id: termId,
-            _ownerId: req.user._id,
-        });
+        const term = await GlossaryTerm.findById(termId);
 
-        if (!deleted) {
+        if (!term) {
+            return res.status(404).json({ message: "Term not found" });
+        }
+
+        if (String(term._ownerId) !== String(req.user._id)) {
             return res.status(403).json({ message: "Forbidden" });
         }
+
+        await GlossaryTerm.findByIdAndDelete(termId);
 
         res.json({ message: "Term deleted successfully" });
     } catch (error) {

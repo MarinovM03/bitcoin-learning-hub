@@ -33,11 +33,7 @@ const articleSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User',
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    }
-});
+}, { timestamps: true });
 
 const Article = mongoose.model('Article', articleSchema);
 

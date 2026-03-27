@@ -44,14 +44,17 @@ export const remove = async (req, res) => {
     try {
         const { commentId } = req.params;
 
-        const deleted = await Comment.findOneAndDelete({
-            _id: commentId,
-            _ownerId: req.user._id,
-        });
+        const comment = await Comment.findById(commentId);
 
-        if (!deleted) {
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        if (String(comment._ownerId) !== String(req.user._id)) {
             return res.status(403).json({ message: "Forbidden" });
         }
+
+        await Comment.findByIdAndDelete(commentId);
 
         res.json({ message: "Comment deleted successfully" });
     } catch (error) {
