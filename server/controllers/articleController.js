@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
     try {
-        const { limit, sort, page } = req.query;
+        const { limit, sort, page, search, category } = req.query;
 
         const pageNum = parseInt(page) || 1;
         const limitNum = parseInt(limit) || 12;
@@ -13,9 +13,17 @@ export const getAll = async (req, res) => {
         let sortOption = { createdAt: -1 };
         if (sort === 'views') sortOption = { views: -1 };
 
+        const filter = {};
+        if (search && search.trim() !== '') {
+            filter.title = { $regex: search.trim(), $options: 'i' };
+        }
+        if (category && category !== 'All') {
+            filter.category = category;
+        }
+
         const [articles, total] = await Promise.all([
-            Article.find().sort(sortOption).skip(skip).limit(limitNum),
-            Article.countDocuments()
+            Article.find(filter).sort(sortOption).skip(skip).limit(limitNum),
+            Article.countDocuments(filter)
         ]);
 
         res.json({ articles, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });

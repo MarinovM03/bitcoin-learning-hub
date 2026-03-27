@@ -29,7 +29,7 @@ export default function Catalog() {
 
     useEffect(() => {
         setIsLoading(true);
-        articleService.getAll({ page, limit: ITEMS_PER_PAGE, sort })
+        articleService.getAll({ page, limit: ITEMS_PER_PAGE, sort, search, category: activeCategory })
             .then(result => {
                 setArticles(result.articles);
                 setTotalPages(result.totalPages);
@@ -40,7 +40,7 @@ export default function Catalog() {
                 console.error(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [page, sort]);
+    }, [page, sort, search, activeCategory]);
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(searchParams);
@@ -52,12 +52,6 @@ export default function Catalog() {
         if (key !== 'page') next.delete('page');
         setSearchParams(next);
     };
-
-    const filteredArticles = articles.filter(article => {
-        const matchesSearch = article.title.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || article.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
 
     return (
         <section id="catalog-page" className="page-content catalog-page">
@@ -109,10 +103,10 @@ export default function Catalog() {
             ) : (
                 <>
                     <div className="catalog-grid">
-                        {filteredArticles.length === 0 && !error && (
+                        {articles.length === 0 && !error && (
                             <p className="catalog-empty">No articles found matching your search.</p>
                         )}
-                        {filteredArticles.map(article => (
+                        {articles.map(article => (
                             <Link
                                 key={article._id}
                                 to={`/articles/${article._id}/details`}
