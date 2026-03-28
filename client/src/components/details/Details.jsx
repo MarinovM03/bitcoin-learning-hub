@@ -37,6 +37,19 @@ export default function Details() {
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [relatedArticles, setRelatedArticles] = useState([]);
+    const [readProgress, setReadProgress] = useState(0);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            setReadProgress(progress);
+        };
+
+        window.addEventListener('scroll', onScroll);
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     useEffect(() => {
         const fetches = [
@@ -104,6 +117,8 @@ export default function Details() {
 
     return (
         <section id="details-page" className="page-content">
+            <div className="read-progress-bar" style={{ width: `${readProgress}%` }} />
+
             {showDeleteModal && (
                 <ConfirmModal
                     icon="📄"

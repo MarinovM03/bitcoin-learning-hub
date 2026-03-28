@@ -1,3 +1,14 @@
+.read-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background-color: var(--btc-orange);
+    z-index: 9999;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+}
+
 .details-page {
     animation: fadeIn 0.4s ease-in-out;
 }
@@ -344,9 +355,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Append to client/src/styles/details.css */
-
-/* Author panel — clickable link state */
 .details-author--link {
     text-decoration: none;
     transition: opacity 0.2s ease;
