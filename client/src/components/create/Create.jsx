@@ -55,7 +55,7 @@ export default function Create() {
         try {
             await articleService.create({ ...formValues, status });
             if (status === 'draft') {
-                navigate('/profile#my-articles');
+                navigate('/my-articles');
             } else {
                 navigate('/articles');
             }

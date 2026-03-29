@@ -19,6 +19,7 @@ import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 import Glossary from "./components/glossary/Glossary";
 import Bookmarks from "./components/bookmarks/Bookmarks";
 import AuthorProfile from "./components/author-profile/AuthorProfile";
+import MyArticles from "./components/my-articles/MyArticles";
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
                         <Route path="/articles/:articleId/edit" element={<Edit />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/bookmarks" element={<Bookmarks />} />
+                        <Route path="/my-articles" element={<MyArticles />} />
                     </Route>
 
                     <Route element={<GuestGuard />}>

@@ -66,7 +66,7 @@ export default function Edit() {
         try {
             await articleService.edit(articleId, { ...formValues, status });
             if (status === 'draft') {
-                navigate('/profile#my-articles');
+                navigate('/my-articles');
             } else {
                 navigate(`/articles/${articleId}/details`);
             }
