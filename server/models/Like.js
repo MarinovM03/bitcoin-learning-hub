@@ -11,7 +11,7 @@ const likeSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-});
+}, { timestamps: true });
 
 likeSchema.index({ articleId: 1, _ownerId: 1 }, { unique: true });
 

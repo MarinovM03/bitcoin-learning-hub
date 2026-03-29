@@ -190,3 +190,39 @@ export const remove = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+export const getTrending = async (req, res) => {
+    try {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        const trending = await Like.aggregate([
+            { $match: { createdAt: { $gte: sevenDaysAgo } } },
+            { $group: { _id: '$articleId', likeCount: { $sum: 1 } } },
+            { $sort: { likeCount: -1 } },
+            { $limit: 3 },
+            {
+                $lookup: {
+                    from: 'articles',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'article'
+                }
+            },
+            { $unwind: '$article' },
+            {
+                $project: {
+                    _id: '$article._id',
+                    title: '$article.title',
+                    summary: '$article.summary',
+                    imageUrl: '$article.imageUrl',
+                    category: '$article.category',
+                    likeCount: 1,
+                }
+            }
+        ]);
+
+        res.json(trending);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
