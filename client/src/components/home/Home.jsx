@@ -13,13 +13,22 @@ const handleImgError = (e) => {
 
 export default function Home() {
     const [latestArticles, setLatestArticles] = useState([]);
+    const [trendingArticles, setTrendingArticles] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isTrendingLoading, setIsTrendingLoading] = useState(true);
 
     useEffect(() => {
         articleService.getAll({ limit: 4, sort: 'latest' })
             .then(result => setLatestArticles(result.articles ?? []))
             .catch(err => console.log(err.message))
             .finally(() => setIsLoading(false));
+    }, []);
+
+    useEffect(() => {
+        articleService.getTrending()
+            .then(result => setTrendingArticles(Array.isArray(result) ? result : []))
+            .catch(err => console.log(err.message))
+            .finally(() => setIsTrendingLoading(false));
     }, []);
 
     const [featured, ...rest] = latestArticles;
@@ -127,6 +136,41 @@ export default function Home() {
                     </div>
                 )}
             </div>
+
+            {!isTrendingLoading && trendingArticles.length > 0 && (
+                <div className="trending-section">
+                    <div className="section-heading">
+                        <h2>🔥 Trending This Week</h2>
+                        <div className="section-heading-line" />
+                    </div>
+
+                    <div className="trending-grid">
+                        {trendingArticles.map((article, index) => (
+                            <Link
+                                key={article._id}
+                                to={`/articles/${article._id}/details`}
+                                className="trending-card"
+                            >
+                                <div className="trending-rank">#{index + 1}</div>
+                                <img
+                                    src={article.imageUrl}
+                                    alt={article.title}
+                                    className="trending-img"
+                                    onError={handleImgError}
+                                />
+                                <div className="trending-body">
+                                    <span className="trending-category">{article.category}</span>
+                                    <h3 className="trending-title">{article.title}</h3>
+                                    <p className="trending-summary">{article.summary}</p>
+                                    <span className="trending-likes">
+                                        ❤️ {article.likeCount} {article.likeCount === 1 ? 'like' : 'likes'} this week
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
 
         </section>
     );
