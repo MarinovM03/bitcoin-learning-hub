@@ -29,6 +29,11 @@ const articleSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    status: {
+        type: String,
+        enum: ['draft', 'published'],
+        default: 'published',
+    },
     _ownerId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',

@@ -14,7 +14,8 @@ export const getAll = async (req, res) => {
         let sortOption = { createdAt: -1 };
         if (sort === 'views') sortOption = { views: -1 };
 
-        const filter = {};
+        const filter = { status: 'published' };
+
         if (search && search.trim() !== '') {
             filter.title = { $regex: search.trim(), $options: 'i' };
         }
@@ -44,7 +45,7 @@ export const getMyArticles = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { title, category, imageUrl, summary, content } = req.body;
+        const { title, category, imageUrl, summary, content, status } = req.body;
 
         const newArticle = await Article.create({
             title,
@@ -52,6 +53,7 @@ export const create = async (req, res) => {
             imageUrl,
             summary,
             content,
+            status: status === 'draft' ? 'draft' : 'published',
             _ownerId: req.user._id
         });
 
@@ -75,6 +77,10 @@ export const getOne = async (req, res) => {
         }
 
         const isOwner = req.user && String(req.user._id) === String(existing._ownerId);
+
+        if (existing.status === 'draft' && !isOwner) {
+            return res.status(404).json({ message: "Article not found" });
+        }
 
         const article = await Article.findByIdAndUpdate(
             articleId,
@@ -103,7 +109,8 @@ export const getRelated = async (req, res) => {
 
         const related = await Article.find({
             category: article.category,
-            _id: { $ne: article._id }
+            _id: { $ne: article._id },
+            status: 'published',
         })
             .sort({ createdAt: -1 })
             .limit(3)
@@ -125,7 +132,7 @@ export const getPublicProfile = async (req, res) => {
 
         const [user, articles] = await Promise.all([
             User.findById(userId).select('username profilePicture'),
-            Article.find({ _ownerId: userId }).sort({ createdAt: -1 })
+            Article.find({ _ownerId: userId, status: 'published' }).sort({ createdAt: -1 })
         ]);
 
         if (!user) {
@@ -146,15 +153,20 @@ export const getPublicProfile = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { articleId } = req.params;
-        const { title, category, imageUrl, summary, content } = req.body;
+        const { title, category, imageUrl, summary, content, status } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(articleId)) {
             return res.status(404).json({ message: "Article not found" });
         }
 
+        const updateData = { title, category, imageUrl, summary, content };
+        if (status === 'draft' || status === 'published') {
+            updateData.status = status;
+        }
+
         const updatedArticle = await Article.findOneAndUpdate(
             { _id: articleId, _ownerId: req.user._id },
-            { title, category, imageUrl, summary, content },
+            updateData,
             { new: true, runValidators: true }
         );
 
@@ -209,6 +221,7 @@ export const getTrending = async (req, res) => {
                 }
             },
             { $unwind: '$article' },
+            { $match: { 'article.status': 'published' } },
             {
                 $project: {
                     _id: '$article._id',
