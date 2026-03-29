@@ -1,0 +1,276 @@
+.my-articles-page {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.my-articles-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.my-articles-page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.my-articles-page-subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0.3rem 0 0 0;
+}
+
+.my-articles-page-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 0;
+}
+
+.my-articles-page-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -1px;
+    font-family: 'Exo 2', sans-serif;
+}
+
+.my-articles-page-tab:hover {
+    color: white;
+}
+
+.my-articles-page-tab--active {
+    color: white;
+    border-bottom-color: var(--btc-orange);
+}
+
+.my-articles-page-tab-count {
+    background-color: var(--border-light);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    min-width: 22px;
+    text-align: center;
+}
+
+.my-articles-page-tab--active .my-articles-page-tab-count {
+    background-color: var(--btc-orange);
+    color: white;
+}
+
+.my-articles-page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.my-articles-page-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.my-articles-page-card:hover {
+    border-color: var(--btc-orange);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.my-articles-page-card-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.my-articles-page-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.25s ease;
+}
+
+.my-articles-page-card:hover .my-articles-page-card-img {
+    opacity: 0.85;
+}
+
+.my-articles-page-card-category {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background-color: var(--btc-orange);
+    color: white;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 9px;
+    border-radius: 4px;
+}
+
+.my-articles-page-card-draft-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+}
+
+.my-articles-page-card-body {
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.my-articles-page-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.my-articles-page-card-summary {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.my-articles-page-card-footer {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.my-articles-page-btn {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-family: 'Exo 2', sans-serif;
+    white-space: nowrap;
+}
+
+.my-articles-page-btn--view {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.my-articles-page-btn--view:hover {
+    border-color: white;
+    color: white;
+}
+
+.my-articles-page-btn--edit {
+    background-color: var(--btc-orange);
+    color: white;
+}
+
+.my-articles-page-btn--edit:hover {
+    background-color: #e08315;
+}
+
+.my-articles-page-btn--delete {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.my-articles-page-btn--delete:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.my-articles-page-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    border: 1px dashed var(--border-light);
+}
+
+.my-articles-page-empty p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+}
+
+.profile-manage-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+    font-family: 'Exo 2', sans-serif;
+}
+
+.profile-manage-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}
