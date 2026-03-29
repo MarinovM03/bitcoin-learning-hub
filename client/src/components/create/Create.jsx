@@ -24,34 +24,41 @@ export default function Create() {
         setError('');
     };
 
-    const createArticleSubmitHandler = async (e) => {
-        e.preventDefault();
-
+    const validate = () => {
         if (formValues.title.length < 5) {
             setError("Title must be at least 5 characters long!");
-            return;
+            return false;
         }
         if (!formValues.category) {
             setError("Please select a category!");
-            return;
+            return false;
         }
         if (formValues.summary.length < 10) {
             setError("Summary must be at least 10 characters long!");
-            return;
+            return false;
         }
         if (formValues.summary.length > 250) {
             setError("Summary must be no longer than 250 characters!");
-            return;
+            return false;
         }
         if (formValues.content.length < 10) {
             setError("Content must be at least 10 characters long!");
-            return;
+            return false;
         }
+        return true;
+    };
+
+    const handleSubmit = async (status) => {
+        if (!validate()) return;
 
         setIsSubmitting(true);
         try {
-            await articleService.create(formValues);
-            navigate('/articles');
+            await articleService.create({ ...formValues, status });
+            if (status === 'draft') {
+                navigate('/profile#my-articles');
+            } else {
+                navigate('/articles');
+            }
         } catch (err) {
             console.log("Error creating article:", err.message);
             setError(err.message);
@@ -66,7 +73,7 @@ export default function Create() {
                 <h1>Write Article</h1>
                 <p className="create-subtitle">Share your Bitcoin knowledge with the community</p>
 
-                <form id="create" className="create-form" onSubmit={createArticleSubmitHandler}>
+                <form id="create" className="create-form" onSubmit={(e) => e.preventDefault()}>
                     <div className="form-group">
                         <label htmlFor="title">Article Title</label>
                         <input
@@ -142,12 +149,24 @@ export default function Create() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input
-                        type="submit"
-                        value={isSubmitting ? "Publishing..." : "Publish Article"}
-                        className="btn-submit"
-                        disabled={isSubmitting}
-                    />
+                    <div className="create-actions">
+                        <button
+                            type="button"
+                            className="btn-save-draft"
+                            disabled={isSubmitting}
+                            onClick={() => handleSubmit('draft')}
+                        >
+                            {isSubmitting ? "Saving..." : "💾 Save as Draft"}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn-submit"
+                            disabled={isSubmitting}
+                            onClick={() => handleSubmit('published')}
+                        >
+                            {isSubmitting ? "Publishing..." : "Publish Article"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </section>

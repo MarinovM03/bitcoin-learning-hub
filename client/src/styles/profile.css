@@ -396,3 +396,89 @@
     color: var(--text-muted);
     text-align: center;
 }
+
+.my-articles-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 0;
+}
+
+.my-articles-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -1px;
+    font-family: 'Exo 2', sans-serif;
+}
+
+.my-articles-tab:hover {
+    color: white;
+}
+
+.my-articles-tab--active {
+    color: white;
+    border-bottom-color: var(--btc-orange);
+}
+
+.my-articles-tab-count {
+    background-color: var(--border-light);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.my-articles-tab--active .my-articles-tab-count {
+    background-color: var(--btc-orange);
+    color: white;
+}
+
+.create-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.create-actions .btn-submit {
+    flex: 1;
+}
+
+.btn-save-draft {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Exo 2', sans-serif;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-save-draft:hover:not(:disabled) {
+    border-color: white;
+    color: white;
+}
+
+.btn-save-draft:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

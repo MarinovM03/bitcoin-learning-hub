@@ -17,8 +17,9 @@ export default function Profile() {
             .then(async (result) => {
                 setMyArticles(result);
 
+                const published = result.filter(a => a.status === 'published');
                 const likeCounts = await Promise.all(
-                    result.map(a => likeService.getAllForArticle(a._id).then(likes => likes.length).catch(() => 0))
+                    published.map(a => likeService.getAllForArticle(a._id).then(likes => likes.length).catch(() => 0))
                 );
                 setTotalLikes(likeCounts.reduce((sum, n) => sum + n, 0));
             })
@@ -35,6 +36,9 @@ export default function Profile() {
         setMyArticles(prev => prev.filter(a => a._id !== articleId));
     };
 
+    const publishedArticles = myArticles.filter(a => a.status === 'published');
+    const draftArticles = myArticles.filter(a => a.status === 'draft');
+
     return (
         <section id="profile-page" className="page-content">
             {showToast && (
@@ -45,11 +49,15 @@ export default function Profile() {
 
             <ProfileForm onSaveSuccess={handleSaveSuccess} />
 
-            <div className="profile-articles-section">
+            <div className="profile-articles-section" id="my-articles">
                 <div className="profile-stats-row">
                     <div className="profile-stat-card">
-                        <span className="profile-stat-value">{myArticles.length}</span>
+                        <span className="profile-stat-value">{publishedArticles.length}</span>
                         <span className="profile-stat-label">Articles Published</span>
+                    </div>
+                    <div className="profile-stat-card">
+                        <span className="profile-stat-value">{draftArticles.length}</span>
+                        <span className="profile-stat-label">Drafts Saved</span>
                     </div>
                     <div className="profile-stat-card">
                         <span className="profile-stat-value">{totalLikes}</span>
@@ -58,7 +66,8 @@ export default function Profile() {
                 </div>
 
                 <MyArticlesList
-                    articles={myArticles}
+                    publishedArticles={publishedArticles}
+                    draftArticles={draftArticles}
                     isLoading={articlesLoading}
                     onArticleDeleted={handleArticleDeleted}
                 />
