@@ -8,6 +8,7 @@ export default function Edit() {
     const { articleId } = useParams();
 
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formValues, setFormValues] = useState({
         title: '',
         category: '',
@@ -19,10 +20,7 @@ export default function Edit() {
     useEffect(() => {
         articleService.getOne(articleId)
             .then(result => setFormValues(result))
-            .catch(err => {
-                console.log(err.message);
-                navigate('/404');
-            });
+            .catch(() => navigate('/not-found'));
     }, [articleId, navigate]);
 
     const changeHandler = (e) => {
@@ -57,12 +55,15 @@ export default function Edit() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await articleService.edit(articleId, formValues);
             navigate(`/articles/${articleId}/details`);
         } catch (err) {
             console.log('Error editing article:', err.message);
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -148,7 +149,12 @@ export default function Edit() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Save Changes" className="btn-submit" />
+                    <input
+                        type="submit"
+                        value={isSubmitting ? "Saving..." : "Save Changes"}
+                        className="btn-submit"
+                        disabled={isSubmitting}
+                    />
                 </form>
             </div>
         </section>

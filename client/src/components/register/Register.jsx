@@ -5,6 +5,7 @@ import { Link } from "react-router";
 export default function Register() {
     const { registerSubmitHandler } = useAuth();
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formValues, setFormValues] = useState({
         username: '',
@@ -41,10 +42,13 @@ export default function Register() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await registerSubmitHandler(formValues);
         } catch (err) {
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -109,7 +113,12 @@ export default function Register() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Create Account" className="btn-submit" />
+                    <input
+                        type="submit"
+                        value={isSubmitting ? "Creating account..." : "Create Account"}
+                        className="btn-submit"
+                        disabled={isSubmitting}
+                    />
 
                     <p className="field-text">
                         Already have an account? <Link to="/login">Login here</Link>

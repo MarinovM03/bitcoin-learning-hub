@@ -6,6 +6,7 @@ import { ARTICLE_CATEGORIES } from '../../utils/categories';
 export default function Create() {
     const navigate = useNavigate();
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formValues, setFormValues] = useState({
         title: '',
@@ -47,12 +48,15 @@ export default function Create() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await articleService.create(formValues);
             navigate('/articles');
         } catch (err) {
             console.log("Error creating article:", err.message);
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -138,7 +142,12 @@ export default function Create() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Publish Article" className="btn-submit" />
+                    <input
+                        type="submit"
+                        value={isSubmitting ? "Publishing..." : "Publish Article"}
+                        className="btn-submit"
+                        disabled={isSubmitting}
+                    />
                 </form>
             </div>
         </section>

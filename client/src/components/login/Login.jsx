@@ -5,6 +5,7 @@ import { Link } from "react-router";
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formValues, setFormValues] = useState({
         identifier: '',
@@ -21,10 +22,13 @@ export default function Login() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
             await loginSubmitHandler(formValues);
         } catch (err) {
             setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -63,7 +67,12 @@ export default function Login() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input type="submit" value="Sign In" className="btn-submit" />
+                    <input
+                        type="submit"
+                        value={isSubmitting ? "Signing in..." : "Sign In"}
+                        className="btn-submit"
+                        disabled={isSubmitting}
+                    />
 
                     <p className="field-text">
                         Don't have an account? <Link to="/register">Register here</Link>
