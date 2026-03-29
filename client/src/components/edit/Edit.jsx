@@ -9,6 +9,7 @@ export default function Edit() {
 
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentStatus, setCurrentStatus] = useState('published');
     const [formValues, setFormValues] = useState({
         title: '',
         category: '',
@@ -19,7 +20,10 @@ export default function Edit() {
 
     useEffect(() => {
         articleService.getOne(articleId)
-            .then(result => setFormValues(result))
+            .then(result => {
+                setFormValues(result);
+                setCurrentStatus(result.status || 'published');
+            })
             .catch(() => navigate('/not-found'));
     }, [articleId, navigate]);
 
@@ -31,34 +35,41 @@ export default function Edit() {
         setError('');
     };
 
-    const editArticleSubmitHandler = async (e) => {
-        e.preventDefault();
-
+    const validate = () => {
         if (formValues.title.length < 5) {
             setError("Title must be at least 5 characters long!");
-            return;
+            return false;
         }
         if (!formValues.category) {
             setError("Please select a category!");
-            return;
+            return false;
         }
         if (formValues.summary.length < 10) {
             setError("Summary must be at least 10 characters long!");
-            return;
+            return false;
         }
         if (formValues.summary.length > 250) {
             setError("Summary must be no longer than 250 characters!");
-            return;
+            return false;
         }
         if (formValues.content.length < 10) {
             setError("Content must be at least 10 characters long!");
-            return;
+            return false;
         }
+        return true;
+    };
+
+    const handleSubmit = async (status) => {
+        if (!validate()) return;
 
         setIsSubmitting(true);
         try {
-            await articleService.edit(articleId, formValues);
-            navigate(`/articles/${articleId}/details`);
+            await articleService.edit(articleId, { ...formValues, status });
+            if (status === 'draft') {
+                navigate('/profile#my-articles');
+            } else {
+                navigate(`/articles/${articleId}/details`);
+            }
         } catch (err) {
             console.log('Error editing article:', err.message);
             setError(err.message);
@@ -73,7 +84,7 @@ export default function Edit() {
                 <h1>Edit Article</h1>
                 <p className="create-subtitle">Update your article details below</p>
 
-                <form id="edit" className="create-form" onSubmit={editArticleSubmitHandler}>
+                <form id="edit" className="create-form" onSubmit={(e) => e.preventDefault()}>
                     <div className="form-group">
                         <label htmlFor="title">Article Title</label>
                         <input
@@ -149,12 +160,24 @@ export default function Edit() {
 
                     {error && <p className="field-error">{error}</p>}
 
-                    <input
-                        type="submit"
-                        value={isSubmitting ? "Saving..." : "Save Changes"}
-                        className="btn-submit"
-                        disabled={isSubmitting}
-                    />
+                    <div className="create-actions">
+                        <button
+                            type="button"
+                            className="btn-save-draft"
+                            disabled={isSubmitting}
+                            onClick={() => handleSubmit('draft')}
+                        >
+                            {isSubmitting ? "Saving..." : "💾 Save as Draft"}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn-submit"
+                            disabled={isSubmitting}
+                            onClick={() => handleSubmit('published')}
+                        >
+                            {isSubmitting ? "Publishing..." : currentStatus === 'draft' ? "Publish Article" : "Save & Publish"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </section>

@@ -4,7 +4,8 @@ import ConfirmModal from "../common/ConfirmModal";
 import { useState } from "react";
 import * as articleService from "../../services/articleService";
 
-export default function MyArticlesList({ articles, isLoading, onArticleDeleted }) {
+export default function MyArticlesList({ publishedArticles, draftArticles, isLoading, onArticleDeleted }) {
+    const [activeTab, setActiveTab] = useState('published');
     const [deleteTarget, setDeleteTarget] = useState(null);
 
     const confirmDelete = async () => {
@@ -17,6 +18,8 @@ export default function MyArticlesList({ articles, isLoading, onArticleDeleted }
             setDeleteTarget(null);
         }
     };
+
+    const articles = activeTab === 'published' ? publishedArticles : draftArticles;
 
     return (
         <div className="my-articles-section">
@@ -34,19 +37,44 @@ export default function MyArticlesList({ articles, isLoading, onArticleDeleted }
 
             <div className="my-articles-header">
                 <h2>My Articles</h2>
-                <span className="my-articles-count">
-                    {articles.length} {articles.length === 1 ? 'article' : 'articles'}
-                </span>
+            </div>
+
+            <div className="my-articles-tabs">
+                <button
+                    className={`my-articles-tab ${activeTab === 'published' ? 'my-articles-tab--active' : ''}`}
+                    onClick={() => setActiveTab('published')}
+                >
+                    Published
+                    <span className="my-articles-tab-count">{publishedArticles.length}</span>
+                </button>
+                <button
+                    className={`my-articles-tab ${activeTab === 'draft' ? 'my-articles-tab--active' : ''}`}
+                    onClick={() => setActiveTab('draft')}
+                >
+                    Drafts
+                    <span className="my-articles-tab-count">{draftArticles.length}</span>
+                </button>
             </div>
 
             {isLoading ? (
                 <Spinner />
             ) : articles.length === 0 ? (
                 <div className="my-articles-empty">
-                    <p>You haven't published any articles yet.</p>
-                    <Link to="/articles/create" className="btn-submit my-articles-cta">
-                        Write Your First Article
-                    </Link>
+                    {activeTab === 'published' ? (
+                        <>
+                            <p>You haven't published any articles yet.</p>
+                            <Link to="/articles/create" className="btn-submit my-articles-cta">
+                                Write Your First Article
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <p>You have no saved drafts.</p>
+                            <Link to="/articles/create" className="btn-submit my-articles-cta">
+                                Start Writing
+                            </Link>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="my-articles-list">
@@ -63,17 +91,19 @@ export default function MyArticlesList({ articles, isLoading, onArticleDeleted }
                                 <p className="my-article-summary">{article.summary}</p>
                             </div>
                             <div className="my-article-card-actions">
-                                <Link
-                                    to={`/articles/${article._id}/details`}
-                                    className="my-article-btn my-article-btn--view"
-                                >
-                                    View
-                                </Link>
+                                {activeTab === 'published' && (
+                                    <Link
+                                        to={`/articles/${article._id}/details`}
+                                        className="my-article-btn my-article-btn--view"
+                                    >
+                                        View
+                                    </Link>
+                                )}
                                 <Link
                                     to={`/articles/${article._id}/edit`}
                                     className="my-article-btn my-article-btn--edit"
                                 >
-                                    Edit
+                                    {activeTab === 'draft' ? 'Edit & Publish' : 'Edit'}
                                 </Link>
                                 <button
                                     className="my-article-btn my-article-btn--delete"
