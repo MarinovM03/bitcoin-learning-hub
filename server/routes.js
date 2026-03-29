@@ -11,6 +11,7 @@ const router = Router();
 
 // Article routes
 router.get('/articles/my', requireAuth, articleController.getMyArticles);
+router.get('/articles/trending', articleController.getTrending);
 router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', articleController.getRelated);
 router.get('/articles/:articleId', articleController.getOne);

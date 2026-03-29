@@ -46,3 +46,8 @@ export const edit = async (articleId, data) => {
     const result = await request.put(`${baseUrl}/${articleId}`, data);
     return result;
 };
+
+export const getTrending = async () => {
+    const result = await request.get(`${baseUrl}/trending`);
+    return result;
+};
