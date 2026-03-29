@@ -13,6 +13,28 @@ const handleImgError = (e) => {
     e.target.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
 };
 
+const getPaginationPages = (current, total) => {
+    if (total <= 7) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const pages = [];
+
+    pages.push(1);
+
+    if (current > 3) pages.push('...');
+
+    for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+        pages.push(p);
+    }
+
+    if (current < total - 2) pages.push('...');
+
+    pages.push(total);
+
+    return pages;
+};
+
 export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -144,15 +166,21 @@ export default function Catalog() {
                                 ← Prev
                             </button>
 
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                <button
-                                    key={p}
-                                    className={`catalog-page-btn ${p === page ? 'catalog-page-btn--active' : ''}`}
-                                    onClick={() => setParam('page', String(p))}
-                                >
-                                    {p}
-                                </button>
-                            ))}
+                            {getPaginationPages(page, totalPages).map((p, index) =>
+                                p === '...' ? (
+                                    <span key={`ellipsis-${index}`} className="catalog-page-ellipsis">
+                                        …
+                                    </span>
+                                ) : (
+                                    <button
+                                        key={p}
+                                        className={`catalog-page-btn ${p === page ? 'catalog-page-btn--active' : ''}`}
+                                        onClick={() => setParam('page', String(p))}
+                                    >
+                                        {p}
+                                    </button>
+                                )
+                            )}
 
                             <button
                                 className="catalog-page-btn"

@@ -293,3 +293,10 @@
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+.catalog-page-ellipsis {
+    padding: 7px 4px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    user-select: none;
+}
