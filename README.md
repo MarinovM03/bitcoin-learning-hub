@@ -9,7 +9,7 @@ A full-stack Single Page Application (SPA) built with **ReactJS** and **Node.js/
 Bitcoin Learning Hub provides a structured, dark-themed interface for learning about Bitcoin and cryptocurrency. The platform supports full user authentication, content ownership, live market data, and community interaction features.
 
 - **Guests** can browse articles, read article details, explore the glossary, and view comments.
-- **Logged-in users** can create articles, contribute glossary terms, and post comments.
+- **Logged-in users** can create articles, contribute glossary terms, post comments, and save drafts.
 - **Authors** have full control (Edit/Delete) over their own articles, glossary terms, and comments.
 
 ---
@@ -17,21 +17,25 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 ## ✨ Features
 
 ### Public Area (Guest)
-- **Home Page** — Hero section, live Bitcoin market stats bar, Why Bitcoin Learning Hub section, halving countdown timer, and latest articles feed.
-- **Articles Catalog** — Browse all articles with a real-time search filter by title.
-- **Article Details** — Full article view with like count and a read-only comments section.
+- **Home Page** — Hero section, live Bitcoin market stats bar, halving countdown timer, Fear & Greed Index widget, latest articles feed, and a "Trending This Week" section.
+- **Articles Catalog** — Browse all articles with server-side search, category filtering, sort by latest or most viewed, and smart pagination.
+- **Article Details** — Full article view with reading progress bar, like count, related articles sidebar, and a comments section.
+- **Author Profiles** — Public profile pages showing an author's published articles and total likes received.
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering.
 - **Authentication** — Login by email or username, and Register with full validation.
 
 ### Private Area (Logged-in User)
-- **Create Article** — Submit new content with title, summary, content, category, and image URL.
+- **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
+- **Article Drafts** — Save works-in-progress as drafts. Drafts are private and never appear in the public catalog.
+- **My Articles Page** — Dedicated page with a full grid view of all published articles and drafts, with edit and delete actions.
 - **Like Articles** — Like any article you did not author. One like per user per article.
+- **Bookmark Articles** — Save articles to a personal bookmarks list for later reading.
 - **Post Comments** — Join the discussion on any article with a 500-character limit and live character counter.
 - **Contribute Glossary Terms** — Add new terms with a definition and category.
-- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, and Profile pages.
+- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, and My Articles pages.
 
 ### Author Capabilities (Owner)
-- **Edit Article** — Update any article you created.
+- **Edit Article** — Update any article you created. Choose to save as draft or publish directly from the edit page.
 - **Delete Article** — Remove any article you created.
 - **Delete Comments** — Remove your own comments.
 - **Delete Glossary Terms** — Remove glossary terms you contributed.
@@ -40,16 +44,21 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Edit Profile** — Update username, email, and profile picture URL.
 - **Username Change Lock** — Username changes are locked for 30 days after each change.
 - **Change Password** — Securely update your password with confirmation validation.
-- **My Articles** — View, edit, and delete all your published articles from your profile page.
+- **Stats Overview** — At-a-glance count of published articles, saved drafts, and total likes received.
 
 ### UI/UX
+- **Reading Progress Bar** — Thin orange bar at the top of the viewport that fills as you scroll through an article.
+- **Smart Paginator** — Catalog pagination shows ellipsis for large page counts (e.g. `1 … 4 5 6 … 20`).
+- **Trending This Week** — Home page section showing the 3 most-liked articles from the past 7 days.
 - **Custom Confirmation Modals** — All delete actions use a styled, context-aware modal.
 - **Scroll to Top Button** — Appears after scrolling 300px, smoothly returns to the top.
-- **Live Bitcoin Price** — Real-time BTC/USDT ticker in the header, updated every 5 seconds.
+- **Live Bitcoin Price** — Real-time BTC/USDT ticker in the sidebar, updated every 5 seconds.
 - **Bitcoin Stats Bar** — Live 24h price change, market cap, BTC dominance, and 24h volume.
 - **Halving Countdown** — Live countdown timer to the next Bitcoin halving event.
+- **Fear & Greed Index** — Live market sentiment widget powered by CoinStats.
 - **Loading Spinners** — Bitcoin-themed spinner shown during all async data fetches.
 - **Toast Notifications** — Fixed-position success notifications visible regardless of scroll position.
+- **Form Loading States** — All submit buttons disable and show feedback text while requests are in flight.
 
 ---
 
@@ -66,7 +75,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | Database | MongoDB via Mongoose |
 | Authentication | JWT + bcrypt |
 | Styling | Pure CSS (no frameworks) |
-| Live Market Data | Binance API, CoinGecko API |
+| Live Market Data | Binance API, CoinGecko API, CoinStats API |
 
 ---
 
@@ -82,7 +91,10 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/articles/create` | Create Article | Authenticated |
 | `/articles/:id/edit` | Edit Article | Owner only |
 | `/glossary` | Bitcoin Glossary | Public |
+| `/users/:id` | Public Author Profile | Public |
 | `/profile` | User Profile & Settings | Authenticated |
+| `/my-articles` | My Articles Manager | Authenticated |
+| `/bookmarks` | Saved Bookmarks | Authenticated |
 | `*` | 404 Not Found | Public |
 
 ---
