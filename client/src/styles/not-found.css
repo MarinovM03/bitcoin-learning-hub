@@ -23,17 +23,108 @@
     z-index: 0;
 }
 
+.not-found-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    top: -60px;
+    color: var(--btc-orange);
+    font-weight: 700;
+    opacity: 0;
+    animation: particleFall linear infinite;
+    user-select: none;
+}
+
+.particle:nth-child(1) {
+    left: 3%;
+    font-size: 1.6rem;
+    animation-duration: 8s;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    left: 15%;
+    font-size: 1.2rem;
+    animation-duration: 11s;
+    animation-delay: 2s;
+}
+
+.particle:nth-child(3) {
+    left: 28%;
+    font-size: 1.8rem;
+    animation-duration: 9s;
+    animation-delay: 5s;
+}
+
+.particle:nth-child(4) {
+    left: 42%;
+    font-size: 1.3rem;
+    animation-duration: 13s;
+    animation-delay: 1s;
+}
+
+.particle:nth-child(5) {
+    left: 57%;
+    font-size: 1.5rem;
+    animation-duration: 10s;
+    animation-delay: 3.5s;
+}
+
+.particle:nth-child(6) {
+    left: 71%;
+    font-size: 1.1rem;
+    animation-duration: 12s;
+    animation-delay: 6s;
+}
+
+.particle:nth-child(7) {
+    left: 85%;
+    font-size: 1.4rem;
+    animation-duration: 7s;
+    animation-delay: 1.5s;
+}
+
+@keyframes particleFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.22;
+    }
+    90% {
+        opacity: 0.22;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
 .not-found-symbol {
-    font-size: 5rem;
+    font-size: 10rem;
     font-weight: 700;
     color: var(--btc-orange);
     line-height: 1;
     margin-bottom: 1rem;
     position: relative;
     z-index: 1;
-    opacity: 0.15;
+    opacity: 0.2;
     letter-spacing: -2px;
     user-select: none;
+    animation: btcPulse 4s ease-in-out infinite;
+}
+
+@keyframes btcPulse {
+    0%   { opacity: 0.1; transform: scale(1); text-shadow: none; }
+    50%  { opacity: 0.7; transform: scale(1.25); text-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(247, 147, 26, 0.4); }
+    100% { opacity: 0.1; transform: scale(1); text-shadow: none; }
 }
 
 .not-found-code {
@@ -44,7 +135,7 @@
     letter-spacing: -4px;
     position: relative;
     z-index: 1;
-    margin-top: -2.5rem;
+    margin-top: -4.5rem;
     background: linear-gradient(to bottom, white 40%, rgba(255,255,255,0.15));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -126,6 +217,37 @@
     justify-content: center;
     position: relative;
     z-index: 1;
+}
+
+.not-found-fact {
+    margin-top: 3rem;
+    max-width: 480px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--btc-orange);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.not-found-fact-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--btc-orange);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.not-found-fact-text {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
 }
 
 @media (max-width: 480px) {

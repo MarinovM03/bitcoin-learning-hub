@@ -1,10 +1,21 @@
 import { Link } from "react-router";
+import { getRandomFact } from "../../utils/bitcoinFacts";
 
 export default function NotFound() {
     return (
         <section className="page-content">
             <div className="not-found-page">
                 <div className="not-found-glow" />
+
+                <div className="not-found-particles">
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                    <span className="particle">₿</span>
+                </div>
 
                 <div className="not-found-symbol">₿</div>
 
@@ -13,7 +24,7 @@ export default function NotFound() {
                 <h1 className="not-found-title">Block Not Found</h1>
 
                 <p className="not-found-message">
-                    This block was never mined. The page you're looking for 
+                    This block was never mined. The page you're looking for
                     doesn't exist or was never added to the chain in the first place.
                 </p>
 
@@ -41,6 +52,11 @@ export default function NotFound() {
                     <Link to="/articles" className="btn-hero-secondary">
                         Browse Articles
                     </Link>
+                </div>
+
+                <div className="not-found-fact">
+                    <span className="not-found-fact-label">⚡ Did you know?</span>
+                    <p className="not-found-fact-text">{getRandomFact()}</p>
                 </div>
             </div>
         </section>
