@@ -13,8 +13,8 @@ export default function NotFound() {
                 <h1 className="not-found-title">Block Not Found</h1>
 
                 <p className="not-found-message">
-                    This block was never mined. The page you're looking for
-                    doesn't exist, has been removed, or never made it onto the chain.
+                    This block was never mined. The page you're looking for 
+                    doesn't exist or was never added to the chain in the first place.
                 </p>
 
                 <div className="not-found-meta">
