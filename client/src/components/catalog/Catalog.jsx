@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router";
 import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
+import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { getReadingTime } from '../../utils/readingTime';
 import { formatViews } from '../../utils/formatters';
 
@@ -19,17 +20,12 @@ const getPaginationPages = (current, total) => {
     }
 
     const pages = [];
-
     pages.push(1);
-
     if (current > 3) pages.push('...');
-
     for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
         pages.push(p);
     }
-
     if (current < total - 2) pages.push('...');
-
     pages.push(total);
 
     return pages;
@@ -40,6 +36,7 @@ export default function Catalog() {
 
     const search = searchParams.get('search') || '';
     const activeCategory = searchParams.get('category') || 'All';
+    const activeDifficulty = searchParams.get('difficulty') || 'All';
     const sort = searchParams.get('sort') || 'latest';
     const page = parseInt(searchParams.get('page') || '1');
 
@@ -51,7 +48,8 @@ export default function Catalog() {
 
     useEffect(() => {
         setIsLoading(true);
-        articleService.getAll({ page, limit: ITEMS_PER_PAGE, sort, search, category: activeCategory })
+        setError('');
+        articleService.getAll({ page, limit: ITEMS_PER_PAGE, sort, search, category: activeCategory, difficulty: activeDifficulty })
             .then(result => {
                 setArticles(result.articles);
                 setTotalPages(result.totalPages);
@@ -62,7 +60,7 @@ export default function Catalog() {
                 console.error(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [page, sort, search, activeCategory]);
+    }, [page, sort, search, activeCategory, activeDifficulty]);
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(searchParams);
@@ -118,6 +116,18 @@ export default function Catalog() {
                 ))}
             </div>
 
+            <div className="catalog-difficulty-tabs">
+                {["All", ...ARTICLE_DIFFICULTIES].map(d => (
+                    <button
+                        key={d}
+                        className={`catalog-difficulty-tab catalog-difficulty-tab--${d.toLowerCase()} ${activeDifficulty === d ? 'catalog-difficulty-tab--active' : ''}`}
+                        onClick={() => setParam('difficulty', d)}
+                    >
+                        {d}
+                    </button>
+                ))}
+            </div>
+
             {error && <p className="catalog-error">{error}</p>}
 
             {isLoading ? (
@@ -142,6 +152,11 @@ export default function Catalog() {
                                         onError={handleImgError}
                                     />
                                     <span className="catalog-card-category">{article.category}</span>
+                                    {article.difficulty && (
+                                        <span className={`catalog-card-difficulty catalog-card-difficulty--${article.difficulty.toLowerCase()}`}>
+                                            {article.difficulty}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="catalog-card-body">
                                     <h3 className="catalog-card-title">{article.title}</h3>
