@@ -158,6 +158,11 @@ export default function Details() {
                     <div className="details-main">
                         <div className="details-meta-row">
                             <span className="category-tag">{article.category}</span>
+                            {article.difficulty && (
+                                <span className={`difficulty-badge difficulty-badge--${article.difficulty.toLowerCase()}`}>
+                                    {article.difficulty}
+                                </span>
+                            )}
                             <span className="details-reading-time">
                                 {getReadingTime(article.content)} min read
                             </span>
@@ -218,6 +223,12 @@ export default function Details() {
                             <div className="details-info-row">
                                 <span className="details-info-label">Category</span>
                                 <span className="details-info-value">{article.category}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label">Difficulty</span>
+                                <span className={`difficulty-badge difficulty-badge--${article.difficulty?.toLowerCase()}`}>
+                                    {article.difficulty || 'Beginner'}
+                                </span>
                             </div>
                             <div className="details-info-row">
                                 <span className="details-info-label">Views</span>

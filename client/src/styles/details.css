@@ -437,3 +437,31 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+.difficulty-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.difficulty-badge--beginner {
+    background-color: rgba(46, 204, 113, 0.12);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.25);
+}
+
+.difficulty-badge--intermediate {
+    background-color: rgba(230, 168, 23, 0.12);
+    color: #e6a817;
+    border: 1px solid rgba(230, 168, 23, 0.25);
+}
+
+.difficulty-badge--advanced {
+    background-color: rgba(231, 76, 60, 0.12);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.25);
+}
