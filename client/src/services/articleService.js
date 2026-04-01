@@ -3,10 +3,11 @@ import * as request from "../utils/requester";
 const baseUrl = `${import.meta.env.VITE_API_URL}/articles`;
 const usersUrl = `${import.meta.env.VITE_API_URL}/users`;
 
-export const getAll = async ({ page = 1, limit = 12, sort = 'latest', search = '', category = '' } = {}) => {
+export const getAll = async ({ page = 1, limit = 12, sort = 'latest', search = '', category = '', difficulty = '' } = {}) => {
     const params = new URLSearchParams({ page, limit, sort });
     if (search.trim()) params.set('search', search.trim());
     if (category && category !== 'All') params.set('category', category);
+    if (difficulty && difficulty !== 'All') params.set('difficulty', difficulty);
 
     const result = await request.get(`${baseUrl}?${params.toString()}`);
     return result;

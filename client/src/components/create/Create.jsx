@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import * as articleService from '../../services/articleService';
 import { useState } from 'react';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
+import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 
 export default function Create() {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Create() {
     const [formValues, setFormValues] = useState({
         title: '',
         category: '',
+        difficulty: 'Beginner',
         imageUrl: '',
         summary: '',
         content: '',
@@ -101,6 +103,22 @@ export default function Create() {
                                 <option key={cat} value={cat}>{cat}</option>
                             ))}
                         </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Difficulty</label>
+                        <div className="difficulty-toggle">
+                            {ARTICLE_DIFFICULTIES.map(d => (
+                                <button
+                                    key={d}
+                                    type="button"
+                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${formValues.difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
+                                    onClick={() => setFormValues(state => ({ ...state, difficulty: d }))}
+                                >
+                                    {d}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="form-group">
