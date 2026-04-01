@@ -38,6 +38,7 @@ export default function Details() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [relatedArticles, setRelatedArticles] = useState([]);
     const [readProgress, setReadProgress] = useState(0);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const onScroll = () => {
@@ -111,6 +112,13 @@ export default function Details() {
         } catch (err) {
             console.log("Bookmark failed", err);
         }
+    };
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+        });
     };
 
     if (isLoading) return <Spinner />;
@@ -245,6 +253,13 @@ export default function Details() {
                                 </span>
                             </div>
                         </div>
+
+                        <button
+                            className={`btn-copy-link ${copied ? 'btn-copy-link--copied' : ''}`}
+                            onClick={handleCopyLink}
+                        >
+                            {copied ? '✅ Link Copied!' : '🔗 Copy Link'}
+                        </button>
 
                         {relatedArticles.length > 0 && (
                             <div className="details-related-panel">
