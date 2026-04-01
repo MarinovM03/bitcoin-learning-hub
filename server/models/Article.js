@@ -11,6 +11,11 @@ const articleSchema = new mongoose.Schema({
         required: true,
         enum: ['Basics', 'Technology', 'Economics', 'Security', 'History', 'Trading', 'Mining', 'Regulation', 'Culture'],
     },
+    difficulty: {
+        type: String,
+        enum: ['Beginner', 'Intermediate', 'Advanced'],
+        default: 'Beginner',
+    },
     imageUrl: {
         type: String,
         required: true,

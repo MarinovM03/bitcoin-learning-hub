@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
     try {
-        const { limit, sort, page, search, category } = req.query;
+        const { limit, sort, page, search, category, difficulty } = req.query;
 
         const pageNum = parseInt(page) || 1;
         const limitNum = parseInt(limit) || 12;
@@ -21,6 +21,9 @@ export const getAll = async (req, res) => {
         }
         if (category && category !== 'All') {
             filter.category = category;
+        }
+        if (difficulty && difficulty !== 'All') {
+            filter.difficulty = difficulty;
         }
 
         const [articles, total] = await Promise.all([
@@ -45,11 +48,12 @@ export const getMyArticles = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { title, category, imageUrl, summary, content, status } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status } = req.body;
 
         const newArticle = await Article.create({
             title,
             category,
+            difficulty: difficulty || 'Beginner',
             imageUrl,
             summary,
             content,
@@ -153,16 +157,15 @@ export const getPublicProfile = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { articleId } = req.params;
-        const { title, category, imageUrl, summary, content, status } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(articleId)) {
             return res.status(404).json({ message: "Article not found" });
         }
 
         const updateData = { title, category, imageUrl, summary, content };
-        if (status === 'draft' || status === 'published') {
-            updateData.status = status;
-        }
+        if (difficulty) updateData.difficulty = difficulty;
+        if (status === 'draft' || status === 'published') updateData.status = status;
 
         const updatedArticle = await Article.findOneAndUpdate(
             { _id: articleId, _ownerId: req.user._id },
