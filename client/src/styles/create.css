@@ -87,3 +87,99 @@
     text-transform: none;
     margin-left: auto;
 }
+
+.difficulty-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.difficulty-toggle-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Exo 2', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.difficulty-toggle-btn--beginner {
+    border-color: rgba(46, 204, 113, 0.3);
+    color: rgba(46, 204, 113, 0.5);
+}
+
+.difficulty-toggle-btn--intermediate {
+    border-color: rgba(230, 168, 23, 0.3);
+    color: rgba(230, 168, 23, 0.5);
+}
+
+.difficulty-toggle-btn--advanced {
+    border-color: rgba(231, 76, 60, 0.3);
+    color: rgba(231, 76, 60, 0.5);
+}
+
+.difficulty-toggle-btn:hover {
+    filter: brightness(1.3);
+    border-color: inherit;
+}
+
+.difficulty-toggle-btn--beginner.difficulty-toggle-btn--active {
+    background-color: rgba(46, 204, 113, 0.12);
+    border-color: #2ecc71;
+    color: #2ecc71;
+}
+
+.difficulty-toggle-btn--intermediate.difficulty-toggle-btn--active {
+    background-color: rgba(230, 168, 23, 0.12);
+    border-color: #e6a817;
+    color: #e6a817;
+}
+
+.difficulty-toggle-btn--advanced.difficulty-toggle-btn--active {
+    background-color: rgba(231, 76, 60, 0.12);
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+.create-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.create-actions .btn-submit {
+    flex: 1;
+}
+
+.btn-save-draft {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Exo 2', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-save-draft:hover:not(:disabled) {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}
+
+.btn-save-draft:disabled,
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

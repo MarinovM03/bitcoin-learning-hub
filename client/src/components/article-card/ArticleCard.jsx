@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { getReadingTime } from "../../utils/readingTime";
 import { formatViews } from "../../utils/formatters";
 import { handleImgError } from "../../utils/imageHelpers";
 
@@ -27,7 +26,7 @@ export default function ArticleCard({ article, readLabel = "Read Article →" })
                 <h3 className="catalog-card-title">{article.title}</h3>
                 <p className="catalog-card-summary">{article.summary}</p>
                 <div className="catalog-card-footer">
-                    <span className="catalog-card-meta">{getReadingTime(article.content)} min read</span>
+                    <span className="catalog-card-meta">{article.readingTime ?? 1} min read</span>
                     <span className="catalog-card-meta">{formatViews(article.views ?? 0)} views</span>
                     <span className="catalog-card-read">{readLabel}</span>
                 </div>
