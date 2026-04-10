@@ -499,3 +499,86 @@
     border-color: var(--success-color);
     color: var(--success-color);
 }
+
+.details-share-panel {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.details-share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.btn-share {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.btn-share:hover {
+    border-color: white;
+    color: white;
+}
+
+.btn-share-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.btn-share--copy:hover {
+    border-color: white;
+    color: white;
+}
+
+.btn-share--copied {
+    border-color: var(--success-color) !important;
+    color: var(--success-color) !important;
+    background-color: rgba(46, 204, 113, 0.08);
+}
+
+.btn-share--twitter:hover {
+    border-color: #000;
+    color: #000;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.btn-share--facebook:hover {
+    border-color: #1877f2;
+    color: #1877f2;
+    background-color: rgba(24, 119, 242, 0.08);
+}
+
+.btn-share--linkedin:hover {
+    border-color: #0a66c2;
+    color: #0a66c2;
+    background-color: rgba(10, 102, 194, 0.08);
+}
+
+.btn-share--native:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+}
