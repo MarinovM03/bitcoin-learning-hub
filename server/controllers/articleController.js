@@ -3,6 +3,12 @@ import Like from '../models/Like.js';
 import User from '../models/User.js';
 import mongoose from 'mongoose';
 
+const calculateReadingTime = (content) => {
+    if (!content) return 1;
+    const wordCount = content.trim().split(/\s+/).length;
+    return Math.max(1, Math.round(wordCount / 200));
+};
+
 export const getAll = async (req, res) => {
     try {
         const { limit, sort, page, search, category, difficulty } = req.query;
@@ -57,6 +63,7 @@ export const create = async (req, res) => {
             imageUrl,
             summary,
             content,
+            readingTime: calculateReadingTime(content),
             status: status === 'draft' ? 'draft' : 'published',
             _ownerId: req.user._id
         });
@@ -86,11 +93,17 @@ export const getOne = async (req, res) => {
             return res.status(404).json({ message: "Article not found" });
         }
 
+        const shouldIncrementView = !isOwner && !hasViewedRecently(req, articleId);
+
         const article = await Article.findByIdAndUpdate(
             articleId,
-            isOwner ? {} : { $inc: { views: 1 } },
+            shouldIncrementView ? { $inc: { views: 1 } } : {},
             { new: true }
         ).populate('_ownerId', 'username profilePicture');
+
+        if (shouldIncrementView) {
+            recordView(req, articleId);
+        }
 
         res.json(article);
     } catch (error) {
@@ -164,6 +177,7 @@ export const update = async (req, res) => {
         }
 
         const updateData = { title, category, imageUrl, summary, content };
+        if (content) updateData.readingTime = calculateReadingTime(content);
         if (difficulty) updateData.difficulty = difficulty;
         if (status === 'draft' || status === 'published') updateData.status = status;
 
@@ -241,4 +255,28 @@ export const getTrending = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+const recentViews = new Map();
+const VIEW_TTL_MS = 24 * 60 * 60 * 1000;
+
+const getViewerKey = (req, articleId) => {
+    const viewer = req.user ? req.user._id : (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
+    return `${viewer}:${articleId}`;
+};
+
+const hasViewedRecently = (req, articleId) => {
+    const key = getViewerKey(req, articleId);
+    const expiry = recentViews.get(key);
+    if (!expiry) return false;
+    if (Date.now() > expiry) {
+        recentViews.delete(key);
+        return false;
+    }
+    return true;
+};
+
+const recordView = (req, articleId) => {
+    const key = getViewerKey(req, articleId);
+    recentViews.set(key, Date.now() + VIEW_TTL_MS);
 };

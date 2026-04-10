@@ -30,6 +30,10 @@ const articleSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    readingTime: {
+        type: Number,
+        default: 1,
+    },
     views: {
         type: Number,
         default: 0,
