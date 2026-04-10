@@ -11,11 +11,7 @@ const bookmarkSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+}, { timestamps: true });
 
 bookmarkSchema.index({ articleId: 1, _ownerId: 1 }, { unique: true });
 
