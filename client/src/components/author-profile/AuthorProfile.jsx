@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
-import { formatViews } from '../../utils/formatters';
-import { getReadingTime } from '../../utils/readingTime';
+import ArticleCard from "../article-card/ArticleCard";
+import { handleImgError } from "../../utils/imageHelpers";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-const handleImgError = (e) => {
-    e.target.onerror = null;
-    e.target.classList.add('img-fallback');
-    e.target.removeAttribute('src');
-};
 
 export default function AuthorProfile() {
     const { userId } = useParams();
@@ -66,30 +60,11 @@ export default function AuthorProfile() {
                 ) : (
                     <div className="catalog-grid">
                         {articles.map(article => (
-                            <Link
+                            <ArticleCard
                                 key={article._id}
-                                to={`/articles/${article._id}/details`}
-                                className="catalog-card"
-                            >
-                                <div className="catalog-card-img-wrap">
-                                    <img
-                                        src={article.imageUrl}
-                                        alt={article.title}
-                                        className="catalog-card-img"
-                                        onError={handleImgError}
-                                    />
-                                    <span className="catalog-card-category">{article.category}</span>
-                                </div>
-                                <div className="catalog-card-body">
-                                    <h3 className="catalog-card-title">{article.title}</h3>
-                                    <p className="catalog-card-summary">{article.summary}</p>
-                                    <div className="catalog-card-footer">
-                                        <span className="catalog-card-meta">{getReadingTime(article.content)} min read</span>
-                                        <span className="catalog-card-meta">{formatViews(article.views ?? 0)} views</span>
-                                        <span className="catalog-card-read">Read →</span>
-                                    </div>
-                                </div>
-                            </Link>
+                                article={article}
+                                readLabel="Read →"
+                            />
                         ))}
                     </div>
                 )}
