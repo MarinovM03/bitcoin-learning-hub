@@ -21,6 +21,7 @@
 @import 'fear-greed-widget.css';
 @import "author-profile.css";
 @import 'my-articles.css';
+@import "article-card.css";
 
 :root {
     --btc-orange: #F7931A;
