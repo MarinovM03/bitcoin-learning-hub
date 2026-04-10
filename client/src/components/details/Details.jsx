@@ -7,8 +7,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
-import { getReadingTime } from '../../utils/readingTime';
 import { formatViews } from '../../utils/formatters';
+import { handleImgError } from '../../utils/imageHelpers';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -19,11 +19,6 @@ function formatDate(dateString) {
 }
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-const handleImgError = (e) => {
-    e.target.onerror = null;
-    e.target.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
-};
 
 export default function Details() {
     const navigate = useNavigate();
@@ -172,7 +167,7 @@ export default function Details() {
                                 </span>
                             )}
                             <span className="details-reading-time">
-                                {getReadingTime(article.content)} min read
+                                {article.readingTime ?? 1} min read
                             </span>
                         </div>
 
