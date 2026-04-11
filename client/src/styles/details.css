@@ -582,3 +582,19 @@
     color: var(--btc-orange);
     background-color: var(--btc-orange-dim);
 }
+
+.details-back-to-top {
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.details-back-to-top:hover {
+    color: var(--btc-orange);
+}

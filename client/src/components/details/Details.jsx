@@ -203,6 +203,13 @@ export default function Details() {
                             </div>
                         )}
 
+                        <a
+                            className="details-back-to-top"
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        >
+                            ↑ Back to top
+                        </a>
+
                         <CommentsSection
                             articleId={articleId}
                             articleOwnerId={String(ownerId)}
