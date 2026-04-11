@@ -181,6 +181,9 @@ export default function Details() {
                             <span className="details-reading-time">
                                 {article.readingTime ?? 1} min read
                             </span>
+                            <span className="details-reading-time">
+                                {article.content?.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} words
+                            </span>
                         </div>
 
                         <p className="details-summary">{article.summary}</p>
