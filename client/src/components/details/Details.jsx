@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
+import QuizSection from "../quiz/QuizSection";
 import { formatViews } from '../../utils/formatters';
 import { handleImgError } from '../../utils/imageHelpers';
 
@@ -212,6 +213,8 @@ export default function Details() {
                         >
                             ↑ Back to top
                         </a>
+
+                        <QuizSection quiz={article.quiz} />
 
                         <CommentsSection
                             articleId={articleId}
