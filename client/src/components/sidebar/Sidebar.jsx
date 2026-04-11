@@ -10,7 +10,15 @@ export default function Sidebar() {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
 
-    const isActive = (path) => location.pathname === path ? "sidebar-link active" : "sidebar-link";
+    const isActive = (path) => {
+        if (path === '/') return location.pathname === '/' ? 'sidebar-link active' : 'sidebar-link';
+        if (path === '/articles') {
+            const articleSubRoutes = ['/articles/create', '/my-articles'];
+            if (articleSubRoutes.some(r => location.pathname.startsWith(r))) return 'sidebar-link';
+            return location.pathname.startsWith('/articles') ? 'sidebar-link active' : 'sidebar-link';
+        }
+        return location.pathname.startsWith(path) ? 'sidebar-link active' : 'sidebar-link';
+    };
 
     const closeSidebar = () => setIsOpen(false);
 
