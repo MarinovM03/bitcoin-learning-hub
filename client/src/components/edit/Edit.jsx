@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import QuizBuilder from '../quiz-builder/QuizBuilder';
 
 export default function Edit() {
     const navigate = useNavigate();
@@ -19,12 +20,14 @@ export default function Edit() {
         summary: '',
         content: '',
     });
+    const [quiz, setQuiz] = useState([]);
 
     useEffect(() => {
         articleService.getOne(articleId)
             .then(result => {
                 setFormValues(result);
                 setCurrentStatus(result.status || 'published');
+                setQuiz(result.quiz || []);
             })
             .catch(() => navigate('/not-found'));
     }, [articleId, navigate]);
@@ -66,7 +69,7 @@ export default function Edit() {
 
         setIsSubmitting(true);
         try {
-            await articleService.edit(articleId, { ...formValues, status });
+            await articleService.edit(articleId, { ...formValues, status, quiz });
             if (status === 'draft') {
                 navigate('/my-articles');
             } else {
@@ -175,6 +178,8 @@ export default function Edit() {
                             onChange={changeHandler}
                         />
                     </div>
+
+                    <QuizBuilder quiz={quiz} onChange={setQuiz} />
 
                     {error && <p className="field-error">{error}</p>}
 

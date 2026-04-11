@@ -3,6 +3,7 @@ import * as articleService from '../../services/articleService';
 import { useState } from 'react';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import QuizBuilder from '../quiz-builder/QuizBuilder';
 
 export default function Create() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function Create() {
         summary: '',
         content: '',
     });
+    const [quiz, setQuiz] = useState([]);
 
     const changeHandler = (e) => {
         setFormValues((state) => ({
@@ -55,7 +57,7 @@ export default function Create() {
 
         setIsSubmitting(true);
         try {
-            await articleService.create({ ...formValues, status });
+            await articleService.create({ ...formValues, status, quiz });
             if (status === 'draft') {
                 navigate('/my-articles');
             } else {
@@ -164,6 +166,8 @@ export default function Create() {
                             onChange={changeHandler}
                         />
                     </div>
+
+                    <QuizBuilder quiz={quiz} onChange={setQuiz} />
 
                     {error && <p className="field-error">{error}</p>}
 
