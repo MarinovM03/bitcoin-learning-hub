@@ -54,7 +54,7 @@ export const getMyArticles = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { title, category, difficulty, imageUrl, summary, content, status } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status, quiz } = req.body;
 
         const newArticle = await Article.create({
             title,
@@ -65,6 +65,7 @@ export const create = async (req, res) => {
             content,
             readingTime: calculateReadingTime(content),
             status: status === 'draft' ? 'draft' : 'published',
+            quiz: Array.isArray(quiz) ? quiz : [],
             _ownerId: req.user._id
         });
 
@@ -170,7 +171,7 @@ export const getPublicProfile = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { articleId } = req.params;
-        const { title, category, difficulty, imageUrl, summary, content, status } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status, quiz } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(articleId)) {
             return res.status(404).json({ message: "Article not found" });
@@ -180,6 +181,7 @@ export const update = async (req, res) => {
         if (content) updateData.readingTime = calculateReadingTime(content);
         if (difficulty) updateData.difficulty = difficulty;
         if (status === 'draft' || status === 'published') updateData.status = status;
+        if (Array.isArray(quiz)) updateData.quiz = quiz;
 
         const updatedArticle = await Article.findOneAndUpdate(
             { _id: articleId, _ownerId: req.user._id },

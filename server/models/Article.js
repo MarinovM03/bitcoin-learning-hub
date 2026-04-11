@@ -43,6 +43,14 @@ const articleSchema = new mongoose.Schema({
         enum: ['draft', 'published'],
         default: 'published',
     },
+    quiz: [{
+        question: { type: String, required: true },
+        options: {
+            type: [String],
+            validate: { validator: v => v.length === 4, message: 'Each question must have exactly 4 options.' }
+        },
+        correctIndex: { type: Number, min: 0, max: 3, required: true },
+    }],
     _ownerId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
