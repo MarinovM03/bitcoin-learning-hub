@@ -22,6 +22,7 @@
 @import "author-profile.css";
 @import 'my-articles.css';
 @import "article-card.css";
+@import "quiz.css";
 
 :root {
     --btc-orange: #F7931A;
