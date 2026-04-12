@@ -21,6 +21,7 @@ import Bookmarks from "./components/bookmarks/Bookmarks";
 import AuthorProfile from "./components/author-profile/AuthorProfile";
 import MyArticles from "./components/my-articles/MyArticles";
 import DcaCalculator from "./components/dca-calculator/DcaCalculator";
+import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer";
 
 function App() {
     return (
@@ -37,6 +38,7 @@ function App() {
                     <Route path="/users/:userId" element={<AuthorProfile />} />
                     <Route path="/glossary" element={<Glossary />} />
                     <Route path="/dca" element={<DcaCalculator />} />
+                    <Route path="/mempool" element={<MempoolVisualizer />} />
 
                     <Route element={<AuthGuard />}>
                         <Route path="/articles/create" element={<Create />} />

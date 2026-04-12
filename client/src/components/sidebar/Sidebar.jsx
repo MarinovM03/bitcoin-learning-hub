@@ -78,6 +78,11 @@ export default function Sidebar() {
                         DCA Calculator
                     </Link>
 
+                    <Link to="/mempool" className={isActive("/mempool")} onClick={closeSidebar}>
+                        <span className="sidebar-link-icon">⛓</span>
+                        Mempool
+                    </Link>
+
                     {isAuthenticated && (
                         <>
                             <span className="sidebar-nav-label">My Space</span>
