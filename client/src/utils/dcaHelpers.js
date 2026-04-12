@@ -6,23 +6,23 @@ export const FREQUENCY_OPTIONS = [
 
 export const BINANCE_START_DATE = '2017-09-01';
 
-export async function fetchHistoricalPrices(startDate) {
+export async function fetchHistoricalPrices(startDate, signal) {
     const startMs = new Date(startDate).getTime();
     const endMs = Date.now();
 
-    let allKlines = [];
+    const allKlines = [];
     let currentStart = startMs;
 
     while (currentStart < endMs) {
         const url = `https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${currentStart}&endTime=${endMs}&limit=1000`;
-        const res = await fetch(url);
+        const res = await fetch(url, { signal });
 
         if (!res.ok) throw new Error('Failed to fetch price data from Binance.');
 
         const klines = await res.json();
         if (!klines.length) break;
 
-        allKlines = allKlines.concat(klines);
+        allKlines.push(...klines);
 
         if (klines.length < 1000) break;
         currentStart = klines[klines.length - 1][6] + 1;
