@@ -119,7 +119,7 @@ export default function MempoolVisualizer() {
         const txFees = txs.map(tx => tx.fee);
         const minFee = Math.min(...txFees);
         const maxFee = Math.max(...txFees);
-        const slots  = MAX_BUBBLES - bubblesRef.current.length;
+        const slots = MAX_BUBBLES - bubblesRef.current.length;
         if (slots <= 0) return;
 
         const fresh = [];
@@ -129,22 +129,30 @@ export default function MempoolVisualizer() {
             seenRef.current.add(tx.txid);
             fresh.push(buildBubble(tx, w, CANVAS_HEIGHT, minFee, maxFee));
         }
+
+        if (seenRef.current.size > 500) seenRef.current.clear();
+
         bubblesRef.current = [...bubblesRef.current, ...fresh];
     };
 
     useEffect(() => {
+        const controller = new AbortController();
+        const { signal } = controller;
+
         const loadAll = async () => {
             try {
                 const [statsData, txsData, feesData] = await Promise.all([
-                    fetchMempoolStats(),
-                    fetchRecentTxs(),
-                    fetchRecommendedFees(),
+                    fetchMempoolStats(signal),
+                    fetchRecentTxs(signal),
+                    fetchRecommendedFees(signal),
                 ]);
                 setStats(statsData);
                 setFees(feesData);
                 addBubbles(txsData);
-            } catch {
-                setError('Could not connect to mempool.space. Check your connection and try refreshing.');
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    setError('Could not connect to mempool.space. Check your connection and try refreshing.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -154,42 +162,63 @@ export default function MempoolVisualizer() {
 
         const statsTimer = setInterval(async () => {
             try {
-                const [statsData, feesData] = await Promise.all([fetchMempoolStats(), fetchRecommendedFees()]);
+                const [statsData, feesData] = await Promise.all([
+                    fetchMempoolStats(signal),
+                    fetchRecommendedFees(signal),
+                ]);
                 setStats(statsData);
                 setFees(feesData);
-            } catch {}
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.warn('Failed to refresh mempool stats — displaying last known data.');
+                }
+            }
         }, REFRESH_STATS);
 
         const txTimer = setInterval(async () => {
             try {
-                const txs = await fetchRecentTxs();
+                const txs = await fetchRecentTxs(signal);
                 addBubbles(txs);
-            } catch {}
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.warn('Failed to refresh transactions — visualization may be stale.');
+                }
+            }
         }, REFRESH_TXS);
 
         return () => {
+            controller.abort();
             clearInterval(statsTimer);
             clearInterval(txTimer);
         };
     }, []);
 
+    const mouseMoveRafRef = useRef(null);
+
     const handleMouseMove = (e) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
+        if (mouseMoveRafRef.current) return;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
 
-        let found = null;
-        for (const b of [...bubblesRef.current].reverse()) {
-            const dx = b.x - mx;
-            const dy = b.y - my;
-            if (Math.sqrt(dx * dx + dy * dy) <= b.radius) { found = b; break; }
-        }
+        mouseMoveRafRef.current = requestAnimationFrame(() => {
+            mouseMoveRafRef.current = null;
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            const mx = clientX - rect.left;
+            const my = clientY - rect.top;
 
-        bubblesRef.current.forEach(b => { b.hovered = b === found; });
-        setHovered(found ? { ...found } : null);
-        if (found) setTipPos({ x: e.clientX, y: e.clientY });
+            let found = null;
+            for (const b of [...bubblesRef.current].reverse()) {
+                const dx = b.x - mx;
+                const dy = b.y - my;
+                if (Math.sqrt(dx * dx + dy * dy) <= b.radius) { found = b; break; }
+            }
+
+            bubblesRef.current.forEach(b => { b.hovered = b === found; });
+            setHovered(found ? { ...found } : null);
+            if (found) setTipPos({ x: clientX, y: clientY });
+        });
     };
 
     const handleMouseLeave = () => {
