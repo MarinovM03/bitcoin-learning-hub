@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
@@ -68,7 +69,6 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
         <div className="comments-section">
             {deleteTarget && (
                 <ConfirmModal
-                    icon="💬"
                     title="Delete Comment?"
                     message="You are about to delete your comment."
                     subMessage="This action cannot be undone."
@@ -142,9 +142,9 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
                                             <button
                                                 className="comment-delete-btn"
                                                 onClick={() => setDeleteTarget(comment._id)}
-                                                title="Delete comment"
+                                                aria-label="Delete comment"
                                             >
-                                                ✕
+                                                <X size={14} strokeWidth={2.25} />
                                             </button>
                                         )}
                                     </div>

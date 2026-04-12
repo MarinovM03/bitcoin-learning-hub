@@ -93,7 +93,9 @@
 }
 
 .username-locked-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     margin-left: 8px;
     background-color: var(--danger-dim);
     color: var(--danger-color);
@@ -131,6 +133,9 @@
     border-left: 3px solid #e6a817;
     border-radius: 4px;
     animation: fadeIn 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
 }
 
 .username-change-warning strong {

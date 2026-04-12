@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 
@@ -121,7 +122,10 @@ export default function ProfileForm({ onSaveSuccess }) {
                     <label>
                         Username
                         {usernameLocked && (
-                            <span className="username-locked-badge">🔒 {daysLeft}d</span>
+                            <span className="username-locked-badge">
+                                <Lock size={12} strokeWidth={2.5} />
+                                {daysLeft}d
+                            </span>
                         )}
                     </label>
                     <input
@@ -141,7 +145,8 @@ export default function ProfileForm({ onSaveSuccess }) {
                         </p>
                     ) : usernameWarningVisible ? (
                         <p className="username-change-warning">
-                            ⚠️ Changing locks username for <strong>30 days</strong>.
+                            <AlertCircle size={14} strokeWidth={2.25} />
+                            Changing locks username for <strong>30 days</strong>.
                         </p>
                     ) : null}
                 </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { Search } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
 import ArticleCard from "../article-card/ArticleCard";
@@ -74,7 +75,9 @@ export default function Catalog() {
 
             <div className="catalog-toolbar">
                 <div className="catalog-search-wrap">
-                    <span className="catalog-search-icon">🔍</span>
+                    <span className="catalog-search-icon">
+                        <Search size={16} strokeWidth={2} />
+                    </span>
                     <input
                         type="text"
                         className="catalog-search-input"

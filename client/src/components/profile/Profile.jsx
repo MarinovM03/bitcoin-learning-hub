@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { CheckCircle2, FileText, ArrowRight } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ProfileForm from "../profile-form/ProfileForm";
 import { useAuth } from "../../contexts/AuthContext";
-import { Link } from "react-router";
 
 export default function Profile() {
     const { userId } = useAuth();
@@ -41,7 +42,8 @@ export default function Profile() {
         <section id="profile-page" className="page-content">
             {showToast && (
                 <div className="profile-toast">
-                    ✅ Profile updated successfully!
+                    <CheckCircle2 size={18} strokeWidth={2.25} />
+                    Profile updated successfully!
                 </div>
             )}
 
@@ -64,7 +66,9 @@ export default function Profile() {
                 </div>
 
                 <Link to="/my-articles" className="profile-manage-btn">
-                    📰 Manage My Articles →
+                    <FileText size={16} strokeWidth={2} />
+                    Manage My Articles
+                    <ArrowRight size={16} strokeWidth={2} />
                 </Link>
             </div>
         </section>

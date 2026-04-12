@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { X } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
@@ -31,7 +32,6 @@ export default function GlossaryList({ terms, onTermDeleted }) {
         <>
             {deleteTarget && (
                 <ConfirmModal
-                    icon="📖"
                     title="Remove Glossary Term?"
                     message={`You are about to remove "${deleteTarget.name}" from the glossary.`}
                     subMessage="This action cannot be undone."
@@ -56,9 +56,9 @@ export default function GlossaryList({ terms, onTermDeleted }) {
                                         <button
                                             className="glossary-delete-btn"
                                             onClick={() => setDeleteTarget({ id: term._id, name: term.term })}
-                                            title="Delete term"
+                                            aria-label="Delete term"
                                         >
-                                            ✕
+                                            <X size={14} strokeWidth={2.25} />
                                         </button>
                                     )}
                                 </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { Bookmark } from "lucide-react";
 import * as bookmarkService from "../../services/bookmarkService";
 import Spinner from "../spinner/Spinner";
 
@@ -42,7 +43,9 @@ export default function Bookmarks() {
                     <Spinner />
                 ) : articles.length === 0 ? (
                     <div className="bookmarks-empty">
-                        <p className="bookmarks-empty-icon">🔖</p>
+                        <div className="bookmarks-empty-icon">
+                            <Bookmark size={40} strokeWidth={1.6} />
+                        </div>
                         <h3>No saved articles yet</h3>
                         <p>Bookmark articles while reading to find them here later.</p>
                         <Link to="/articles" className="btn-submit bookmarks-cta">
