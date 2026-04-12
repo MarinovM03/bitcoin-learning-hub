@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pickaxe } from "lucide-react";
 
 // Next halving estimated around April 2028
 const NEXT_HALVING_DATE = new Date("2028-04-18T00:00:00Z");
@@ -26,7 +27,10 @@ export default function HalvingCountdown() {
 
     return (
         <div className="halving-section">
-            <p className="halving-label">⛏ Next Bitcoin Halving</p>
+            <p className="halving-label">
+                <Pickaxe size={14} strokeWidth={2.25} />
+                Next Bitcoin Halving
+            </p>
             <div className="halving-timer">
                 <div className="halving-unit">
                     <span className="halving-number">{timeLeft.days}</span>

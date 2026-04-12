@@ -94,6 +94,9 @@
     color: var(--btc-orange);
     margin-bottom: 1rem;
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
 }
 
 .halving-timer {
@@ -223,9 +226,15 @@
 }
 
 .why-icon {
-    font-size: 1.8rem;
-    display: block;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 0.8rem;
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    border-radius: 10px;
 }
 
 .why-card h3 {

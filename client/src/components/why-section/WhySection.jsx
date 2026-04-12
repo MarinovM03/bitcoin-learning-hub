@@ -1,16 +1,18 @@
+import { BookOpen, Zap, ShieldCheck } from "lucide-react";
+
 const features = [
     {
-        icon: "📖",
+        Icon: BookOpen,
         title: "Community Knowledge",
         description: "Articles written by real enthusiasts and learners — not algorithms. Every post is a piece of genuine Bitcoin education.",
     },
     {
-        icon: "⚡",
+        Icon: Zap,
         title: "Always Up To Date",
         description: "Live price data, market stats, and community-driven content ensure you're never reading yesterday's news.",
     },
     {
-        icon: "🔐",
+        Icon: ShieldCheck,
         title: "Contribute Securely",
         description: "Register, write, edit, and manage your own articles. Your content, your identity, protected by JWT authentication.",
     },
@@ -24,11 +26,13 @@ export default function WhySection() {
                 <div className="section-heading-line" />
             </div>
             <div className="why-cards">
-                {features.map((f, i) => (
-                    <div className="why-card" key={i}>
-                        <span className="why-icon">{f.icon}</span>
-                        <h3>{f.title}</h3>
-                        <p>{f.description}</p>
+                {features.map(({ Icon, title, description }) => (
+                    <div className="why-card" key={title}>
+                        <span className="why-icon">
+                            <Icon size={22} strokeWidth={1.8} />
+                        </span>
+                        <h3>{title}</h3>
+                        <p>{description}</p>
                     </div>
                 ))}
             </div>

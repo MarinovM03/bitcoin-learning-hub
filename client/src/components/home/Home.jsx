@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { BookOpen, Library, LineChart, Network, TrendingUp, Heart } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
@@ -93,7 +94,9 @@ export default function Home() {
                             <p className="hero-visual-label">Explore the Platform</p>
                             <div className="hero-feature-list">
                                 <Link to="/articles" className="hero-feature-item">
-                                    <span className="hero-feature-icon">📚</span>
+                                    <span className="hero-feature-icon">
+                                        <BookOpen size={22} strokeWidth={1.8} />
+                                    </span>
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Articles</span>
                                         <span className="hero-feature-desc">Deep-dive Bitcoin education</span>
@@ -101,7 +104,9 @@ export default function Home() {
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>
                                 <Link to="/glossary" className="hero-feature-item">
-                                    <span className="hero-feature-icon">📖</span>
+                                    <span className="hero-feature-icon">
+                                        <Library size={22} strokeWidth={1.8} />
+                                    </span>
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Glossary</span>
                                         <span className="hero-feature-desc">Every term explained</span>
@@ -109,7 +114,9 @@ export default function Home() {
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>
                                 <Link to="/dca" className="hero-feature-item">
-                                    <span className="hero-feature-icon">📈</span>
+                                    <span className="hero-feature-icon">
+                                        <LineChart size={22} strokeWidth={1.8} />
+                                    </span>
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">DCA Calculator</span>
                                         <span className="hero-feature-desc">Simulate your stacking strategy</span>
@@ -117,7 +124,9 @@ export default function Home() {
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>
                                 <Link to="/mempool" className="hero-feature-item">
-                                    <span className="hero-feature-icon">⛓</span>
+                                    <span className="hero-feature-icon">
+                                        <Network size={22} strokeWidth={1.8} />
+                                    </span>
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Mempool Visualizer</span>
                                         <span className="hero-feature-desc">Live transaction data</span>
@@ -204,7 +213,10 @@ export default function Home() {
             {!isTrendingLoading && trendingArticles.length > 0 && (
                 <div className="trending-section">
                     <div className="section-heading">
-                        <h2>🔥 Trending This Week</h2>
+                        <h2>
+                            <TrendingUp size={22} strokeWidth={2} className="section-heading-icon" />
+                            Trending This Week
+                        </h2>
                         <div className="section-heading-line" />
                     </div>
 
@@ -227,7 +239,8 @@ export default function Home() {
                                     <h3 className="trending-title">{article.title}</h3>
                                     <p className="trending-summary">{article.summary}</p>
                                     <span className="trending-likes">
-                                        ❤️ {article.likeCount} {article.likeCount === 1 ? 'like' : 'likes'} this week
+                                        <Heart size={14} strokeWidth={2} fill="currentColor" />
+                                        {article.likeCount} {article.likeCount === 1 ? 'like' : 'likes'} this week
                                     </span>
                                 </div>
                             </Link>
