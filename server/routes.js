@@ -45,4 +45,16 @@ router.get('/comments/:articleId', commentController.getAllForArticle);
 router.post('/comments', requireAuth, commentController.create);
 router.delete('/comments/:commentId', requireAuth, commentController.remove);
 
+// Proxy routes — server-side fetches to avoid browser CORS/rate-limit issues
+router.get('/proxy/btc-global', async (req, res) => {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/global');
+        if (!response.ok) return res.status(response.status).json({ error: 'CoinGecko request failed' });
+        const data = await response.json();
+        res.json(data);
+    } catch {
+        res.status(502).json({ error: 'Failed to reach CoinGecko' });
+    }
+});
+
 export default router;
