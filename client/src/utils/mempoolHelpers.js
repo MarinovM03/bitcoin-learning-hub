@@ -1,9 +1,9 @@
 const MEMPOOL_API = 'https://mempool.space/api';
 
-export const MAX_BUBBLES   = 40;
+export const MAX_BUBBLES   = 60;
 export const CANVAS_HEIGHT = 500;
 export const REFRESH_STATS = 30_000;
-export const REFRESH_TXS   = 10_000;
+export const REFRESH_TXS   = 5_000;
 
 export const FEE_TIERS = [
     { label: 'Priority', key: 'priority', min: 100, color: '#e74c3c', description: '≥100 sat/vB — next block guaranteed' },
@@ -44,8 +44,8 @@ export function buildBubble(tx, canvasWidth, canvasHeight, minFee, maxFee) {
         txid:    tx.txid,
         x:       radius + Math.random() * (canvasWidth - radius * 2),
         y:       canvasHeight + radius + Math.random() * 80,
-        vx:      (Math.random() - 0.5) * 0.45,
-        vy:      -(0.35 + Math.random() * 0.55),
+        vx:      (Math.random() - 0.5) * 0.35,
+        vy:      -(0.18 + Math.random() * 0.22),
         phase:   Math.random() * Math.PI * 2,
         radius,
         color:   getFeeColor(feeRate),
