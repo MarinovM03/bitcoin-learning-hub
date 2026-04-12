@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, X } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
 import GlossaryAddForm from "../glossary-add-form/GlossaryAddForm";
 import GlossaryList from "../glossary-list/GlossaryList";
+import GlossaryLetterRail from "../glossary-letter-rail/GlossaryLetterRail";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
@@ -39,77 +40,84 @@ export default function Glossary() {
         return matchesSearch && matchesCategory;
     });
 
+    const availableLetters = useMemo(
+        () => new Set(filteredTerms.map(t => t.term[0].toUpperCase())),
+        [filteredTerms]
+    );
+
     return (
         <section id="glossary-page" className="page-content">
             <div className="glossary-page">
-
-                <div className="glossary-header">
-                    <div>
-                        <h1>Bitcoin Glossary</h1>
-                        <p className="glossary-subtitle">
-                            Your reference guide to Bitcoin and cryptocurrency terminology.
-                        </p>
+                <div className="glossary-main">
+                    <div className="glossary-header">
+                        <div>
+                            <h1>Bitcoin Glossary</h1>
+                            <p className="glossary-subtitle">
+                                Your reference guide to Bitcoin and cryptocurrency terminology.
+                            </p>
+                        </div>
+                        {isAuthenticated && (
+                            <button
+                                className="glossary-add-btn"
+                                onClick={() => setShowForm(state => !state)}
+                            >
+                                {showForm ? (
+                                    <>
+                                        <X size={14} strokeWidth={2.5} />
+                                        Cancel
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus size={14} strokeWidth={2.5} />
+                                        Add Term
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </div>
-                    {isAuthenticated && (
-                        <button
-                            className="glossary-add-btn"
-                            onClick={() => setShowForm(state => !state)}
-                        >
-                            {showForm ? (
-                                <>
-                                    <X size={14} strokeWidth={2.5} />
-                                    Cancel
-                                </>
-                            ) : (
-                                <>
-                                    <Plus size={14} strokeWidth={2.5} />
-                                    Add Term
-                                </>
-                            )}
-                        </button>
+
+                    {showForm && (
+                        <GlossaryAddForm
+                            onTermAdded={handleTermAdded}
+                            onCancel={() => setShowForm(false)}
+                        />
+                    )}
+
+                    <div className="glossary-controls">
+                        <input
+                            type="text"
+                            className="search-input glossary-search"
+                            placeholder="Search terms..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                        <div className="glossary-filter-tabs">
+                            {["All", ...CATEGORIES].map(cat => (
+                                <button
+                                    key={cat}
+                                    className={`glossary-tab ${activeCategory === cat ? 'glossary-tab--active' : ''}`}
+                                    onClick={() => setActiveCategory(cat)}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {isLoading ? (
+                        <Spinner />
+                    ) : filteredTerms.length === 0 ? (
+                        <p className="glossary-empty">
+                            No terms found. {isAuthenticated ? 'Be the first to add one!' : 'Check back soon.'}
+                        </p>
+                    ) : (
+                        <GlossaryList
+                            terms={filteredTerms}
+                            onTermDeleted={handleTermDeleted}
+                        />
                     )}
                 </div>
-
-                {showForm && (
-                    <GlossaryAddForm
-                        onTermAdded={handleTermAdded}
-                        onCancel={() => setShowForm(false)}
-                    />
-                )}
-
-                <div className="glossary-controls">
-                    <input
-                        type="text"
-                        className="search-input glossary-search"
-                        placeholder="Search terms..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <div className="glossary-filter-tabs">
-                        {["All", ...CATEGORIES].map(cat => (
-                            <button
-                                key={cat}
-                                className={`glossary-tab ${activeCategory === cat ? 'glossary-tab--active' : ''}`}
-                                onClick={() => setActiveCategory(cat)}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {isLoading ? (
-                    <Spinner />
-                ) : filteredTerms.length === 0 ? (
-                    <p className="glossary-empty">
-                        No terms found. {isAuthenticated ? 'Be the first to add one!' : 'Check back soon.'}
-                    </p>
-                ) : (
-                    <GlossaryList
-                        terms={filteredTerms}
-                        onTermDeleted={handleTermDeleted}
-                    />
-                )}
+                <GlossaryLetterRail availableLetters={availableLetters} />
             </div>
         </section>
     );

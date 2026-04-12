@@ -1,6 +1,21 @@
 .glossary-page {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 44px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.glossary-main {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .glossary-page {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
 }
 
 .glossary-header {
@@ -159,6 +174,7 @@
     border-bottom: 1px solid var(--border-light);
     padding-bottom: 0.4rem;
     line-height: 1;
+    scroll-margin-top: 6.5rem;
 }
 
 .glossary-term-card {
