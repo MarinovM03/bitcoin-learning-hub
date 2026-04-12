@@ -164,7 +164,7 @@ export default function SearchPage() {
                                     {results.glossary.map(term => (
                                         <Link
                                             key={term._id}
-                                            to={`/glossary#glossary-letter-${term.term[0].toUpperCase()}`}
+                                            to={`/glossary/${term._id}`}
                                             className="search-page-result"
                                         >
                                             <div className="search-page-result-body">

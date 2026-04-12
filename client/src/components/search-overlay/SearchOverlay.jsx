@@ -165,7 +165,7 @@ export default function SearchOverlay({ onClose }) {
                                         {results.glossary.map(term => (
                                             <li key={term._id}>
                                                 <Link
-                                                    to={`/glossary#glossary-letter-${term.term[0].toUpperCase()}`}
+                                                    to={`/glossary/${term._id}`}
                                                     className="search-overlay-item"
                                                     onClick={onClose}
                                                 >

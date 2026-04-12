@@ -30,10 +30,6 @@ export default function Glossary() {
         setShowForm(false);
     };
 
-    const handleTermDeleted = (termId) => {
-        setTerms(state => state.filter(t => t._id !== termId));
-    };
-
     const filteredTerms = terms.filter(t => {
         const matchesSearch = t.term.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = activeCategory === "All" || t.category === activeCategory;
@@ -111,10 +107,7 @@ export default function Glossary() {
                             No terms found. {isAuthenticated ? 'Be the first to add one!' : 'Check back soon.'}
                         </p>
                     ) : (
-                        <GlossaryList
-                            terms={filteredTerms}
-                            onTermDeleted={handleTermDeleted}
-                        />
+                        <GlossaryList terms={filteredTerms} />
                     )}
                 </div>
                 <GlossaryLetterRail availableLetters={availableLetters} />
