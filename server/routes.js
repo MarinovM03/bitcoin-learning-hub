@@ -39,6 +39,7 @@ router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 
 // Glossary routes
 router.get('/glossary', glossaryController.getAll);
+router.get('/glossary/:termId', glossaryController.getOne);
 router.post('/glossary', requireAuth, glossaryController.create);
 router.delete('/glossary/:termId', requireAuth, glossaryController.remove);
 

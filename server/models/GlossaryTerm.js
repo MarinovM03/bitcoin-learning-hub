@@ -12,6 +12,15 @@ const glossaryTermSchema = new mongoose.Schema({
         required: true,
         minlength: 10,
     },
+    extendedDefinition: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    examples: {
+        type: [String],
+        default: [],
+    },
     category: {
         type: String,
         enum: ['Technology', 'Economics', 'Trading', 'Culture', 'Security'],
