@@ -1,13 +1,32 @@
+import { useEffect, useRef } from 'react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
 
 export default function MempoolInfoModal({ onClose }) {
+    const closeRef = useRef(null);
+
+    useEffect(() => {
+        closeRef.current?.focus();
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
     return (
         <div className="mempool-info-overlay" onClick={onClose}>
-            <div className="mempool-info-modal" onClick={e => e.stopPropagation()}>
+            <div
+                className="mempool-info-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="mempool-info-title"
+                onClick={e => e.stopPropagation()}
+            >
 
                 <div className="mempool-info-header">
-                    <h2 className="mempool-info-title">How the Mempool Works</h2>
-                    <button className="mempool-info-close" onClick={onClose} aria-label="Close">✕</button>
+                    <h2 className="mempool-info-title" id="mempool-info-title">How the Mempool Works</h2>
+                    <button className="mempool-info-close" ref={closeRef} onClick={onClose} aria-label="Close">✕</button>
                 </div>
 
                 <div className="mempool-info-body">
