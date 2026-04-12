@@ -147,8 +147,10 @@
 }
 
 .btn-edit {
-    display: block;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     padding: 10px;
     border-radius: 8px;
     font-weight: 700;
@@ -168,8 +170,10 @@
 }
 
 .btn-delete {
-    display: block;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     padding: 10px;
     border-radius: 8px;
     font-weight: 700;

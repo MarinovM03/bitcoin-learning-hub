@@ -1,6 +1,7 @@
 // client/src/components/details/Details.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
+import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2 } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import * as bookmarkService from '../../services/bookmarkService';
@@ -137,7 +138,6 @@ export default function Details() {
 
             {showDeleteModal && (
                 <ConfirmModal
-                    icon="📄"
                     title="Delete Article?"
                     message={`You are about to delete "${article.title}".`}
                     subMessage="This will permanently remove the article and cannot be undone."
@@ -162,9 +162,13 @@ export default function Details() {
                             <button
                                 className={`bookmark-btn ${isBookmarked ? 'bookmark-btn--active' : ''}`}
                                 onClick={onBookmark}
-                                title={isBookmarked ? 'Remove bookmark' : 'Save article'}
+                                aria-label={isBookmarked ? 'Remove bookmark' : 'Save article'}
                             >
-                                {isBookmarked ? '🔖' : '🏷️'}
+                                <Bookmark
+                                    size={20}
+                                    strokeWidth={2}
+                                    fill={isBookmarked ? 'currentColor' : 'none'}
+                                />
                             </button>
                         )}
                     </div>
@@ -198,10 +202,14 @@ export default function Details() {
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
                                 {hasLiked ? (
-                                    <div className="liked-badge">❤️ Liked</div>
+                                    <div className="liked-badge">
+                                        <Heart size={16} strokeWidth={2} fill="currentColor" />
+                                        Liked
+                                    </div>
                                 ) : (
                                     <button className="btn-like" onClick={onLike}>
-                                        🤍 Like this article
+                                        <Heart size={16} strokeWidth={2} />
+                                        Like this article
                                     </button>
                                 )}
                             </div>
@@ -226,8 +234,14 @@ export default function Details() {
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>
-                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">✏️ Edit Article</Link>
-                                <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>🗑️ Delete Article</button>
+                                <Link to={`/articles/${articleId}/edit`} className="btn-edit">
+                                    <PenLine size={16} strokeWidth={2} />
+                                    Edit Article
+                                </Link>
+                                <button className="btn-delete" onClick={() => setShowDeleteModal(true)}>
+                                    <Trash2 size={16} strokeWidth={2} />
+                                    Delete Article
+                                </button>
                             </div>
                         )}
 
@@ -282,7 +296,9 @@ export default function Details() {
                                     onClick={handleCopyLink}
                                     title="Copy link"
                                 >
-                                    {copied ? '✅' : '🔗'}
+                                    {copied
+                                        ? <Check size={16} strokeWidth={2.25} />
+                                        : <Link2 size={16} strokeWidth={2.25} />}
                                     <span>{copied ? 'Copied!' : 'Copy Link'}</span>
                                 </button>
 
@@ -335,7 +351,7 @@ export default function Details() {
                                         })}
                                         title="Share"
                                     >
-                                        <span>📤</span>
+                                        <Share2 size={16} strokeWidth={2} />
                                         <span>Share</span>
                                     </button>
                                 )}
