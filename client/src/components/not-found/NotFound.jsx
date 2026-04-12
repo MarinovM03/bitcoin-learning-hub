@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Zap, ArrowLeft } from "lucide-react";
 import { getRandomFact } from "../../utils/bitcoinFacts";
 
 export default function NotFound() {
@@ -47,7 +48,8 @@ export default function NotFound() {
 
                 <div className="not-found-actions">
                     <Link to="/" className="btn-hero-primary">
-                        ← Back to Genesis Block
+                        <ArrowLeft size={16} strokeWidth={2.25} />
+                        Back to Genesis Block
                     </Link>
                     <Link to="/articles" className="btn-hero-secondary">
                         Browse Articles
@@ -55,7 +57,10 @@ export default function NotFound() {
                 </div>
 
                 <div className="not-found-fact">
-                    <span className="not-found-fact-label">⚡ Did you know?</span>
+                    <span className="not-found-fact-label">
+                        <Zap size={14} strokeWidth={2.25} />
+                        Did you know?
+                    </span>
                     <p className="not-found-fact-text">{getRandomFact()}</p>
                 </div>
             </div>

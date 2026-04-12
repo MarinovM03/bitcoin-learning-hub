@@ -54,6 +54,9 @@
     letter-spacing: 0.12em;
     color: var(--btc-orange);
     margin: 0 0 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .mempool-title {

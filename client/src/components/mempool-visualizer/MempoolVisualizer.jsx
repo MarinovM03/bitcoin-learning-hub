@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import { Network, AlertCircle, Info } from 'lucide-react';
 import Spinner from '../spinner/Spinner';
 import MempoolInfoModal from '../mempool-info-modal/MempoolInfoModal';
 import {
@@ -232,14 +233,18 @@ export default function MempoolVisualizer() {
                 <div className="mempool-hero-glow" />
                 <div className="mempool-btc-watermark">₿</div>
                 <div className="mempool-header-content">
-                    <p className="mempool-eyebrow">⛓ Live Bitcoin Network</p>
+                    <p className="mempool-eyebrow">
+                        <Network size={14} strokeWidth={2.25} />
+                        Live Bitcoin Network
+                    </p>
                     <h1 className="mempool-title">Mempool <span>Visualizer</span></h1>
                     <p className="mempool-subtitle">
                         Watch unconfirmed Bitcoin transactions float through the mempool in real time.
                         Bubble size and color reflect the fee rate — higher fee means faster confirmation.
                     </p>
                     <button className="mempool-info-btn" onClick={() => setShowInfo(true)}>
-                        ⓘ How it works
+                        <Info size={14} strokeWidth={2.25} />
+                        How it works
                     </button>
                 </div>
             </div>
@@ -255,7 +260,8 @@ export default function MempoolVisualizer() {
 
             {error && !loading && (
                 <div className="mempool-error">
-                    <span>⚠</span> {error}
+                    <AlertCircle size={16} strokeWidth={2.25} />
+                    <span>{error}</span>
                 </div>
             )}
 

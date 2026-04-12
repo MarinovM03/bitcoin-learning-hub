@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Zap, AlertCircle } from 'lucide-react';
 import {
     AreaChart,
     Area,
@@ -78,7 +79,10 @@ export default function DcaCalculator() {
                 <div className="dca-hero-glow" />
                 <div className="dca-btc-watermark">₿</div>
                 <div className="dca-header-content">
-                    <p className="dca-eyebrow">⚡ Bitcoin Strategy Tool</p>
+                    <p className="dca-eyebrow">
+                        <Zap size={14} strokeWidth={2.5} />
+                        Bitcoin Strategy Tool
+                    </p>
                     <h1 className="dca-title"><span>DCA</span> Calculator</h1>
                     <p className="dca-subtitle">
                         How much would you have today if you'd stacked sats on autopilot?
@@ -148,7 +152,9 @@ export default function DcaCalculator() {
 
             {error && (
                 <div className="dca-error">
-                    <span className="dca-error-icon">⚠</span>
+                    <span className="dca-error-icon">
+                        <AlertCircle size={16} strokeWidth={2.25} />
+                    </span>
                     {error}
                 </div>
             )}
@@ -163,7 +169,10 @@ export default function DcaCalculator() {
             {results && !loading && (
                 <div className="dca-results">
                     <div className="dca-results-header">
-                        <span className="dca-results-badge">⚡ Stack Report</span>
+                        <span className="dca-results-badge">
+                            <Zap size={14} strokeWidth={2.5} />
+                            Stack Report
+                        </span>
                         <div className="dca-results-header-line" />
                     </div>
 

@@ -54,6 +54,9 @@
     letter-spacing: 0.12em;
     color: var(--btc-orange);
     margin: 0 0 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .dca-title {
@@ -245,8 +248,10 @@
 }
 
 .dca-error-icon {
-    font-size: 1rem;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .dca-loading {
@@ -289,6 +294,9 @@
     letter-spacing: 0.14em;
     color: var(--btc-orange);
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .dca-results-header-line {

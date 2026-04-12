@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
 
 export default function MempoolInfoModal({ onClose }) {
@@ -26,7 +27,9 @@ export default function MempoolInfoModal({ onClose }) {
 
                 <div className="mempool-info-header">
                     <h2 className="mempool-info-title" id="mempool-info-title">How the Mempool Works</h2>
-                    <button className="mempool-info-close" ref={closeRef} onClick={onClose} aria-label="Close">✕</button>
+                    <button className="mempool-info-close" ref={closeRef} onClick={onClose} aria-label="Close">
+                        <X size={18} strokeWidth={2.25} />
+                    </button>
                 </div>
 
                 <div className="mempool-info-body">
