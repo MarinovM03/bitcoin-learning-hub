@@ -404,6 +404,9 @@
     padding: 0.25rem 0.6rem;
     border-radius: 6px;
     transition: color 0.15s, border-color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
 .qb-remove-btn:hover {

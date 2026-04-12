@@ -1,3 +1,5 @@
+import { X } from 'lucide-react';
+
 const MAX_QUESTIONS = 5;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -57,7 +59,8 @@ export default function QuizBuilder({ quiz, onChange }) {
                         <div className="qb-card-top">
                             <span className="qb-card-num">Question {qIndex + 1}</span>
                             <button type="button" className="qb-remove-btn" onClick={() => removeQuestion(qIndex)}>
-                                ✕ Remove
+                                <X size={13} strokeWidth={2.5} />
+                                Remove
                             </button>
                         </div>
 

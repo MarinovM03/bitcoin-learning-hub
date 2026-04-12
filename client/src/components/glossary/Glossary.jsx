@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Plus, X } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
@@ -54,7 +55,17 @@ export default function Glossary() {
                             className="glossary-add-btn"
                             onClick={() => setShowForm(state => !state)}
                         >
-                            {showForm ? '✕ Cancel' : '+ Add Term'}
+                            {showForm ? (
+                                <>
+                                    <X size={14} strokeWidth={2.5} />
+                                    Cancel
+                                </>
+                            ) : (
+                                <>
+                                    <Plus size={14} strokeWidth={2.5} />
+                                    Add Term
+                                </>
+                            )}
                         </button>
                     )}
                 </div>

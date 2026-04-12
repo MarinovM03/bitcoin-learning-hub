@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { PenLine } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ConfirmModal from "../common/ConfirmModal";
@@ -56,7 +57,6 @@ export default function MyArticles() {
         <section id="my-articles-page" className="page-content">
             {deleteTarget && (
                 <ConfirmModal
-                    icon="📄"
                     title="Delete Article?"
                     message={`You are about to delete "${deleteTarget.title}".`}
                     subMessage="This will permanently remove the article and cannot be undone."
@@ -74,8 +74,9 @@ export default function MyArticles() {
                             {publishedArticles.length} published · {draftArticles.length} drafts · {totalLikes} likes received
                         </p>
                     </div>
-                    <Link to="/articles/create" className="btn-submit" style={undefined}>
-                        ✏️ Write New Article
+                    <Link to="/articles/create" className="btn-submit my-articles-write-btn">
+                        <PenLine size={15} strokeWidth={2.25} />
+                        Write New Article
                     </Link>
                 </div>
 

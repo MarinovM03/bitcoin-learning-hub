@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { Save } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
@@ -190,7 +191,12 @@ export default function Edit() {
                             disabled={isSubmitting}
                             onClick={() => handleSubmit('draft')}
                         >
-                            {isSubmitting ? "Saving..." : "💾 Save as Draft"}
+                            {isSubmitting ? "Saving..." : (
+                                <>
+                                    <Save size={15} strokeWidth={2.25} />
+                                    Save as Draft
+                                </>
+                            )}
                         </button>
                         <button
                             type="button"
