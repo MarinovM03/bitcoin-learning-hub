@@ -292,6 +292,207 @@
     color: var(--btc-orange) !important;
 }
 
+.mempool-info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    padding: 0.4rem 0.9rem;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    letter-spacing: 0.04em;
+}
+
+.mempool-info-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}
+
+.mempool-info-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: mempoolFadeUp 0.2s ease both;
+}
+
+.mempool-info-modal {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-top: 2px solid var(--btc-orange);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 620px;
+    max-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mempool-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+
+.mempool-info-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.mempool-info-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+}
+
+.mempool-info-close:hover {
+    color: var(--text-color);
+    background: var(--border-light);
+}
+
+.mempool-info-body {
+    overflow-y: auto;
+    padding: 0 1.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.mempool-info-section {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.mempool-info-section--last {
+    border-bottom: none;
+}
+
+.mempool-info-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--btc-orange);
+    margin: 0 0 0.75rem;
+}
+
+.mempool-info-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.mempool-info-text strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.mempool-info-bubbles-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.mempool-info-bubble-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.mempool-info-bubble-icon {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    width: 1.5rem;
+    text-align: center;
+}
+
+.mempool-info-bubble-icon--large {
+    font-size: 1.4rem;
+    color: var(--text-secondary);
+}
+
+.mempool-info-bubble-icon--color {
+    color: var(--btc-orange);
+}
+
+.mempool-info-tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.mempool-info-tier-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.mempool-info-tier-label {
+    font-weight: 700;
+    color: var(--text-color);
+    min-width: 72px;
+}
+
+.mempool-info-tier-desc {
+    color: var(--text-secondary);
+}
+
+.mempool-info-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.mempool-info-stat-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.85rem;
+}
+
+.mempool-info-stat-row:last-child {
+    border-bottom: none;
+}
+
+.mempool-info-stat-name {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.mempool-info-stat-desc {
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
 @media (max-width: 900px) {
     .mempool-stats-grid {
         grid-template-columns: 1fr 1fr;
