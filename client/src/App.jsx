@@ -20,6 +20,7 @@ import Glossary from "./components/glossary/Glossary";
 import Bookmarks from "./components/bookmarks/Bookmarks";
 import AuthorProfile from "./components/author-profile/AuthorProfile";
 import MyArticles from "./components/my-articles/MyArticles";
+import DcaCalculator from "./components/dca-calculator/DcaCalculator";
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                     <Route path="/articles/:articleId/details" element={<Details />} />
                     <Route path="/users/:userId" element={<AuthorProfile />} />
                     <Route path="/glossary" element={<Glossary />} />
+                    <Route path="/dca" element={<DcaCalculator />} />
 
                     <Route element={<AuthGuard />}>
                         <Route path="/articles/create" element={<Create />} />

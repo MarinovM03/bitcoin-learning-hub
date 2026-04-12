@@ -73,6 +73,11 @@ export default function Sidebar() {
                         Glossary
                     </Link>
 
+                    <Link to="/dca" className={isActive("/dca")} onClick={closeSidebar}>
+                        <span className="sidebar-link-icon">📈</span>
+                        DCA Calculator
+                    </Link>
+
                     {isAuthenticated && (
                         <>
                             <span className="sidebar-nav-label">My Space</span>
