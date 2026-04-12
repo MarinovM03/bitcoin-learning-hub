@@ -149,6 +149,16 @@
     box-shadow: 0 0 0 3px var(--btc-orange-dim);
 }
 
+.dca-input[type="number"]::-webkit-outer-spin-button,
+.dca-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.dca-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 .dca-input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(63%) sepia(94%) saturate(700%) hue-rotate(1deg) brightness(105%);
     cursor: pointer;
