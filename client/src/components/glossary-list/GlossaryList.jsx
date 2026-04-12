@@ -44,7 +44,13 @@ export default function GlossaryList({ terms, onTermDeleted }) {
             <div className="glossary-list">
                 {sortedLetters.map(letter => (
                     <div key={letter} className="glossary-letter-group">
-                        <div className="glossary-letter-heading">{letter}</div>
+                        <div
+                            className="glossary-letter-heading"
+                            id={`glossary-letter-${letter}`}
+                            data-letter={letter}
+                        >
+                            {letter}
+                        </div>
                         {grouped[letter].map(term => (
                             <div key={term._id} className="glossary-term-card">
                                 <div className="glossary-term-header">
