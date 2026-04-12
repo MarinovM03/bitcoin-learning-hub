@@ -1,0 +1,70 @@
+.glossary-letter-rail {
+    position: sticky;
+    top: 6.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1px;
+    padding: 0.5rem 0.35rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.glossary-letter-rail::-webkit-scrollbar {
+    display: none;
+}
+
+.glossary-letter-rail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.15s, background-color 0.15s, transform 0.1s;
+}
+
+.glossary-letter-rail-btn:hover {
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+}
+
+.glossary-letter-rail-btn:active {
+    transform: scale(0.92);
+}
+
+.glossary-letter-rail-btn--active {
+    color: #000;
+    background-color: var(--btc-orange);
+}
+
+.glossary-letter-rail-btn--active:hover {
+    color: #000;
+    background-color: var(--btc-orange);
+}
+
+.glossary-letter-rail-btn--disabled {
+    color: var(--text-muted);
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    .glossary-letter-rail {
+        display: none;
+    }
+}
