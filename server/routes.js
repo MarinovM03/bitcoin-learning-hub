@@ -46,13 +46,25 @@ router.post('/comments', requireAuth, commentController.create);
 router.delete('/comments/:commentId', requireAuth, commentController.remove);
 
 // Proxy routes — server-side fetches to avoid browser CORS/rate-limit issues
+let btcGlobalCache = { data: null, timestamp: 0 };
+const BTC_GLOBAL_TTL_MS = 60_000;
+
 router.get('/proxy/btc-global', async (req, res) => {
+    const now = Date.now();
+    if (btcGlobalCache.data && now - btcGlobalCache.timestamp < BTC_GLOBAL_TTL_MS) {
+        return res.json(btcGlobalCache.data);
+    }
     try {
         const response = await fetch('https://api.coingecko.com/api/v3/global');
-        if (!response.ok) return res.status(response.status).json({ error: 'CoinGecko request failed' });
+        if (!response.ok) {
+            if (btcGlobalCache.data) return res.json(btcGlobalCache.data);
+            return res.status(response.status).json({ error: 'CoinGecko request failed' });
+        }
         const data = await response.json();
+        btcGlobalCache = { data, timestamp: now };
         res.json(data);
     } catch {
+        if (btcGlobalCache.data) return res.json(btcGlobalCache.data);
         res.status(502).json({ error: 'Failed to reach CoinGecko' });
     }
 });
