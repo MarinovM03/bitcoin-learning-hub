@@ -7,6 +7,11 @@ export const getAll = async () => {
     return result;
 };
 
+export const getOne = async (termId) => {
+    const result = await request.get(`${baseUrl}/${termId}`);
+    return result;
+};
+
 export const create = async (data) => {
     const result = await request.post(baseUrl, data);
     return result;

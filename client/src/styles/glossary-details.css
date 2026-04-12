@@ -1,0 +1,345 @@
+.glossary-details {
+    max-width: 820px;
+    margin: 0 auto;
+    overflow-wrap: anywhere;
+}
+
+/* Chrome row: back button + delete */
+.glossary-details-chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.glossary-details-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.95rem;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.glossary-details-back:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+    transform: translateX(-2px);
+}
+
+.glossary-details-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.95rem;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+
+.glossary-details-delete-btn:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background-color: var(--danger-dim);
+}
+
+/* Hero */
+.glossary-details-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 2.25rem 2.25rem 2rem;
+    background:
+        radial-gradient(circle at top left, var(--btc-orange-dim), transparent 60%),
+        var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.glossary-details-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--btc-orange), transparent);
+}
+
+.glossary-details-hero-mark {
+    flex-shrink: 0;
+    width: 92px;
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--btc-orange);
+    color: #111;
+    font-size: 3rem;
+    font-weight: 800;
+    border-radius: 20px;
+    box-shadow: 0 0 28px var(--btc-orange-glow), inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+    letter-spacing: -1px;
+    font-family: 'Exo 2', sans-serif;
+}
+
+.glossary-details-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.glossary-details-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    padding: 4px 12px;
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px;
+}
+
+.glossary-details-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+.glossary-details-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-top: 0.15rem;
+}
+
+.glossary-details-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Quick definition card */
+.glossary-details-quote-card {
+    position: relative;
+    padding: 1.5rem 1.75rem 1.5rem 2rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--btc-orange);
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 2rem;
+}
+
+.glossary-details-quote-label {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--btc-orange);
+    margin-bottom: 0.55rem;
+}
+
+.glossary-details-quote {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.08rem;
+    line-height: 1.65;
+}
+
+/* Framed card (In depth / Examples share head style) */
+.glossary-details-card,
+.glossary-details-examples-section {
+    padding: 1.75rem 2rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    margin-bottom: 2rem;
+}
+
+.glossary-details-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--btc-orange);
+}
+
+.glossary-details-card-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--btc-orange);
+}
+
+/* Body typography for In depth */
+.glossary-details-body {
+    color: var(--text-color);
+}
+
+.glossary-details-body p {
+    font-size: 1.02rem;
+    line-height: 1.8;
+    margin: 0 0 1.25rem;
+}
+
+.glossary-details-body p:last-child {
+    margin-bottom: 0;
+}
+
+.glossary-details-body-lead {
+    font-size: 1.18rem !important;
+    line-height: 1.7 !important;
+    color: white;
+    font-weight: 500;
+}
+
+/* Examples — numbered grid */
+.glossary-details-examples {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.glossary-details-example {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.glossary-details-example:hover {
+    border-color: var(--btc-orange);
+    transform: translateY(-2px);
+}
+
+.glossary-details-example-num {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--btc-orange);
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    padding-top: 0.1rem;
+}
+
+.glossary-details-example-text {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Stub / error */
+.glossary-details-stub {
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    background-color: var(--card-bg);
+    border: 1px dashed var(--border-light);
+    border-radius: 12px;
+}
+
+.glossary-details-error {
+    max-width: 520px;
+    margin: 2rem auto;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+}
+
+.glossary-details-error h2 {
+    color: white;
+    margin: 0 0 0.5rem;
+}
+
+.glossary-details-error p {
+    color: var(--text-secondary);
+    margin: 0 0 1.25rem;
+}
+
+/* Responsive */
+@media (max-width: 760px) {
+    .glossary-details-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.75rem 1.5rem 1.5rem;
+        gap: 1.25rem;
+    }
+
+    .glossary-details-hero-mark {
+        width: 72px;
+        height: 72px;
+        font-size: 2.4rem;
+        border-radius: 16px;
+    }
+
+    .glossary-details-title {
+        font-size: 2rem;
+    }
+
+    .glossary-details-card,
+    .glossary-details-examples-section {
+        padding: 1.4rem 1.25rem;
+    }
+
+    .glossary-details-quote-card {
+        padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    }
+
+    .glossary-details-quote {
+        font-size: 1rem;
+    }
+
+    .glossary-details-body-lead {
+        font-size: 1.08rem !important;
+    }
+
+    .glossary-details-examples {
+        grid-template-columns: 1fr;
+    }
+}
