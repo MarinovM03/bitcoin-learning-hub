@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { PenLine } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ConfirmModal from "../common/ConfirmModal";
 import Spinner from "../spinner/Spinner";
+import MyArticlesRail from "../my-articles-rail/MyArticlesRail";
 import { useAuth } from "../../contexts/AuthContext";
 
 const handleImgError = (e) => {
@@ -21,6 +22,8 @@ export default function MyArticles() {
     const [activeTab, setActiveTab] = useState('published');
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [totalLikes, setTotalLikes] = useState(0);
+    const [activeCategory, setActiveCategory] = useState('All');
+    const [sortMode, setSortMode] = useState('newest');
 
     useEffect(() => {
         articleService.getMyArticles()
@@ -51,7 +54,36 @@ export default function MyArticles() {
 
     const publishedArticles = myArticles.filter(a => a.status === 'published');
     const draftArticles = myArticles.filter(a => a.status === 'draft');
-    const articles = activeTab === 'published' ? publishedArticles : draftArticles;
+    const tabArticles = activeTab === 'published' ? publishedArticles : draftArticles;
+
+    const availableCategories = useMemo(() => {
+        const set = new Set(tabArticles.map(a => a.category).filter(Boolean));
+        return Array.from(set).sort();
+    }, [tabArticles]);
+
+    useEffect(() => {
+        if (activeCategory !== 'All' && !availableCategories.includes(activeCategory)) {
+            setActiveCategory('All');
+        }
+    }, [activeCategory, availableCategories]);
+
+    const totalViews = useMemo(
+        () => publishedArticles.reduce((sum, a) => sum + (a.views || 0), 0),
+        [publishedArticles]
+    );
+
+    const articles = useMemo(() => {
+        const filtered = activeCategory === 'All'
+            ? tabArticles
+            : tabArticles.filter(a => a.category === activeCategory);
+        const sorted = [...filtered];
+        if (sortMode === 'views') {
+            sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
+        } else {
+            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+        return sorted;
+    }, [tabArticles, activeCategory, sortMode]);
 
     return (
         <section id="my-articles-page" className="page-content">
@@ -67,104 +99,117 @@ export default function MyArticles() {
             )}
 
             <div className="my-articles-page">
-                <div className="my-articles-page-header">
-                    <div>
-                        <h1>My Articles</h1>
-                        <p className="my-articles-page-subtitle">
-                            {publishedArticles.length} published · {draftArticles.length} drafts · {totalLikes} likes received
-                        </p>
+                <div className="my-articles-main">
+                    <div className="my-articles-page-header">
+                        <div>
+                            <h1>My Articles</h1>
+                            <p className="my-articles-page-subtitle">
+                                Manage your published work and drafts.
+                            </p>
+                        </div>
+                        <Link to="/articles/create" className="btn-submit my-articles-write-btn">
+                            <PenLine size={15} strokeWidth={2.25} />
+                            Write New Article
+                        </Link>
                     </div>
-                    <Link to="/articles/create" className="btn-submit my-articles-write-btn">
-                        <PenLine size={15} strokeWidth={2.25} />
-                        Write New Article
-                    </Link>
-                </div>
 
-                <div className="my-articles-page-tabs">
-                    <button
-                        className={`my-articles-page-tab ${activeTab === 'published' ? 'my-articles-page-tab--active' : ''}`}
-                        onClick={() => setActiveTab('published')}
-                    >
-                        Published
-                        <span className="my-articles-page-tab-count">{publishedArticles.length}</span>
-                    </button>
-                    <button
-                        className={`my-articles-page-tab ${activeTab === 'draft' ? 'my-articles-page-tab--active' : ''}`}
-                        onClick={() => setActiveTab('draft')}
-                    >
-                        Drafts
-                        <span className="my-articles-page-tab-count">{draftArticles.length}</span>
-                    </button>
-                </div>
+                    <div className="my-articles-page-tabs">
+                        <button
+                            className={`my-articles-page-tab ${activeTab === 'published' ? 'my-articles-page-tab--active' : ''}`}
+                            onClick={() => setActiveTab('published')}
+                        >
+                            Published
+                            <span className="my-articles-page-tab-count">{publishedArticles.length}</span>
+                        </button>
+                        <button
+                            className={`my-articles-page-tab ${activeTab === 'draft' ? 'my-articles-page-tab--active' : ''}`}
+                            onClick={() => setActiveTab('draft')}
+                        >
+                            Drafts
+                            <span className="my-articles-page-tab-count">{draftArticles.length}</span>
+                        </button>
+                    </div>
 
-                {isLoading ? (
-                    <Spinner />
-                ) : (
-                    <div className="my-articles-page-grid">
-                        {articles.length === 0 ? (
-                            <div className="my-articles-page-empty">
-                                {activeTab === 'published' ? (
-                                    <>
-                                        <p>You haven't published any articles yet.</p>
-                                        <Link to="/articles/create" className="btn-submit my-articles-cta">
-                                            Write Your First Article
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        <p>You have no saved drafts.</p>
-                                        <Link to="/articles/create" className="btn-submit my-articles-cta">
-                                            Start Writing
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        ) : (
-                            articles.map(article => (
-                                <div key={article._id} className="my-articles-page-card">
-                                    <div className="my-articles-page-card-img-wrap">
-                                        <img
-                                            src={article.imageUrl}
-                                            alt={article.title}
-                                            className="my-articles-page-card-img"
-                                            onError={handleImgError}
-                                        />
-                                        <span className="my-articles-page-card-category">{article.category}</span>
-                                        {activeTab === 'draft' && (
-                                            <span className="my-articles-page-card-draft-badge">Draft</span>
-                                        )}
-                                    </div>
-                                    <div className="my-articles-page-card-body">
-                                        <h3 className="my-articles-page-card-title">{article.title}</h3>
-                                        <p className="my-articles-page-card-summary">{article.summary}</p>
-                                        <div className="my-articles-page-card-footer">
-                                            {activeTab === 'published' && (
-                                                <Link
-                                                    to={`/articles/${article._id}/details`}
-                                                    className="my-articles-page-btn my-articles-page-btn--view"
-                                                >
-                                                    View
-                                                </Link>
-                                            )}
-                                            <Link
-                                                to={`/articles/${article._id}/edit`}
-                                                className="my-articles-page-btn my-articles-page-btn--edit"
-                                            >
-                                                {activeTab === 'draft' ? 'Edit & Publish' : 'Edit'}
+                    {isLoading ? (
+                        <Spinner />
+                    ) : (
+                        <div className="my-articles-page-grid">
+                            {articles.length === 0 ? (
+                                <div className="my-articles-page-empty">
+                                    {activeTab === 'published' ? (
+                                        <>
+                                            <p>You haven't published any articles yet.</p>
+                                            <Link to="/articles/create" className="btn-submit my-articles-cta">
+                                                Write Your First Article
                                             </Link>
-                                            <button
-                                                className="my-articles-page-btn my-articles-page-btn--delete"
-                                                onClick={() => setDeleteTarget({ id: article._id, title: article.title })}
-                                            >
-                                                Delete
-                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p>You have no saved drafts.</p>
+                                            <Link to="/articles/create" className="btn-submit my-articles-cta">
+                                                Start Writing
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                articles.map(article => (
+                                    <div key={article._id} className="my-articles-page-card">
+                                        <div className="my-articles-page-card-img-wrap">
+                                            <img
+                                                src={article.imageUrl}
+                                                alt={article.title}
+                                                className="my-articles-page-card-img"
+                                                onError={handleImgError}
+                                            />
+                                            <span className="my-articles-page-card-category">{article.category}</span>
+                                            {activeTab === 'draft' && (
+                                                <span className="my-articles-page-card-draft-badge">Draft</span>
+                                            )}
+                                        </div>
+                                        <div className="my-articles-page-card-body">
+                                            <h3 className="my-articles-page-card-title">{article.title}</h3>
+                                            <p className="my-articles-page-card-summary">{article.summary}</p>
+                                            <div className="my-articles-page-card-footer">
+                                                {activeTab === 'published' && (
+                                                    <Link
+                                                        to={`/articles/${article._id}/details`}
+                                                        className="my-articles-page-btn my-articles-page-btn--view"
+                                                    >
+                                                        View
+                                                    </Link>
+                                                )}
+                                                <Link
+                                                    to={`/articles/${article._id}/edit`}
+                                                    className="my-articles-page-btn my-articles-page-btn--edit"
+                                                >
+                                                    {activeTab === 'draft' ? 'Edit & Publish' : 'Edit'}
+                                                </Link>
+                                                <button
+                                                    className="my-articles-page-btn my-articles-page-btn--delete"
+                                                    onClick={() => setDeleteTarget({ id: article._id, title: article.title })}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                )}
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+                <MyArticlesRail
+                    publishedCount={publishedArticles.length}
+                    draftCount={draftArticles.length}
+                    totalViews={totalViews}
+                    totalLikes={totalLikes}
+                    categories={availableCategories}
+                    activeCategory={activeCategory}
+                    onCategoryChange={setActiveCategory}
+                    sortMode={sortMode}
+                    onSortChange={setSortMode}
+                />
             </div>
         </section>
     );
