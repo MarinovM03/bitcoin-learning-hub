@@ -13,43 +13,60 @@ export default function StatsBar() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchBinanceStats = () => {
-            fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT")
-                .then(res => res.json())
+            fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT", { signal: controller.signal })
+                .then(res => res.ok ? res.json() : null)
                 .then(data => {
-                    setStats(prev => ({
-                        ...prev,
-                        price:     parseFloat(data.lastPrice),
-                        change24h: parseFloat(data.priceChangePercent),
-                        volume:    parseFloat(data.quoteVolume),
-                    }));
+                    if (!data) return;
+                    const price = parseFloat(data.lastPrice);
+                    const change24h = parseFloat(data.priceChangePercent);
+                    const volume = parseFloat(data.quoteVolume);
+                    if (Number.isNaN(price) || Number.isNaN(change24h) || Number.isNaN(volume)) return;
+                    setStats(prev => ({ ...prev, price, change24h, volume }));
                     setIsLoading(false);
                 })
-                .catch(err => console.log("Binance stats fetch failed:", err));
+                .catch(err => {
+                    if (err.name !== 'AbortError') console.log("Binance stats fetch failed:", err.message);
+                });
         };
 
         fetchBinanceStats();
         const interval = setInterval(fetchBinanceStats, 5000);
-        return () => clearInterval(interval);
+        return () => {
+            controller.abort();
+            clearInterval(interval);
+        };
     }, []);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchDominance = () => {
-            fetch(`${import.meta.env.VITE_API_URL}/proxy/btc-global`)
-                .then(res => res.json())
+            fetch(`${import.meta.env.VITE_API_URL}/proxy/btc-global`, { signal: controller.signal })
+                .then(res => res.ok ? res.json() : null)
                 .then(data => {
+                    const pct = data?.data?.market_cap_percentage?.btc;
+                    const totalCap = data?.data?.total_market_cap?.usd;
+                    if (pct == null || totalCap == null) return;
                     setStats(prev => ({
                         ...prev,
-                        dominance: data.data.market_cap_percentage.btc,
-                        marketCap: (data.data.total_market_cap.usd * data.data.market_cap_percentage.btc) / 100,
+                        dominance: pct,
+                        marketCap: (totalCap * pct) / 100,
                     }));
                 })
-                .catch(err => console.log("Dominance fetch failed:", err));
+                .catch(err => {
+                    if (err.name !== 'AbortError') console.log("Dominance fetch failed:", err.message);
+                });
         };
 
         fetchDominance();
         const interval = setInterval(fetchDominance, 60000);
-        return () => clearInterval(interval);
+        return () => {
+            controller.abort();
+            clearInterval(interval);
+        };
     }, []);
 
     if (isLoading) {

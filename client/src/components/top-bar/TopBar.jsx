@@ -18,15 +18,16 @@ export default function TopBar() {
 
         const fetchMarket = () => {
             fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT", { signal: controller.signal })
-                .then(res => res.json())
+                .then(res => res.ok ? res.json() : null)
                 .then(data => {
-                    setMarket({
-                        price: parseFloat(data.lastPrice),
-                        change24h: parseFloat(data.priceChangePercent),
-                    });
+                    if (!data) return;
+                    const price = parseFloat(data.lastPrice);
+                    const change24h = parseFloat(data.priceChangePercent);
+                    if (Number.isNaN(price) || Number.isNaN(change24h)) return;
+                    setMarket({ price, change24h });
                 })
                 .catch(err => {
-                    if (err.name !== "AbortError") console.log("TopBar market fetch failed:", err);
+                    if (err.name !== "AbortError") console.log("TopBar market fetch failed:", err.message);
                 });
         };
 
@@ -43,10 +44,14 @@ export default function TopBar() {
 
         const fetchDominance = () => {
             fetch(`${import.meta.env.VITE_API_URL}/proxy/btc-global`, { signal: controller.signal })
-                .then(res => res.json())
-                .then(data => setDominance(data.data.market_cap_percentage.btc))
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    const pct = data?.data?.market_cap_percentage?.btc;
+                    if (pct == null) return;
+                    setDominance(pct);
+                })
                 .catch(err => {
-                    if (err.name !== "AbortError") console.log("TopBar dominance fetch failed:", err);
+                    if (err.name !== "AbortError") console.log("TopBar dominance fetch failed:", err.message);
                 });
         };
 
@@ -62,16 +67,17 @@ export default function TopBar() {
         const controller = new AbortController();
 
         fetch("https://api.alternative.me/fng/", { signal: controller.signal })
-            .then(res => res.json())
+            .then(res => res.ok ? res.json() : null)
             .then(json => {
-                const entry = json.data[0];
+                const entry = json?.data?.[0];
+                if (!entry) return;
                 setFearGreed({
                     value: parseInt(entry.value, 10),
                     label: entry.value_classification,
                 });
             })
             .catch(err => {
-                if (err.name !== "AbortError") console.log("TopBar F&G fetch failed:", err);
+                if (err.name !== "AbortError") console.log("TopBar F&G fetch failed:", err.message);
             });
 
         return () => controller.abort();
