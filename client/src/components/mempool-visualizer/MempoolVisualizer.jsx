@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import Spinner from '../spinner/Spinner';
+import MempoolInfoModal from '../mempool-info-modal/MempoolInfoModal';
 import {
     FEE_TIERS,
     MAX_BUBBLES,
@@ -17,17 +18,18 @@ import {
 } from '../../utils/mempoolHelpers';
 
 export default function MempoolVisualizer() {
-    const canvasRef  = useRef(null);
+    const canvasRef = useRef(null);
     const bubblesRef = useRef([]);
-    const animRef    = useRef(null);
-    const seenRef    = useRef(new Set());
+    const animRef = useRef(null);
+    const seenRef = useRef(new Set());
 
-    const [stats,   setStats]   = useState(null);
-    const [fees,    setFees]    = useState(null);
+    const [stats, setStats] = useState(null);
+    const [fees, setFees] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error,   setError]   = useState('');
+    const [error, setError] = useState('');
     const [hovered, setHovered] = useState(null);
-    const [tipPos,  setTipPos]  = useState({ x: 0, y: 0 });
+    const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
+    const [showInfo, setShowInfo] = useState(false);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -207,8 +209,13 @@ export default function MempoolVisualizer() {
                         Watch unconfirmed Bitcoin transactions float through the mempool in real time.
                         Bubble size and color reflect the fee rate — higher fee means faster confirmation.
                     </p>
+                    <button className="mempool-info-btn" onClick={() => setShowInfo(true)}>
+                        ⓘ How it works
+                    </button>
                 </div>
             </div>
+
+            {showInfo && <MempoolInfoModal onClose={() => setShowInfo(false)} />}
 
             {loading && (
                 <div className="mempool-loading">
@@ -274,7 +281,7 @@ export default function MempoolVisualizer() {
                     />
 
                     <p className="mempool-canvas-footer">
-                        Showing recent unconfirmed transactions · refreshes every 10s · hover a bubble for details
+                        Showing recent unconfirmed transactions · refreshes every 5s · hover a bubble for details
                     </p>
                 </div>
             )}
