@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
     AreaChart,
     Area,
@@ -32,26 +32,33 @@ export default function DcaCalculator() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [results, setResults] = useState(null);
+    const abortRef = useRef(null);
 
     const handleCalculate = async (e) => {
         e.preventDefault();
+
+        if (abortRef.current) abortRef.current.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+
         setError('');
         setResults(null);
         setLoading(true);
 
         try {
-            const priceMap = await fetchHistoricalPrices(startDate);
+            const priceMap = await fetchHistoricalPrices(startDate, controller.signal);
             const data = calculateDCA(priceMap, startDate, Number(amount), Number(frequency));
 
             if (data.purchaseCount < 2) {
                 setError('Not enough purchases in that range. Choose an earlier start date or a higher frequency.');
-                setLoading(false);
                 return;
             }
 
             setResults(data);
         } catch (err) {
-            setError(err.message || 'Something went wrong. Please try again.');
+            if (err.name !== 'AbortError') {
+                setError(err.message || 'Something went wrong. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
