@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Search } from "lucide-react";
+import { Search, X, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import Spinner from "../spinner/Spinner";
 import ArticleCard from "../article-card/ArticleCard";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+
+const SORT_LABELS = {
+    latest: 'Latest',
+    views: 'Most Viewed',
+};
 
 const ITEMS_PER_PAGE = 12;
 
@@ -68,6 +73,19 @@ export default function Catalog() {
         setSearchParams(next);
     };
 
+    const clearFilters = () => {
+        setSearchParams(new URLSearchParams());
+    };
+
+    const activeFilters = useMemo(() => {
+        const chips = [];
+        if (search) chips.push({ key: 'search', label: 'Search', value: search, resetTo: '' });
+        if (activeCategory !== 'All') chips.push({ key: 'category', label: 'Category', value: activeCategory, resetTo: 'All' });
+        if (activeDifficulty !== 'All') chips.push({ key: 'difficulty', label: 'Level', value: activeDifficulty, resetTo: 'All' });
+        if (sort !== 'latest') chips.push({ key: 'sort', label: 'Sort', value: SORT_LABELS[sort] || sort, resetTo: 'latest' });
+        return chips;
+    }, [search, activeCategory, activeDifficulty, sort]);
+
     return (
         <section id="catalog-page" className="page-content catalog-page">
             <h1>All Articles</h1>
@@ -125,30 +143,74 @@ export default function Catalog() {
                 ))}
             </div>
 
+            {activeFilters.length > 0 && (
+                <div className="catalog-active-filters" aria-label="Active filters">
+                    {activeFilters.map(chip => (
+                        <button
+                            key={chip.key}
+                            type="button"
+                            className="catalog-active-filter"
+                            onClick={() => setParam(chip.key, chip.resetTo)}
+                            aria-label={`Clear ${chip.label} filter`}
+                        >
+                            <span className="catalog-active-filter-label">{chip.label}:</span>
+                            <span className="catalog-active-filter-value">{chip.value}</span>
+                            <X size={12} strokeWidth={2.5} />
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        className="catalog-clear-filters-btn"
+                        onClick={clearFilters}
+                    >
+                        Clear all
+                    </button>
+                </div>
+            )}
+
             {error && <p className="catalog-error">{error}</p>}
 
             {isLoading ? (
                 <Spinner />
             ) : (
                 <>
-                    <div className="catalog-grid">
-                        {articles.length === 0 && !error && (
-                            <p className="catalog-empty">No articles found matching your search.</p>
-                        )}
-                        {articles.map(article => (
-                            <ArticleCard key={article._id} article={article} />
-                        ))}
-                    </div>
+                    {articles.length === 0 && !error ? (
+                        <div className="catalog-empty">
+                            <SearchX size={42} strokeWidth={1.5} />
+                            <h3 className="catalog-empty-title">No articles found</h3>
+                            <p className="catalog-empty-text">
+                                {activeFilters.length > 0
+                                    ? 'Try removing a filter or clearing all filters.'
+                                    : 'There are no articles yet. Check back soon.'}
+                            </p>
+                            {activeFilters.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="catalog-empty-btn"
+                                    onClick={clearFilters}
+                                >
+                                    Clear filters
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="catalog-grid">
+                            {articles.map(article => (
+                                <ArticleCard key={article._id} article={article} />
+                            ))}
+                        </div>
+                    )}
 
                     {totalPages > 1 && (
                         <div className="catalog-pagination">
                             <button
-                                className="catalog-page-btn"
+                                className="catalog-page-btn catalog-page-btn--nav"
                                 onClick={() => setParam('page', String(page - 1))}
                                 disabled={page === 1}
                                 aria-label="Previous page"
                             >
-                                ← Prev
+                                <ChevronLeft size={16} strokeWidth={2.25} />
+                                <span>Prev</span>
                             </button>
 
                             {getPaginationPages(page, totalPages).map((p, index) =>
@@ -169,12 +231,13 @@ export default function Catalog() {
                             )}
 
                             <button
-                                className="catalog-page-btn"
+                                className="catalog-page-btn catalog-page-btn--nav"
                                 onClick={() => setParam('page', String(page + 1))}
                                 disabled={page === totalPages}
                                 aria-label="Next page"
                             >
-                                Next →
+                                <span>Next</span>
+                                <ChevronRight size={16} strokeWidth={2.25} />
                             </button>
                         </div>
                     )}
