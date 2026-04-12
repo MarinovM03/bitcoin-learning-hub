@@ -76,20 +76,20 @@ export function formatTotalFees(sats) {
     return (sats / 100_000_000).toFixed(4) + ' BTC';
 }
 
-export async function fetchMempoolStats() {
-    const res = await fetch(`${MEMPOOL_API}/mempool`);
+export async function fetchMempoolStats(signal) {
+    const res = await fetch(`${MEMPOOL_API}/mempool`, { signal });
     if (!res.ok) throw new Error('Failed to fetch mempool stats');
     return res.json();
 }
 
-export async function fetchRecentTxs() {
-    const res = await fetch(`${MEMPOOL_API}/mempool/recent`);
+export async function fetchRecentTxs(signal) {
+    const res = await fetch(`${MEMPOOL_API}/mempool/recent`, { signal });
     if (!res.ok) throw new Error('Failed to fetch recent transactions');
     return res.json();
 }
 
-export async function fetchRecommendedFees() {
-    const res = await fetch(`${MEMPOOL_API}/v1/fees/recommended`);
+export async function fetchRecommendedFees(signal) {
+    const res = await fetch(`${MEMPOOL_API}/v1/fees/recommended`, { signal });
     if (!res.ok) throw new Error('Failed to fetch recommended fees');
     return res.json();
 }
