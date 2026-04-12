@@ -18,11 +18,13 @@ import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
 import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 import Glossary from "./components/glossary/Glossary";
+import GlossaryDetails from "./components/glossary-details/GlossaryDetails";
 import Bookmarks from "./components/bookmarks/Bookmarks";
 import AuthorProfile from "./components/author-profile/AuthorProfile";
 import MyArticles from "./components/my-articles/MyArticles";
 import DcaCalculator from "./components/dca-calculator/DcaCalculator";
 import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer";
+import SearchPage from "./components/search-page/SearchPage";
 
 function App() {
     return (
@@ -41,6 +43,8 @@ function App() {
                     <Route path="/articles/:articleId/details" element={<Details />} />
                     <Route path="/users/:userId" element={<AuthorProfile />} />
                     <Route path="/glossary" element={<Glossary />} />
+                    <Route path="/glossary/:termId" element={<GlossaryDetails />} />
+                    <Route path="/search" element={<SearchPage />} />
                     <Route path="/dca" element={<DcaCalculator />} />
                     <Route path="/mempool" element={<MempoolVisualizer />} />
 

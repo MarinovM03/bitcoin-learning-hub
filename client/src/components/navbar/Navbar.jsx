@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
-import { Menu, X, PenLine } from "lucide-react";
+import { Menu, X, PenLine, Search } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import AccountMenu from "./AccountMenu";
+import SearchOverlay from "../search-overlay/SearchOverlay";
 
 const NAV_LINKS = [
     { to: "/", label: "Home", end: true },
@@ -15,11 +16,24 @@ const NAV_LINKS = [
 export default function Navbar() {
     const { isAuthenticated } = useAuth();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
         setIsMobileOpen(false);
+        setIsSearchOpen(false);
     }, [location.pathname]);
+
+    useEffect(() => {
+        const handleKey = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, []);
 
     useEffect(() => {
         if (!isMobileOpen) return;
@@ -66,6 +80,16 @@ export default function Navbar() {
                 </div>
 
                 <div className="navbar-actions">
+                    <button
+                        type="button"
+                        className="navbar-search-btn"
+                        onClick={() => setIsSearchOpen(true)}
+                        aria-label="Open search"
+                    >
+                        <Search size={16} strokeWidth={2.25} />
+                        <span className="navbar-search-btn-label">Search</span>
+                        <kbd className="navbar-search-btn-kbd">Ctrl K</kbd>
+                    </button>
                     {isAuthenticated ? (
                         <>
                             <Link to="/articles/create" className="navbar-write">
@@ -92,6 +116,8 @@ export default function Navbar() {
                     </button>
                 </div>
             </div>
+
+            {isSearchOpen && <SearchOverlay onClose={() => setIsSearchOpen(false)} />}
 
             {isMobileOpen && (
                 <div className="navbar-mobile" role="dialog" aria-modal="true" aria-label="Navigation">
