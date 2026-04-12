@@ -10,6 +10,7 @@ import Spinner from "../spinner/Spinner";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 import QuizSection from "../quiz/QuizSection";
+import ReadingPanel from "../reading-panel/ReadingPanel";
 import { formatViews } from '../../utils/formatters';
 import { handleImgError } from '../../utils/imageHelpers';
 
@@ -193,7 +194,7 @@ export default function Details() {
 
                         <p className="details-summary">{article.summary}</p>
 
-                        <div className="details-content">
+                        <div className="details-content" id="article-body">
                             {article.content?.split('\n').filter(Boolean).map((paragraph, i) => (
                                 <p key={i}>{paragraph}</p>
                             ))}
@@ -215,22 +216,25 @@ export default function Details() {
                             </div>
                         )}
 
-                        <a
-                            className="details-back-to-top"
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        >
-                            ↑ Back to top
-                        </a>
+                        <div id="article-quiz">
+                            <QuizSection quiz={article.quiz} />
+                        </div>
 
-                        <QuizSection quiz={article.quiz} />
-
-                        <CommentsSection
-                            articleId={articleId}
-                            articleOwnerId={String(ownerId)}
-                        />
+                        <div id="article-comments">
+                            <CommentsSection
+                                articleId={articleId}
+                                articleOwnerId={String(ownerId)}
+                            />
+                        </div>
                     </div>
 
                     <div className="details-sidebar">
+                        <ReadingPanel
+                            readProgress={readProgress}
+                            readingTime={article.readingTime ?? 1}
+                            hasQuiz={Array.isArray(article.quiz) && article.quiz.length > 0}
+                        />
+
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>
