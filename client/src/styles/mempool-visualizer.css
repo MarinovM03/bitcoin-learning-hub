@@ -1,0 +1,321 @@
+.mempool-page {
+    padding-top: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.mempool-header {
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.mempool-hero-glow {
+    position: absolute;
+    top: -60px;
+    left: -80px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mempool-btc-watermark {
+    position: absolute;
+    top: -1.5rem;
+    right: -1rem;
+    font-size: 11rem;
+    font-weight: 700;
+    color: var(--btc-orange);
+    opacity: 0.04;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    animation: mempoolWatermarkPulse 7s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes mempoolWatermarkPulse {
+    0%   { opacity: 0.03; transform: scale(1); }
+    50%  { opacity: 0.07; transform: scale(1.04); }
+    100% { opacity: 0.03; transform: scale(1); }
+}
+
+.mempool-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.mempool-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--btc-orange);
+    margin: 0 0 0.6rem;
+}
+
+.mempool-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 0.6rem;
+    line-height: 1.1;
+}
+
+.mempool-title span {
+    color: var(--btc-orange);
+}
+
+.mempool-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.97rem;
+    margin: 0;
+    max-width: 580px;
+    line-height: 1.7;
+}
+
+.mempool-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 0;
+}
+
+.mempool-loading-text {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin: 0;
+    letter-spacing: 0.04em;
+}
+
+.mempool-error {
+    background: var(--danger-dim);
+    border: 1px solid var(--danger-color);
+    border-radius: 8px;
+    color: var(--danger-color);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+}
+
+.mempool-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    animation: mempoolFadeUp 0.4s ease both;
+}
+
+@keyframes mempoolFadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.mempool-stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--btc-orange-glow);
+    border-radius: 10px;
+    padding: 1.1rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: border-left-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    animation: mempoolFadeUp 0.4s ease both;
+}
+
+.mempool-stat-card:nth-child(1) { animation-delay: 0.04s; }
+.mempool-stat-card:nth-child(2) { animation-delay: 0.08s; }
+.mempool-stat-card:nth-child(3) { animation-delay: 0.12s; }
+.mempool-stat-card:nth-child(4) { animation-delay: 0.16s; }
+.mempool-stat-card:nth-child(5) { animation-delay: 0.20s; }
+.mempool-stat-card:nth-child(6) { animation-delay: 0.24s; }
+
+.mempool-stat-card:hover {
+    border-left-color: var(--btc-orange);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+.mempool-stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.mempool-stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    font-variant-numeric: tabular-nums;
+}
+
+.mempool-stat--orange { color: var(--btc-orange); }
+.mempool-stat--red    { color: #e74c3c; }
+.mempool-stat--yellow { color: #f1c40f; }
+.mempool-stat--blue   { color: var(--accent-blue); }
+
+.mempool-canvas-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-top: 2px solid var(--btc-orange-glow);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: mempoolFadeUp 0.5s ease 0.2s both;
+}
+
+.mempool-canvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.mempool-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.mempool-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.mempool-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.mempool-legend-dot--priority { background-color: #e74c3c; box-shadow: 0 0 6px #e74c3c; }
+.mempool-legend-dot--fast     { background-color: #F7931A; box-shadow: 0 0 6px #F7931A; }
+.mempool-legend-dot--medium   { background-color: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
+.mempool-legend-dot--slow     { background-color: #3498db; box-shadow: 0 0 6px #3498db; }
+.mempool-legend-dot--no-rush  { background-color: #555555; box-shadow: 0 0 6px #555555; }
+
+.mempool-legend-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.mempool-live-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--success-color);
+    animation: mempoolBlink 2s ease-in-out infinite;
+}
+
+@keyframes mempoolBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+.mempool-canvas {
+    display: block;
+    width: 100%;
+    height: 500px;
+    cursor: crosshair;
+}
+
+.mempool-canvas-footer {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    border-top: 1px solid var(--border-light);
+    letter-spacing: 0.02em;
+}
+
+.mempool-tooltip {
+    position: fixed;
+    left: var(--tip-x);
+    top: var(--tip-y);
+    transform: translate(16px, -50%);
+    background: #1e1e1e;
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--btc-orange);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    min-width: 200px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.mempool-tooltip-txid {
+    font-size: 0.7rem;
+    font-family: monospace;
+    color: var(--text-muted);
+    margin: 0 0 0.6rem;
+    letter-spacing: 0.04em;
+}
+
+.mempool-tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.28rem 0;
+    font-size: 0.8rem;
+}
+
+.mempool-tooltip-row > span:first-child {
+    color: var(--text-secondary);
+}
+
+.mempool-tooltip-row > span:last-child {
+    font-weight: 700;
+    color: var(--text-color);
+    font-variant-numeric: tabular-nums;
+}
+
+.mempool-tooltip-highlight {
+    color: var(--btc-orange) !important;
+}
+
+@media (max-width: 900px) {
+    .mempool-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .mempool-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .mempool-title {
+        font-size: 1.6rem;
+    }
+
+    .mempool-btc-watermark {
+        font-size: 7rem;
+    }
+
+    .mempool-canvas-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .mempool-legend {
+        gap: 0.75rem;
+    }
+}

@@ -24,6 +24,7 @@
 @import "article-card.css";
 @import "quiz.css";
 @import "dca-calculator.css";
+@import "mempool-visualizer.css";
 
 :root {
     --btc-orange: #F7931A;
