@@ -1,5 +1,6 @@
 @import "typography.css";
-@import "sidebar.css";
+@import "top-bar.css";
+@import "navbar.css";
 @import "footer.css";
 @import "home.css";
 @import "home-extensions.css";
@@ -9,7 +10,6 @@
 @import "login.css";
 @import "register.css";
 @import 'not-found.css';
-@import "bitcoin-price.css";
 @import "profile.css";
 @import "scroll-to-top.css";
 @import "spinner.css";
@@ -45,8 +45,6 @@
     --success-color: #2ecc71;
     --accent-blue: #3498db;
     --accent-blue-hover: #2980b9;
-    --sidebar-width: 260px;
-    --sidebar-collapsed: 0px;
 }
 
 * {
@@ -73,16 +71,21 @@ ul {
 
 #root {
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
 }
 
+.app-chrome {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
 .main-area {
-    margin-left: var(--sidebar-width);
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    transition: margin-left 0.3s ease;
+    min-height: 0;
 }
 
 .page-content {
@@ -91,10 +94,4 @@ ul {
     max-width: 1100px;
     margin: 0 auto;
     width: 100%;
-}
-
-@media (max-width: 768px) {
-    .main-area {
-        margin-left: 0;
-    }
 }

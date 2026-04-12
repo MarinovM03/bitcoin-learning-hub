@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router";
 import { AuthProvider } from './contexts/AuthContext';
 import './styles/site.css';
 
-import Sidebar from "./components/sidebar/Sidebar";
+import TopBar from "./components/top-bar/TopBar";
+import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import Home from "./components/home/Home";
 import Catalog from "./components/catalog/Catalog";
@@ -26,7 +27,10 @@ import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer
 function App() {
     return (
         <AuthProvider>
-            <Sidebar />
+            <header className="app-chrome">
+                <TopBar />
+                <Navbar />
+            </header>
 
             <div className="main-area">
                 <ScrollToTop />

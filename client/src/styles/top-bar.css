@@ -1,0 +1,139 @@
+.topbar {
+    background-color: #0a0a0a;
+    border-bottom: 1px solid var(--border-color);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.78rem;
+}
+
+.topbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.45rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+
+.topbar-live {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-right: 1rem;
+    border-right: 1px solid var(--border-light);
+}
+
+.topbar-live-dot {
+    width: 7px;
+    height: 7px;
+    background-color: var(--btc-orange);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--btc-orange);
+    animation: topbar-pulse 2s infinite;
+}
+
+.topbar-live-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.topbar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.topbar-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.topbar-value {
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3px;
+}
+
+.topbar-value--up {
+    color: var(--success-color);
+}
+
+.topbar-value--down {
+    color: var(--danger-color);
+}
+
+.topbar-fg {
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    letter-spacing: 0.3px;
+}
+
+.topbar-fg--extreme-fear {
+    color: #ff5252;
+    border-color: rgba(255, 82, 82, 0.35);
+    background-color: rgba(255, 82, 82, 0.08);
+}
+
+.topbar-fg--fear {
+    color: #ff8a4c;
+    border-color: rgba(255, 138, 76, 0.35);
+    background-color: rgba(255, 138, 76, 0.08);
+}
+
+.topbar-fg--neutral {
+    color: #e0c05a;
+    border-color: rgba(224, 192, 90, 0.35);
+    background-color: rgba(224, 192, 90, 0.08);
+}
+
+.topbar-fg--greed {
+    color: #7ed957;
+    border-color: rgba(126, 217, 87, 0.35);
+    background-color: rgba(126, 217, 87, 0.08);
+}
+
+.topbar-fg--extreme-greed {
+    color: #2ecc71;
+    border-color: rgba(46, 204, 113, 0.4);
+    background-color: rgba(46, 204, 113, 0.1);
+}
+
+@keyframes topbar-pulse {
+    0%   { opacity: 0.5; transform: scale(0.9); }
+    50%  { opacity: 1;   transform: scale(1.15); }
+    100% { opacity: 0.5; transform: scale(0.9); }
+}
+
+@media (max-width: 900px) {
+    .topbar-item--hide-md {
+        display: none;
+    }
+
+    .topbar-inner {
+        gap: 1.25rem;
+        padding: 0.45rem 1rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .topbar-item--hide-sm {
+        display: none;
+    }
+
+    .topbar-live {
+        padding-right: 0.75rem;
+    }
+
+    .topbar-inner {
+        gap: 1rem;
+    }
+}
