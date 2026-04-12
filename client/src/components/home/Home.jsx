@@ -39,29 +39,93 @@ export default function Home() {
             <div className="hero-section">
                 <div className="hero-dot-grid" />
                 <div className="hero-glow" />
+                <div className="hero-glow hero-glow--left" />
 
-                <div className="hero-content">
-                    <div className="hero-eyebrow-row">
-                        <span className="hero-eyebrow">₿ Bitcoin Learning Hub</span>
-                        <span className="hero-badge">Est. 2009</span>
-                        <span className="hero-badge">21M Supply</span>
-                        <span className="hero-badge">Open Source</span>
+                <div className="hero-inner">
+                    <div className="hero-content">
+                        <div className="hero-eyebrow-row">
+                            <span className="hero-eyebrow">₿ Bitcoin Learning Hub</span>
+                            <span className="hero-badge">Est. 2009</span>
+                            <span className="hero-badge">21M Supply</span>
+                            <span className="hero-badge">Open Source</span>
+                        </div>
+                        <h1>
+                            Understand <span>Bitcoin</span>,<br />
+                            from the ground up.
+                        </h1>
+                        <p className="lead">
+                            Community-written articles, a living glossary, and live market data —
+                            everything a beginner or enthusiast needs in one place.
+                        </p>
+                        <div className="hero-actions">
+                            <Link to="/articles" className="btn-hero-primary">
+                                Browse Articles →
+                            </Link>
+                            <Link to="/glossary" className="btn-hero-secondary">
+                                Explore Glossary
+                            </Link>
+                        </div>
+                        <div className="hero-metrics">
+                            <div className="hero-metric">
+                                <span className="hero-metric-value">21M</span>
+                                <span className="hero-metric-label">Supply Cap</span>
+                            </div>
+                            <div className="hero-metric-divider" />
+                            <div className="hero-metric">
+                                <span className="hero-metric-value">100%</span>
+                                <span className="hero-metric-label">Free Access</span>
+                            </div>
+                            <div className="hero-metric-divider" />
+                            <div className="hero-metric">
+                                <span className="hero-metric-value">4+</span>
+                                <span className="hero-metric-label">Live Tools</span>
+                            </div>
+                            <div className="hero-metric-divider" />
+                            <div className="hero-metric">
+                                <span className="hero-metric-value">∞</span>
+                                <span className="hero-metric-label">Things to Learn</span>
+                            </div>
+                        </div>
                     </div>
-                    <h1>
-                        Understand <span>Bitcoin</span>,<br />
-                        from the ground up.
-                    </h1>
-                    <p className="lead">
-                        Community-written articles, a living glossary, and live market data —
-                        everything a beginner or enthusiast needs in one place.
-                    </p>
-                    <div className="hero-actions">
-                        <Link to="/articles" className="btn-hero-primary">
-                            Browse Articles →
-                        </Link>
-                        <Link to="/glossary" className="btn-hero-secondary">
-                            Explore Glossary
-                        </Link>
+
+                    <div className="hero-visual">
+                        <div className="hero-visual-inner">
+                            <p className="hero-visual-label">Explore the Platform</p>
+                            <div className="hero-feature-list">
+                                <Link to="/articles" className="hero-feature-item">
+                                    <span className="hero-feature-icon">📚</span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">Articles</span>
+                                        <span className="hero-feature-desc">Deep-dive Bitcoin education</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                                <Link to="/glossary" className="hero-feature-item">
+                                    <span className="hero-feature-icon">📖</span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">Glossary</span>
+                                        <span className="hero-feature-desc">Every term explained</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                                <Link to="/dca" className="hero-feature-item">
+                                    <span className="hero-feature-icon">📈</span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">DCA Calculator</span>
+                                        <span className="hero-feature-desc">Simulate your stacking strategy</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                                <Link to="/mempool" className="hero-feature-item">
+                                    <span className="hero-feature-icon">⛓</span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">Mempool Visualizer</span>
+                                        <span className="hero-feature-desc">Live transaction data</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
