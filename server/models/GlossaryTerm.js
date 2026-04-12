@@ -27,6 +27,11 @@ const glossaryTermSchema = new mongoose.Schema({
     },
 });
 
+glossaryTermSchema.index(
+    { term: 'text', definition: 'text' },
+    { weights: { term: 10, definition: 2 }, name: 'GlossaryTextIndex' }
+);
+
 const GlossaryTerm = mongoose.model('GlossaryTerm', glossaryTermSchema);
 
 export default GlossaryTerm;

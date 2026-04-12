@@ -6,6 +6,8 @@ import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
 import * as bookmarkController from './controllers/bookmarkController.js';
+import Article from './models/Article.js';
+import GlossaryTerm from './models/GlossaryTerm.js';
 
 const router = Router();
 
@@ -44,6 +46,78 @@ router.delete('/glossary/:termId', requireAuth, glossaryController.remove);
 router.get('/comments/:articleId', commentController.getAllForArticle);
 router.post('/comments', requireAuth, commentController.create);
 router.delete('/comments/:commentId', requireAuth, commentController.remove);
+
+// Search route — unified substring search across articles and glossary
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+router.get('/search', async (req, res) => {
+    const rawQuery = (req.query.q || '').toString().trim();
+    const limit = Math.min(parseInt(req.query.limit || '10', 10) || 10, 25);
+
+    if (rawQuery.length < 2) {
+        return res.json({ query: rawQuery, articles: [], glossary: [] });
+    }
+
+    try {
+        const pattern = new RegExp(escapeRegex(rawQuery), 'i');
+        const overfetch = limit * 3;
+
+        const [articles, glossary] = await Promise.all([
+            Article.find(
+                {
+                    status: 'published',
+                    $or: [
+                        { title: pattern },
+                        { summary: pattern },
+                        { content: pattern },
+                    ],
+                },
+                { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 }
+            )
+                .limit(overfetch)
+                .lean(),
+            GlossaryTerm.find(
+                {
+                    $or: [
+                        { term: pattern },
+                        { definition: pattern },
+                    ],
+                },
+                { term: 1, definition: 1, category: 1 }
+            )
+                .limit(overfetch)
+                .lean(),
+        ]);
+
+        const rank = (hay, weight) => (hay && pattern.test(hay) ? weight : 0);
+        const rankedArticles = articles
+            .map((a) => ({
+                article: a,
+                score: rank(a.title, 10) + rank(a.summary, 5) + rank(a.content, 1),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map(({ article }) => {
+                // strip content from payload — only used for ranking
+                const { content, ...rest } = article;
+                return rest;
+            });
+
+        const rankedGlossary = glossary
+            .map((g) => ({
+                term: g,
+                score: rank(g.term, 10) + rank(g.definition, 2),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map(({ term }) => term);
+
+        res.json({ query: rawQuery, articles: rankedArticles, glossary: rankedGlossary });
+    } catch (err) {
+        console.error('Search failed:', err.message);
+        res.status(500).json({ error: 'Search failed' });
+    }
+});
 
 // Proxy routes — server-side fetches to avoid browser CORS/rate-limit issues
 let btcGlobalCache = { data: null, timestamp: 0 };

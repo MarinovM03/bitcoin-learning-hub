@@ -57,6 +57,11 @@ const articleSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
+articleSchema.index(
+    { title: 'text', summary: 'text', content: 'text' },
+    { weights: { title: 10, summary: 5, content: 1 }, name: 'ArticleTextIndex' }
+);
+
 const Article = mongoose.model('Article', articleSchema);
 
 export default Article;
