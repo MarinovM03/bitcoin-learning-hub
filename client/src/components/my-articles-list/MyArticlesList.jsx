@@ -25,7 +25,6 @@ export default function MyArticlesList({ publishedArticles, draftArticles, isLoa
         <div className="my-articles-section">
             {deleteTarget && (
                 <ConfirmModal
-                    icon="📄"
                     title="Delete Article?"
                     message={`You are about to delete "${deleteTarget.title}".`}
                     subMessage="This will permanently remove the article and cannot be undone."
