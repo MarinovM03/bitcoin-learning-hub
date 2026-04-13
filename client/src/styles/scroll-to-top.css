@@ -3,30 +3,64 @@
     bottom: 40px;
     right: 40px;
     z-index: 999;
-    
-    background-color: var(--btc-orange);
-    
+
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    
+    border: none;
+    padding: 0;
+
+    background-color: var(--btc-orange);
+    color: white;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.scroll-icon {
-    width: 28px;
-    height: 28px;
-    fill: white;
+.scroll-btn.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .scroll-btn:hover {
-    background-color: #F7931A;
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    background-color: #ffa733;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 22px rgba(247, 147, 26, 0.35);
+}
+
+.scroll-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+.scroll-btn:active {
+    transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-btn,
+    .scroll-btn:hover,
+    .scroll-btn:active {
+        transition: opacity 0.15s ease;
+        transform: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .scroll-btn {
+        bottom: 24px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+    }
 }

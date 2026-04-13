@@ -1,37 +1,37 @@
 import { useState, useEffect } from "react";
+import { ArrowUp } from "lucide-react";
 
 export default function ScrollToTop() {
     const [isVisible, setIsVisible] = useState(false);
 
-    const toggleVisibility = () => {
-        if (window.scrollY > 300) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
-        }
-    };
-
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    };
-
     useEffect(() => {
-        window.addEventListener("scroll", toggleVisibility);
+        const toggleVisibility = () => {
+            setIsVisible(window.scrollY > 300);
+        };
+
+        toggleVisibility();
+        window.addEventListener("scroll", toggleVisibility, { passive: true });
         return () => window.removeEventListener("scroll", toggleVisibility);
     }, []);
 
+    const scrollToTop = () => {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({
+            top: 0,
+            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        });
+    };
+
     return (
-        <div className="scroll-to-top">
-            {isVisible && (
-                <div onClick={scrollToTop} className="scroll-btn">
-                    <svg className="scroll-icon" viewBox="0 0 24 24">
-                        <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/>
-                    </svg>
-                </div>
-            )}
-        </div>
+        <button
+            type="button"
+            className={`scroll-btn${isVisible ? ' is-visible' : ''}`}
+            onClick={scrollToTop}
+            aria-label="Scroll to top"
+            aria-hidden={!isVisible}
+            tabIndex={isVisible ? 0 : -1}
+        >
+            <ArrowUp size={22} strokeWidth={2.5} />
+        </button>
     );
 }
