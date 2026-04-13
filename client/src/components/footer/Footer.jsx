@@ -27,6 +27,12 @@ export default function Footer() {
                         <Link to="/glossary" className="footer-nav-link">Glossary</Link>
                     </div>
                     <div className="footer-nav-group">
+                        <span className="footer-nav-label">Tools</span>
+                        <Link to="/dca" className="footer-nav-link">DCA Calculator</Link>
+                        <Link to="/mempool" className="footer-nav-link">Mempool</Link>
+                        <Link to="/address" className="footer-nav-link">Address Lookup</Link>
+                    </div>
+                    <div className="footer-nav-group">
                         <span className="footer-nav-label">Account</span>
                         {isAuthenticated ? (
                             <>
