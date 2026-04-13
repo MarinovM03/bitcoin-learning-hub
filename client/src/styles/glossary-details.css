@@ -35,6 +35,13 @@
     transform: translateX(-2px);
 }
 
+.glossary-details-chrome-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.glossary-details-copy-btn,
 .glossary-details-delete-btn {
     display: inline-flex;
     align-items: center;
@@ -49,6 +56,18 @@
     font-family: 'Exo 2', sans-serif;
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+
+.glossary-details-copy-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+}
+
+.glossary-details-copy-btn.is-copied {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
 }
 
 .glossary-details-delete-btn:hover {
@@ -271,6 +290,165 @@
     color: var(--text-color);
 }
 
+/* Related terms — same-category strip */
+.glossary-details-related {
+    padding: 1.75rem 2rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    margin-bottom: 2rem;
+}
+
+.glossary-details-related-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--btc-orange);
+}
+
+.glossary-details-related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+}
+
+.glossary-details-related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.15rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid transparent;
+    border-radius: 10px;
+    color: var(--text-color);
+    transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+    min-width: 0;
+}
+
+.glossary-details-related-card:hover {
+    border-color: var(--btc-orange);
+    border-left-color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+    transform: translateY(-2px);
+}
+
+.glossary-details-related-term {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: -0.2px;
+}
+
+.glossary-details-related-definition {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Pager — prev/next alphabetical */
+.glossary-details-pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.glossary-details-pager-link {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: 1.1rem 1.35rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    color: var(--text-color);
+    transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+    min-width: 0;
+}
+
+.glossary-details-pager-link.is-prev {
+    text-align: left;
+}
+
+.glossary-details-pager-link.is-next {
+    grid-template-columns: 1fr auto;
+    text-align: right;
+}
+
+.glossary-details-pager-link:hover {
+    border-color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+    transform: translateY(-2px);
+}
+
+.glossary-details-pager-link.is-prev svg {
+    grid-row: 1 / span 2;
+    color: var(--btc-orange);
+    transition: transform 0.2s;
+}
+
+.glossary-details-pager-link.is-next svg {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    color: var(--btc-orange);
+    transition: transform 0.2s;
+}
+
+.glossary-details-pager-link.is-prev:hover svg {
+    transform: translateX(-3px);
+}
+
+.glossary-details-pager-link.is-next:hover svg {
+    transform: translateX(3px);
+}
+
+.glossary-details-pager-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    grid-row: 1;
+}
+
+.glossary-details-pager-link.is-next .glossary-details-pager-label {
+    grid-column: 1;
+}
+
+.glossary-details-pager-term {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    grid-row: 2;
+}
+
+.glossary-details-pager-link.is-next .glossary-details-pager-term {
+    grid-column: 1;
+}
+
+.glossary-details-pager-spacer {
+    display: block;
+}
+
 /* Stub / error */
 .glossary-details-stub {
     padding: 2.25rem 1.5rem;
@@ -340,6 +518,18 @@
     }
 
     .glossary-details-examples {
+        grid-template-columns: 1fr;
+    }
+
+    .glossary-details-pager {
+        grid-template-columns: 1fr;
+    }
+
+    .glossary-details-related {
+        padding: 1.4rem 1.25rem;
+    }
+
+    .glossary-details-related-list {
         grid-template-columns: 1fr;
     }
 }

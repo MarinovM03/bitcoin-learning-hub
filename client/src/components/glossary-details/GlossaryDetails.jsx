@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft, BookMarked, Lightbulb, Trash2, Clock, Hash } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookMarked, Lightbulb, Trash2, Clock, Hash, Link2, Check, Sparkles } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import Spinner from "../spinner/Spinner";
@@ -17,6 +17,8 @@ export default function GlossaryDetails() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const copyTimeoutRef = useRef(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -40,6 +42,23 @@ export default function GlossaryDetails() {
             cancelled = true;
         };
     }, [termId]);
+
+    useEffect(() => {
+        return () => {
+            if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+        };
+    }, []);
+
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+            copyTimeoutRef.current = setTimeout(() => setCopied(false), 1800);
+        } catch {
+            setCopied(false);
+        }
+    };
 
     const handleDelete = async () => {
         try {
@@ -77,6 +96,7 @@ export default function GlossaryDetails() {
     const isOwner = userId && term._ownerId === userId;
     const hasExtended = Boolean(term.extendedDefinition && term.extendedDefinition.trim());
     const hasExamples = Array.isArray(term.examples) && term.examples.length > 0;
+    const hasRelated = Array.isArray(term.related) && term.related.length > 0;
     const paragraphs = hasExtended
         ? term.extendedDefinition.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
         : [];
@@ -105,16 +125,29 @@ export default function GlossaryDetails() {
                         <ArrowLeft size={16} strokeWidth={2.25} />
                         Back to Glossary
                     </Link>
-                    {isOwner && (
+                    <div className="glossary-details-chrome-actions">
                         <button
-                            className="glossary-details-delete-btn"
-                            onClick={() => setShowDeleteModal(true)}
-                            aria-label="Delete term"
+                            type="button"
+                            className={`glossary-details-copy-btn${copied ? ' is-copied' : ''}`}
+                            onClick={handleCopyLink}
+                            aria-label={copied ? "Link copied" : "Copy link to this term"}
                         >
-                            <Trash2 size={14} strokeWidth={2.25} />
-                            Delete
+                            {copied
+                                ? <Check size={14} strokeWidth={2.75} />
+                                : <Link2 size={14} strokeWidth={2.25} />}
+                            {copied ? 'Copied' : 'Copy link'}
                         </button>
-                    )}
+                        {isOwner && (
+                            <button
+                                className="glossary-details-delete-btn"
+                                onClick={() => setShowDeleteModal(true)}
+                                aria-label="Delete term"
+                            >
+                                <Trash2 size={14} strokeWidth={2.25} />
+                                Delete
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <header className="glossary-details-hero">
@@ -187,6 +220,63 @@ export default function GlossaryDetails() {
                     <p className="glossary-details-stub">
                         This entry doesn't have an extended explanation yet.
                     </p>
+                )}
+
+                {hasRelated && (
+                    <section className="glossary-details-related">
+                        <div className="glossary-details-related-head">
+                            <Sparkles size={14} strokeWidth={2.25} />
+                            <span className="glossary-details-card-label">
+                                More in {term.category}
+                            </span>
+                        </div>
+                        <ul className="glossary-details-related-list">
+                            {term.related.map((rel) => (
+                                <li key={rel._id}>
+                                    <Link
+                                        to={`/glossary/${rel._id}`}
+                                        className="glossary-details-related-card"
+                                    >
+                                        <span className="glossary-details-related-term">
+                                            {rel.term}
+                                        </span>
+                                        <span className="glossary-details-related-definition">
+                                            {rel.definition}
+                                        </span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
+
+                {(term.prev || term.next) && (
+                    <nav className="glossary-details-pager" aria-label="Glossary navigation">
+                        {term.prev ? (
+                            <Link
+                                to={`/glossary/${term.prev._id}`}
+                                className="glossary-details-pager-link is-prev"
+                            >
+                                <ArrowLeft size={14} strokeWidth={2.25} />
+                                <span className="glossary-details-pager-label">Previous</span>
+                                <span className="glossary-details-pager-term">{term.prev.term}</span>
+                            </Link>
+                        ) : (
+                            <span className="glossary-details-pager-spacer" aria-hidden="true" />
+                        )}
+                        {term.next ? (
+                            <Link
+                                to={`/glossary/${term.next._id}`}
+                                className="glossary-details-pager-link is-next"
+                            >
+                                <span className="glossary-details-pager-label">Next</span>
+                                <span className="glossary-details-pager-term">{term.next.term}</span>
+                                <ArrowRight size={14} strokeWidth={2.25} />
+                            </Link>
+                        ) : (
+                            <span className="glossary-details-pager-spacer" aria-hidden="true" />
+                        )}
+                    </nav>
                 )}
             </div>
         </section>

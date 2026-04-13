@@ -1,5 +1,7 @@
 import GlossaryTerm from '../models/GlossaryTerm.js';
 
+const CASE_INSENSITIVE = { locale: 'en', strength: 2 };
+
 const sanitizeExamples = (value) => {
     if (!Array.isArray(value)) return [];
     return value
@@ -10,7 +12,9 @@ const sanitizeExamples = (value) => {
 
 export const getAll = async (req, res) => {
     try {
-        const terms = await GlossaryTerm.find().sort({ term: 1 });
+        const terms = await GlossaryTerm.find()
+            .collation(CASE_INSENSITIVE)
+            .sort({ term: 1 });
         res.json(terms);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -23,7 +27,28 @@ export const getOne = async (req, res) => {
         if (!term) {
             return res.status(404).json({ message: "Term not found" });
         }
-        res.json(term);
+
+        const neighborProjection = { term: 1 };
+        const [prev, next, related] = await Promise.all([
+            GlossaryTerm.findOne({ term: { $lt: term.term } }, neighborProjection)
+                .collation(CASE_INSENSITIVE)
+                .sort({ term: -1 })
+                .lean(),
+            GlossaryTerm.findOne({ term: { $gt: term.term } }, neighborProjection)
+                .collation(CASE_INSENSITIVE)
+                .sort({ term: 1 })
+                .lean(),
+            GlossaryTerm.find(
+                { category: term.category, _id: { $ne: term._id } },
+                { term: 1, definition: 1, category: 1 }
+            )
+                .collation(CASE_INSENSITIVE)
+                .sort({ term: 1 })
+                .limit(4)
+                .lean(),
+        ]);
+
+        res.json({ ...term, prev, next, related });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
