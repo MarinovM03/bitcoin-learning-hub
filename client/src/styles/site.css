@@ -31,6 +31,7 @@
 @import "quiz.css";
 @import "dca-calculator.css";
 @import "mempool-visualizer.css";
+@import "address-demystifier.css";
 
 :root {
     --btc-orange: #F7931A;

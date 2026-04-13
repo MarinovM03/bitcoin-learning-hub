@@ -11,6 +11,7 @@ const NAV_LINKS = [
     { to: "/glossary", label: "Glossary" },
     { to: "/dca", label: "DCA Calculator" },
     { to: "/mempool", label: "Mempool" },
+    { to: "/address", label: "Address Check" },
 ];
 
 export default function Navbar() {
