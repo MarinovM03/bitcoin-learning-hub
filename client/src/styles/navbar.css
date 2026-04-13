@@ -365,6 +365,26 @@
     font-size: 0.95rem;
 }
 
+@media (max-width: 1150px) and (min-width: 901px) {
+    .navbar-inner {
+        gap: 1.25rem;
+        padding: 0.9rem 1.1rem;
+    }
+
+    .navbar-link {
+        padding: 0.5rem 0.65rem;
+        font-size: 0.82rem;
+    }
+
+    .navbar-search-btn-label {
+        display: none;
+    }
+
+    .navbar-search-btn {
+        padding: 0.45rem 0.55rem;
+    }
+}
+
 @media (max-width: 900px) {
     .navbar-inner {
         gap: 1.25rem;

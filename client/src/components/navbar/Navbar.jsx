@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation } from "react-router";
 import { Menu, X, PenLine, Search } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -11,7 +12,7 @@ const NAV_LINKS = [
     { to: "/glossary", label: "Glossary" },
     { to: "/dca", label: "DCA Calculator" },
     { to: "/mempool", label: "Mempool" },
-    { to: "/address", label: "Address Check" },
+    { to: "/address", label: "Address Lookup" },
 ];
 
 export default function Navbar() {
@@ -120,7 +121,7 @@ export default function Navbar() {
 
             {isSearchOpen && <SearchOverlay onClose={() => setIsSearchOpen(false)} />}
 
-            {isMobileOpen && (
+            {isMobileOpen && createPortal(
                 <div className="navbar-mobile" role="dialog" aria-modal="true" aria-label="Navigation">
                     <div className="navbar-mobile-head">
                         <Link to="/" className="navbar-brand" onClick={() => setIsMobileOpen(false)}>
@@ -151,7 +152,8 @@ export default function Navbar() {
                             </Link>
                         </div>
                     )}
-                </div>
+                </div>,
+                document.body
             )}
         </nav>
     );
