@@ -135,6 +135,44 @@
     color: #111;
 }
 
+.address-input-clear:focus-visible {
+    outline: 2px solid var(--btc-orange);
+    outline-offset: 2px;
+    background-color: var(--btc-orange);
+    color: #111;
+}
+
+.address-input-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
+.address-input-hint svg {
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+
+.address-input-hint kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    margin: 0 1px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+}
+
 .address-samples {
     display: flex;
     align-items: center;

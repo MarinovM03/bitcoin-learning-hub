@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { BookOpen, Library, LineChart, Network, TrendingUp, Heart } from "lucide-react";
+import { BookOpen, Library, LineChart, Network, ScanLine, TrendingUp, Heart } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
@@ -78,7 +78,7 @@ export default function Home() {
                             </div>
                             <div className="hero-metric-divider" />
                             <div className="hero-metric">
-                                <span className="hero-metric-value">4+</span>
+                                <span className="hero-metric-value">5+</span>
                                 <span className="hero-metric-label">Live Tools</span>
                             </div>
                             <div className="hero-metric-divider" />
@@ -130,6 +130,16 @@ export default function Home() {
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Mempool Visualizer</span>
                                         <span className="hero-feature-desc">Live transaction data</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                                <Link to="/address" className="hero-feature-item">
+                                    <span className="hero-feature-icon">
+                                        <ScanLine size={22} strokeWidth={1.8} />
+                                    </span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">Address Lookup</span>
+                                        <span className="hero-feature-desc">Identify any Bitcoin address</span>
                                     </div>
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>

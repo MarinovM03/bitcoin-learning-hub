@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { ExternalLink, Search, X, Sparkles, CircleAlert, Info } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { ExternalLink, Search, X, Sparkles, CircleAlert, Info, Clipboard } from 'lucide-react';
 import { detectAddressType, getMempoolUrl } from '../../utils/addressTypes';
 import AddressInfoModal from '../address-info-modal/AddressInfoModal';
 
@@ -13,9 +13,14 @@ const SAMPLE_ADDRESSES = [
 export default function AddressDemystifier() {
     const [raw, setRaw] = useState('');
     const [showInfo, setShowInfo] = useState(false);
+    const inputRef = useRef(null);
     const trimmed = raw.trim();
     const detection = useMemo(() => detectAddressType(trimmed), [trimmed]);
     const mempoolUrl = detection ? getMempoolUrl(detection) : null;
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
 
     return (
         <section className="page-content address-page">
@@ -49,6 +54,7 @@ export default function AddressDemystifier() {
                 <div className="address-input-wrapper">
                     <Search size={16} strokeWidth={2.25} className="address-input-icon" />
                     <input
+                        ref={inputRef}
                         type="text"
                         className="address-input"
                         placeholder="Paste a Bitcoin address (1..., 3..., bc1..., lnbc...)"
@@ -69,6 +75,11 @@ export default function AddressDemystifier() {
                             <X size={14} strokeWidth={2.75} />
                         </button>
                     )}
+                </div>
+
+                <div className="address-input-hint">
+                    <Clipboard size={12} strokeWidth={2.25} />
+                    <span>Tip: press <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste from your clipboard</span>
                 </div>
 
                 <div className="address-samples">
