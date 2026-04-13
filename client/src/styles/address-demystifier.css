@@ -1,0 +1,649 @@
+.address-page {
+    padding-top: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.address-header {
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.address-hero-glow {
+    position: absolute;
+    top: -60px;
+    left: -80px;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.address-btc-watermark {
+    position: absolute;
+    top: -1.5rem;
+    right: -1rem;
+    font-size: 11rem;
+    font-weight: 700;
+    color: var(--btc-orange);
+    opacity: 0.04;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+.address-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.address-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--btc-orange);
+    margin: 0 0 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.address-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.5px;
+}
+
+.address-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 620px;
+    line-height: 1.6;
+}
+
+.address-input-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.address-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.address-input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.address-input {
+    width: 100%;
+    padding: 0.95rem 1rem 0.95rem 2.6rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-color);
+    font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    transition: border-color 0.2s, background-color 0.2s;
+    outline: none;
+}
+
+.address-input:focus {
+    border-color: var(--btc-orange);
+    background-color: #050505;
+}
+
+.address-input::placeholder {
+    color: var(--text-muted);
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: 0;
+}
+
+.address-input-clear {
+    position: absolute;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.address-input-clear:hover {
+    background-color: var(--btc-orange);
+    color: #111;
+}
+
+.address-samples {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.address-samples-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-right: 0.25rem;
+}
+
+.address-sample-btn {
+    padding: 0.4rem 0.85rem;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+
+.address-sample-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+}
+
+/* Empty + typing states */
+.address-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem 1.5rem;
+    background-color: var(--card-bg);
+    border: 1px dashed var(--border-light);
+    border-radius: 14px;
+    color: var(--text-muted);
+}
+
+.address-empty p {
+    margin: 0;
+    font-size: 0.92rem;
+}
+
+.address-result {
+    position: relative;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 2rem 2.25rem;
+    overflow: hidden;
+    animation: addressResultIn 0.35s ease-out;
+}
+
+@keyframes addressResultIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.address-result::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--btc-orange);
+    opacity: 0.6;
+}
+
+.address-result--legacy::before { background: linear-gradient(90deg, #ffb84d, transparent); }
+.address-result--p2sh::before { background: linear-gradient(90deg, #7bc9e0, transparent); }
+.address-result--p2wpkh::before,
+.address-result--p2wsh::before { background: linear-gradient(90deg, #6ae0a3, transparent); }
+.address-result--p2tr::before { background: linear-gradient(90deg, #c49bff, transparent); }
+.address-result--lightning::before { background: linear-gradient(90deg, #ffdd33, transparent); }
+.address-result--testnet::before { background: linear-gradient(90deg, #888, transparent); }
+.address-result--unknown::before { background: linear-gradient(90deg, var(--danger-color), transparent); }
+.address-result--typing::before { opacity: 0; }
+
+.address-result--typing {
+    text-align: center;
+    padding: 1.75rem;
+}
+
+.address-result-head {
+    margin-bottom: 1.5rem;
+}
+
+.address-result-label {
+    display: inline-block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 0.55rem;
+}
+
+.address-result-name {
+    margin: 0 0 0.25rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+}
+
+.address-result--legacy .address-result-name { color: #ffb84d; }
+.address-result--p2sh .address-result-name { color: #7bc9e0; }
+.address-result--p2wpkh .address-result-name,
+.address-result--p2wsh .address-result-name { color: #6ae0a3; }
+.address-result--p2tr .address-result-name { color: #c49bff; }
+.address-result--lightning .address-result-name { color: #ffdd33; }
+.address-result--testnet .address-result-name { color: #cccccc; }
+.address-result--unknown .address-result-name { color: var(--danger-color); }
+
+.address-result-fullname {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.address-result-value {
+    margin-bottom: 1.5rem;
+    padding: 0.85rem 1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+    font-size: 0.82rem;
+    color: var(--text-color);
+    word-break: break-all;
+    line-height: 1.6;
+}
+
+.address-result-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.address-fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    min-width: 0;
+}
+
+.address-fact-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.address-fact-value {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: capitalize;
+}
+
+.address-result-description {
+    margin: 0 0 1.5rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+.address-result-characteristics {
+    list-style: none;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.address-result-characteristics li {
+    position: relative;
+    padding: 0.6rem 0.85rem 0.6rem 2.1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.address-result-characteristics li::before {
+    content: "";
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--btc-orange);
+    transform: translateY(-50%);
+}
+
+.address-mempool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.15rem;
+    background-color: var(--btc-orange);
+    color: #111;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: 0.02em;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.address-mempool-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(247, 147, 26, 0.25);
+    color: #111;
+}
+
+.address-info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    padding: 0.4rem 0.9rem;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    letter-spacing: 0.04em;
+}
+
+.address-info-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}
+
+.address-info-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: addressResultIn 0.2s ease both;
+}
+
+.address-info-modal {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-top: 2px solid var(--btc-orange);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 84vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.address-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+
+.address-info-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.address-info-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+
+.address-info-close:hover {
+    color: var(--text-color);
+    background: var(--border-light);
+}
+
+.address-info-body {
+    overflow-y: auto;
+    padding: 0 1.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.address-info-section {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.address-info-section--last {
+    border-bottom: none;
+}
+
+.address-info-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--btc-orange);
+    margin: 0 0 0.75rem;
+}
+
+.address-info-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+}
+
+.address-info-text:last-child {
+    margin-bottom: 0;
+}
+
+.address-info-text strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.address-info-text em {
+    color: var(--text-color);
+    font-style: italic;
+}
+
+.address-info-text code,
+.address-info-stat-desc code {
+    padding: 0.08rem 0.4rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+    font-size: 0.78rem;
+    color: var(--btc-orange);
+}
+
+.address-info-formats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.address-info-formats-head,
+.address-info-format-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.2fr 0.7fr 1fr;
+    gap: 0.75rem;
+    padding: 0.7rem 0.95rem;
+    font-size: 0.8rem;
+    align-items: center;
+}
+
+.address-info-formats-head {
+    background-color: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.address-info-format-row {
+    border-bottom: 1px solid var(--border-light);
+}
+
+.address-info-format-row:last-child {
+    border-bottom: none;
+}
+
+.address-info-format-name {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.address-info-format-prefix {
+    font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+    font-size: 0.74rem;
+    color: var(--btc-orange);
+}
+
+.address-info-format-year,
+.address-info-format-encoding {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.address-info-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.address-info-stat-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.85rem;
+}
+
+.address-info-stat-row:last-child {
+    border-bottom: none;
+}
+
+.address-info-stat-name {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.address-info-stat-desc {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .address-info-formats-head,
+    .address-info-format-row {
+        grid-template-columns: 1.2fr 1.3fr;
+        gap: 0.35rem 0.75rem;
+    }
+
+    .address-info-formats-head span:nth-child(3),
+    .address-info-formats-head span:nth-child(4),
+    .address-info-format-year,
+    .address-info-format-encoding {
+        display: none;
+    }
+
+    .address-info-stat-row {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+}
+
+@media (max-width: 720px) {
+    .address-title {
+        font-size: 2rem;
+    }
+
+    .address-result {
+        padding: 1.6rem 1.35rem;
+    }
+
+    .address-result-facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .address-result-name {
+        font-size: 1.6rem;
+    }
+
+    .address-btc-watermark {
+        font-size: 7rem;
+        right: -0.5rem;
+    }
+}
