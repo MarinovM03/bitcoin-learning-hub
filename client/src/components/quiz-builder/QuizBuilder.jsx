@@ -1,6 +1,8 @@
 import { X } from 'lucide-react';
 
 const MAX_QUESTIONS = 5;
+const MAX_QUESTION_LENGTH = 200;
+const MAX_OPTION_LENGTH = 120;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 const emptyQuestion = () => ({
@@ -9,7 +11,7 @@ const emptyQuestion = () => ({
     correctIndex: 0,
 });
 
-export default function QuizBuilder({ quiz, onChange }) {
+export default function QuizBuilder({ quiz, onChange, showErrors = false }) {
     const addQuestion = () => {
         if (quiz.length >= MAX_QUESTIONS) return;
         onChange([...quiz, emptyQuestion()]);
@@ -54,7 +56,10 @@ export default function QuizBuilder({ quiz, onChange }) {
             )}
 
             <div className="qb-list">
-                {quiz.map((q, qIndex) => (
+                {quiz.map((q, qIndex) => {
+                    const questionEmpty = !q.question?.trim();
+                    const questionErr = showErrors && questionEmpty;
+                    return (
                     <div key={qIndex} className="qb-card">
                         <div className="qb-card-top">
                             <span className="qb-card-num">Question {qIndex + 1}</span>
@@ -65,13 +70,18 @@ export default function QuizBuilder({ quiz, onChange }) {
                         </div>
 
                         <div className="qb-field">
-                            <label className="qb-label">Question text</label>
+                            <label className="qb-label">
+                                Question text
+                                <span className="qb-char-count">{q.question.length}/{MAX_QUESTION_LENGTH}</span>
+                            </label>
                             <textarea
-                                className="qb-textarea"
+                                className={`qb-textarea${questionErr ? ' qb-textarea--error' : ''}`}
                                 placeholder="e.g. What is the maximum supply of Bitcoin?"
                                 value={q.question}
                                 rows={2}
+                                maxLength={MAX_QUESTION_LENGTH}
                                 onChange={(e) => updateQuestion(qIndex, e.target.value)}
+                                aria-invalid={questionErr || undefined}
                             />
                         </div>
 
@@ -83,10 +93,16 @@ export default function QuizBuilder({ quiz, onChange }) {
                             <div className="qb-options" role="radiogroup" aria-label={`Question ${qIndex + 1} answer options`}>
                                 {q.options.map((opt, optIndex) => {
                                     const isCorrect = q.correctIndex === optIndex;
+                                    const optionErr = showErrors && !opt?.trim();
+                                    const rowCls = [
+                                        'qb-option-row',
+                                        isCorrect && 'qb-option-row--correct',
+                                        optionErr && 'qb-option-row--error',
+                                    ].filter(Boolean).join(' ');
                                     return (
                                         <div
                                             key={optIndex}
-                                            className={`qb-option-row${isCorrect ? ' qb-option-row--correct' : ''}`}
+                                            className={rowCls}
                                             onClick={() => setCorrect(qIndex, optIndex)}
                                         >
                                             <span className="qb-option-letter" aria-hidden="true">{LETTERS[optIndex]}</span>
@@ -95,7 +111,9 @@ export default function QuizBuilder({ quiz, onChange }) {
                                                 className="qb-option-input"
                                                 placeholder={`Option ${LETTERS[optIndex]}...`}
                                                 value={opt}
+                                                maxLength={MAX_OPTION_LENGTH}
                                                 aria-label={`Option ${LETTERS[optIndex]} text`}
+                                                aria-invalid={optionErr || undefined}
                                                 onClick={(e) => e.stopPropagation()}
                                                 onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
                                             />
@@ -117,7 +135,8 @@ export default function QuizBuilder({ quiz, onChange }) {
                             </div>
                         </div>
                     </div>
-                ))}
+                    );
+                })}
             </div>
 
             {quiz.length >= MAX_QUESTIONS && (
