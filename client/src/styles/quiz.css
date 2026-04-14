@@ -65,6 +65,7 @@
 
 .quiz-progress-fill {
     height: 100%;
+    width: var(--quiz-progress, 0%);
     background: var(--btc-orange);
     transition: width 0.35s ease;
     border-radius: 0 4px 4px 0;
@@ -102,7 +103,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    padding: 0 1.75rem;
+    padding: 0 1.75rem 1.25rem;
 }
 
 .quiz-option {
@@ -166,6 +167,8 @@
 
 .quiz-option-text {
     flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .quiz-option-badge {
@@ -182,7 +185,7 @@
 .quiz-next-row {
     display: flex;
     justify-content: flex-end;
-    padding: 1.25rem 1.75rem;
+    padding: 0 1.75rem 1.25rem;
 }
 
 .quiz-next-btn {
@@ -261,7 +264,8 @@
 .quiz-result-row {
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
     padding: 0.6rem 0.85rem;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -288,14 +292,18 @@
 
 .quiz-result-row-q {
     flex: 1;
+    min-width: 0;
     color: var(--text-color);
     font-weight: 500;
+    overflow-wrap: anywhere;
 }
 
 .quiz-result-row-answer {
+    flex-basis: 100%;
+    padding-left: 1.4rem;
     font-size: 0.78rem;
     color: #22c55e;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .quiz-restart-btn {
