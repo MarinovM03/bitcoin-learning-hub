@@ -80,7 +80,7 @@ export default function QuizBuilder({ quiz, onChange }) {
                                 Answer options
                                 <span className="qb-label-sub"> — click a row to mark it as correct</span>
                             </label>
-                            <div className="qb-options">
+                            <div className="qb-options" role="radiogroup" aria-label={`Question ${qIndex + 1} answer options`}>
                                 {q.options.map((opt, optIndex) => {
                                     const isCorrect = q.correctIndex === optIndex;
                                     return (
@@ -89,18 +89,28 @@ export default function QuizBuilder({ quiz, onChange }) {
                                             className={`qb-option-row${isCorrect ? ' qb-option-row--correct' : ''}`}
                                             onClick={() => setCorrect(qIndex, optIndex)}
                                         >
-                                            <span className="qb-option-letter">{LETTERS[optIndex]}</span>
+                                            <span className="qb-option-letter" aria-hidden="true">{LETTERS[optIndex]}</span>
                                             <input
                                                 type="text"
                                                 className="qb-option-input"
                                                 placeholder={`Option ${LETTERS[optIndex]}...`}
                                                 value={opt}
+                                                aria-label={`Option ${LETTERS[optIndex]} text`}
                                                 onClick={(e) => e.stopPropagation()}
                                                 onChange={(e) => updateOption(qIndex, optIndex, e.target.value)}
                                             />
-                                            <span className={`qb-option-status${isCorrect ? ' qb-option-status--correct' : ''}`}>
+                                            <button
+                                                type="button"
+                                                className={`qb-option-status${isCorrect ? ' qb-option-status--correct' : ''}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setCorrect(qIndex, optIndex);
+                                                }}
+                                                aria-pressed={isCorrect}
+                                                aria-label={`Mark option ${LETTERS[optIndex]} as the correct answer`}
+                                            >
                                                 {isCorrect ? '✓ Correct' : 'Set correct'}
-                                            </span>
+                                            </button>
                                         </div>
                                     );
                                 })}
