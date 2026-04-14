@@ -1,3 +1,26 @@
+export function validateQuiz(quiz) {
+    if (!quiz || quiz.length === 0) return null;
+
+    for (let i = 0; i < quiz.length; i++) {
+        const q = quiz[i];
+        const num = i + 1;
+
+        if (!q.question?.trim()) {
+            return `Quiz question ${num}: question text is empty.`;
+        }
+        if (!Array.isArray(q.options) || q.options.length < 2) {
+            return `Quiz question ${num}: must have at least 2 answer options.`;
+        }
+        if (!q.options.every(opt => opt?.trim())) {
+            return `Quiz question ${num}: all answer options must be filled in.`;
+        }
+        if (typeof q.correctIndex !== 'number' || q.correctIndex < 0 || q.correctIndex >= q.options.length) {
+            return `Quiz question ${num}: please mark a correct answer.`;
+        }
+    }
+    return null;
+}
+
 export function getResultMessage(score, total) {
     if (score === 0) return { emoji: '😅', text: "Don't worry, re-read the article and try again!" };
     if (score === total) return { emoji: '₿', text: "Perfect score! You're a Bitcoin expert!" };
