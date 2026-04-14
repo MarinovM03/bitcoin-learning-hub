@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getResultMessage } from '../../utils/quizHelpers';
 
 export default function QuizSection({ quiz }) {
@@ -8,6 +8,21 @@ export default function QuizSection({ quiz }) {
     const [score, setScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [answers, setAnswers] = useState([]);
+
+    const questionRef = useRef(null);
+    const resultRef = useRef(null);
+
+    useEffect(() => {
+        if (started && !finished && questionRef.current) {
+            questionRef.current.focus();
+        }
+    }, [started, currentIndex, finished]);
+
+    useEffect(() => {
+        if (finished && resultRef.current) {
+            resultRef.current.focus();
+        }
+    }, [finished]);
 
     if (!quiz || quiz.length === 0) return null;
 
@@ -74,7 +89,7 @@ export default function QuizSection({ quiz }) {
         return (
             <div className="quiz-section quiz-section--result" role="region" aria-label="Quiz results">
                 <div className="quiz-result-emoji" aria-hidden="true">{result.emoji}</div>
-                <h3 className="quiz-result-title">Quiz Complete!</h3>
+                <h3 className="quiz-result-title" ref={resultRef} tabIndex={-1}>Quiz Complete!</h3>
                 <div
                     className="quiz-result-score"
                     aria-label={`Final score: ${score} out of ${quiz.length}`}
@@ -127,7 +142,7 @@ export default function QuizSection({ quiz }) {
                 <span className="quiz-score-live" aria-live="polite" aria-atomic="true">Score: {score}</span>
             </div>
 
-            <p className="quiz-question" aria-live="polite">{q.question}</p>
+            <p className="quiz-question" ref={questionRef} tabIndex={-1}>{q.question}</p>
 
             <div className="quiz-options">
                 {q.options.map((opt, optIndex) => {
