@@ -12,7 +12,6 @@ export default function QuizSection({ quiz }) {
     if (!quiz || quiz.length === 0) return null;
 
     const restart = () => {
-        setStarted(false);
         setCurrentIndex(0);
         setSelectedIndex(null);
         setScore(0);
@@ -40,6 +39,8 @@ export default function QuizSection({ quiz }) {
 
     const q = quiz[currentIndex];
     const result = getResultMessage(score, quiz.length);
+    const answeredCount = currentIndex + (selectedIndex !== null ? 1 : 0);
+    const progressPct = (answeredCount / quiz.length) * 100;
 
     if (!started) {
         return (
@@ -95,7 +96,7 @@ export default function QuizSection({ quiz }) {
             <div className="quiz-progress-bar">
                 <div
                     className="quiz-progress-fill"
-                    style={{ width: `${((currentIndex) / quiz.length) * 100}%` }}
+                    style={{ '--quiz-progress': `${progressPct}%` }}
                 />
             </div>
 
