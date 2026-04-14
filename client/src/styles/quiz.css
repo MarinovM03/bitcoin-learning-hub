@@ -23,6 +23,11 @@
     outline-offset: 2px;
 }
 
+.quiz-question:focus,
+.quiz-result-title:focus {
+    outline: none;
+}
+
 .quiz-section--idle {
     padding: 1.5rem 1.75rem;
 }
@@ -572,15 +577,32 @@
 .qb-option-input::placeholder { color: var(--text-secondary) !important; }
 
 .qb-option-status {
+    background: none;
+    border: none;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
     font-size: 0.72rem;
+    font-family: inherit;
     color: var(--text-secondary);
     white-space: nowrap;
     user-select: none;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
 }
 
-.qb-option-status--correct {
+.qb-option-status:hover {
+    color: var(--text-color);
+}
+
+.qb-option-status--correct,
+.qb-option-status--correct:hover {
     color: #22c55e;
     font-weight: 700;
+}
+
+.qb-wrap button:focus-visible {
+    outline: 2px solid var(--btc-orange);
+    outline-offset: 2px;
 }
 
 .qb-max {
