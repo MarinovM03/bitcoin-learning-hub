@@ -4,6 +4,7 @@ import { Save } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import { validateQuiz } from '../../utils/quizHelpers';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
 
 export default function Edit() {
@@ -60,6 +61,11 @@ export default function Edit() {
         }
         if (formValues.content.length < 10) {
             setError("Content must be at least 10 characters long!");
+            return false;
+        }
+        const quizError = validateQuiz(quiz);
+        if (quizError) {
+            setError(quizError);
             return false;
         }
         return true;
