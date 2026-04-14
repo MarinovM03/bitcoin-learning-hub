@@ -21,6 +21,7 @@ export default function Create() {
         content: '',
     });
     const [quiz, setQuiz] = useState([]);
+    const [showQuizErrors, setShowQuizErrors] = useState(false);
 
     const changeHandler = (e) => {
         setFormValues((state) => ({
@@ -54,6 +55,7 @@ export default function Create() {
         const quizError = validateQuiz(quiz);
         if (quizError) {
             setError(quizError);
+            setShowQuizErrors(true);
             return false;
         }
         return true;
@@ -174,7 +176,7 @@ export default function Create() {
                         />
                     </div>
 
-                    <QuizBuilder quiz={quiz} onChange={setQuiz} />
+                    <QuizBuilder quiz={quiz} onChange={setQuiz} showErrors={showQuizErrors} />
 
                     {error && <p className="field-error">{error}</p>}
 
