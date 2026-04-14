@@ -23,6 +23,7 @@ export default function Edit() {
         content: '',
     });
     const [quiz, setQuiz] = useState([]);
+    const [showQuizErrors, setShowQuizErrors] = useState(false);
 
     useEffect(() => {
         articleService.getOne(articleId)
@@ -66,6 +67,7 @@ export default function Edit() {
         const quizError = validateQuiz(quiz);
         if (quizError) {
             setError(quizError);
+            setShowQuizErrors(true);
             return false;
         }
         return true;
@@ -186,7 +188,7 @@ export default function Edit() {
                         />
                     </div>
 
-                    <QuizBuilder quiz={quiz} onChange={setQuiz} />
+                    <QuizBuilder quiz={quiz} onChange={setQuiz} showErrors={showQuizErrors} />
 
                     {error && <p className="field-error">{error}</p>}
 
