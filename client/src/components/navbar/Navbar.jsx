@@ -9,6 +9,7 @@ import SearchOverlay from "../search-overlay/SearchOverlay";
 const NAV_LINKS = [
     { to: "/", label: "Home", end: true },
     { to: "/articles", label: "Articles" },
+    { to: "/paths", label: "Paths" },
     { to: "/glossary", label: "Glossary" },
     { to: "/dca", label: "DCA Calculator" },
     { to: "/mempool", label: "Mempool" },
