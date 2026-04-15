@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from './middlewares/requireAuth.js';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
+import * as learningPathController from './controllers/learningPathController.js';
 import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
@@ -13,13 +14,23 @@ const router = Router();
 
 // Article routes
 router.get('/articles/my', requireAuth, articleController.getMyArticles);
+router.get('/articles/series/mine', requireAuth, articleController.getMySeriesParts);
 router.get('/articles/trending', articleController.getTrending);
 router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', articleController.getRelated);
+router.get('/articles/:articleId/series', articleController.getSeries);
 router.get('/articles/:articleId', articleController.getOne);
 router.post('/articles', requireAuth, articleController.create);
 router.put('/articles/:articleId', requireAuth, articleController.update);
 router.delete('/articles/:articleId', requireAuth, articleController.remove);
+
+// Learning path routes
+router.get('/paths/my', requireAuth, learningPathController.getMyPaths);
+router.get('/paths', learningPathController.getAll);
+router.get('/paths/:pathId', learningPathController.getOne);
+router.post('/paths', requireAuth, learningPathController.create);
+router.put('/paths/:pathId', requireAuth, learningPathController.update);
+router.delete('/paths/:pathId', requireAuth, learningPathController.remove);
 
 // Auth routes
 router.post('/users/register', authController.register);
