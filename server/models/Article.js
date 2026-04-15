@@ -43,6 +43,18 @@ const articleSchema = new mongoose.Schema({
         enum: ['draft', 'published'],
         default: 'published',
     },
+    seriesName: {
+        type: String,
+        trim: true,
+        maxLength: 80,
+        default: '',
+    },
+    seriesPart: {
+        type: Number,
+        min: 1,
+        max: 99,
+        default: null,
+    },
     quiz: [{
         question: { type: String, required: true },
         options: {
@@ -60,6 +72,18 @@ const articleSchema = new mongoose.Schema({
 articleSchema.index(
     { title: 'text', summary: 'text', content: 'text' },
     { weights: { title: 10, summary: 5, content: 1 }, name: 'ArticleTextIndex' }
+);
+
+articleSchema.index(
+    { _ownerId: 1, seriesName: 1, seriesPart: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            seriesName: { $type: 'string', $gt: '' },
+            seriesPart: { $type: 'number' },
+        },
+        name: 'SeriesPartUnique',
+    }
 );
 
 const Article = mongoose.model('Article', articleSchema);
