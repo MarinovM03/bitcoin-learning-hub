@@ -21,14 +21,43 @@ export default function Edit() {
         imageUrl: '',
         summary: '',
         content: '',
+        seriesName: '',
+        seriesPart: '',
     });
     const [quiz, setQuiz] = useState([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
+    const [takenParts, setTakenParts] = useState([]);
+
+    useEffect(() => {
+        const name = formValues.seriesName.trim();
+        if (!name) {
+            setTakenParts([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            articleService.getMySeriesParts(name, articleId)
+                .then(res => setTakenParts(res.parts || []))
+                .catch(() => setTakenParts([]));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [formValues.seriesName, articleId]);
+
+    const partNum = Number(formValues.seriesPart);
+    const seriesPartTaken = Boolean(
+        formValues.seriesName.trim() &&
+        Number.isInteger(partNum) &&
+        partNum >= 1 &&
+        takenParts.includes(partNum)
+    );
 
     useEffect(() => {
         articleService.getOne(articleId)
             .then(result => {
-                setFormValues(result);
+                setFormValues({
+                    ...result,
+                    seriesName: result.seriesName || '',
+                    seriesPart: result.seriesPart ?? '',
+                });
                 setCurrentStatus(result.status || 'published');
                 setQuiz(result.quiz || []);
             })
@@ -63,6 +92,27 @@ export default function Edit() {
         if (formValues.content.length < 10) {
             setError("Content must be at least 10 characters long!");
             return false;
+        }
+        const hasSeriesName = formValues.seriesName.trim().length > 0;
+        const hasSeriesPart = String(formValues.seriesPart).trim().length > 0;
+        if (hasSeriesName !== hasSeriesPart) {
+            setError("Series name and part number must be filled together (or leave both empty).");
+            return false;
+        }
+        if (hasSeriesName) {
+            if (formValues.seriesName.trim().length > 80) {
+                setError("Series name must be 80 characters or fewer.");
+                return false;
+            }
+            const partNumValue = Number(formValues.seriesPart);
+            if (!Number.isInteger(partNumValue) || partNumValue < 1 || partNumValue > 99) {
+                setError("Series part must be a whole number between 1 and 99.");
+                return false;
+            }
+            if (seriesPartTaken) {
+                setError(`Part ${partNumValue} is already used in "${formValues.seriesName.trim()}". Pick another part number.`);
+                return false;
+            }
         }
         const quizError = validateQuiz(quiz);
         if (quizError) {
@@ -142,6 +192,38 @@ export default function Edit() {
                                 </button>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="form-group series-group">
+                        <label>Series <span className="series-optional">(optional)</span></label>
+                        <p className="series-hint">Group this article with others in a multi-part guide. Leave blank for standalone articles.</p>
+                        <div className="series-inputs">
+                            <input
+                                type="text"
+                                id="seriesName"
+                                name="seriesName"
+                                placeholder="Series name (e.g. Bitcoin 101)"
+                                maxLength={80}
+                                value={formValues.seriesName}
+                                onChange={changeHandler}
+                            />
+                            <input
+                                type="number"
+                                id="seriesPart"
+                                name="seriesPart"
+                                placeholder="Part #"
+                                min={1}
+                                max={99}
+                                value={formValues.seriesPart}
+                                onChange={changeHandler}
+                                className={seriesPartTaken ? 'series-part-input--error' : ''}
+                            />
+                        </div>
+                        {seriesPartTaken && (
+                            <p className="series-inline-error">
+                                Part {partNum} is already used in "{formValues.seriesName.trim()}". Pick another number{takenParts.length > 0 && <> (taken: {takenParts.sort((a, b) => a - b).join(', ')})</>}.
+                            </p>
+                        )}
                     </div>
 
                     <div className="form-group">
