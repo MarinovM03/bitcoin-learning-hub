@@ -28,6 +28,8 @@
 @import 'my-articles.css';
 @import 'my-articles-rail.css';
 @import "article-card.css";
+@import "series.css";
+@import "paths.css";
 @import "quiz.css";
 @import "dca-calculator.css";
 @import "mempool-visualizer.css";

@@ -26,6 +26,11 @@ import DcaCalculator from "./components/dca-calculator/DcaCalculator";
 import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer";
 import AddressDemystifier from "./components/address-demystifier/AddressDemystifier";
 import SearchPage from "./components/search-page/SearchPage";
+import Paths from "./components/paths/Paths";
+import PathDetails from "./components/path-details/PathDetails";
+import CreatePath from "./components/create-path/CreatePath";
+import EditPath from "./components/edit-path/EditPath";
+import MyPaths from "./components/my-paths/MyPaths";
 
 function App() {
     return (
@@ -42,6 +47,8 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/articles" element={<Catalog />} />
                     <Route path="/articles/:articleId/details" element={<Details />} />
+                    <Route path="/paths" element={<Paths />} />
+                    <Route path="/paths/:pathId" element={<PathDetails />} />
                     <Route path="/users/:userId" element={<AuthorProfile />} />
                     <Route path="/glossary" element={<Glossary />} />
                     <Route path="/glossary/:termId" element={<GlossaryDetails />} />
@@ -53,9 +60,12 @@ function App() {
                     <Route element={<AuthGuard />}>
                         <Route path="/articles/create" element={<Create />} />
                         <Route path="/articles/:articleId/edit" element={<Edit />} />
+                        <Route path="/paths/create" element={<CreatePath />} />
+                        <Route path="/paths/:pathId/edit" element={<EditPath />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/bookmarks" element={<Bookmarks />} />
                         <Route path="/my-articles" element={<MyArticles />} />
+                        <Route path="/my-paths" element={<MyPaths />} />
                     </Route>
 
                     <Route element={<GuestGuard />}>
