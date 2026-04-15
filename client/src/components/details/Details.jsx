@@ -1,7 +1,7 @@
 // client/src/components/details/Details.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2 } from "lucide-react";
+import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import * as bookmarkService from '../../services/bookmarkService';
@@ -36,20 +36,37 @@ export default function Details() {
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [relatedArticles, setRelatedArticles] = useState([]);
+    const [seriesInfo, setSeriesInfo] = useState({ seriesName: '', parts: [] });
     const [readProgress, setReadProgress] = useState(0);
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const onScroll = () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-            setReadProgress(progress);
+            const el = document.getElementById('article-body');
+            if (!el) {
+                setReadProgress(0);
+                return;
+            }
+            const rect = el.getBoundingClientRect();
+            const elHeight = rect.height;
+            if (elHeight <= 0) {
+                setReadProgress(0);
+                return;
+            }
+            const elTop = rect.top + window.scrollY;
+            const viewportBottom = window.scrollY + window.innerHeight;
+            const progress = ((viewportBottom - elTop) / elHeight) * 100;
+            setReadProgress(Math.max(0, Math.min(100, progress)));
         };
 
+        onScroll();
         window.addEventListener('scroll', onScroll);
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+        window.addEventListener('resize', onScroll);
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+        };
+    }, [article._id]);
 
     useEffect(() => {
         const fetches = [
@@ -71,9 +88,15 @@ export default function Details() {
                 if (bookmarks) {
                     setIsBookmarked(bookmarks.some(a => a._id === articleId));
                 }
-                return articleService.getRelated(articleId);
+                return Promise.all([
+                    articleService.getRelated(articleId),
+                    articleService.getSeries(articleId).catch(() => ({ seriesName: '', parts: [] })),
+                ]);
             })
-            .then(related => setRelatedArticles(related))
+            .then(([related, series]) => {
+                setRelatedArticles(related);
+                setSeriesInfo(series || { seriesName: '', parts: [] });
+            })
             .catch(() => navigate('/not-found'))
             .finally(() => setIsLoading(false));
     }, [articleId, userId, isAuthenticated, navigate]);
@@ -82,6 +105,16 @@ export default function Details() {
     const ownerUsername = article._ownerId?.username;
     const ownerProfilePicture = article._ownerId?.profilePicture;
     const isOwner = userId && ownerId && userId === String(ownerId);
+
+    const seriesParts = seriesInfo.parts || [];
+    const isInSeries = Boolean(seriesInfo.seriesName) && seriesParts.length > 0;
+    const currentSeriesIndex = isInSeries
+        ? seriesParts.findIndex(p => String(p._id) === String(articleId))
+        : -1;
+    const prevPart = currentSeriesIndex > 0 ? seriesParts[currentSeriesIndex - 1] : null;
+    const nextPart = currentSeriesIndex >= 0 && currentSeriesIndex < seriesParts.length - 1
+        ? seriesParts[currentSeriesIndex + 1]
+        : null;
 
     const confirmDelete = async () => {
         try {
@@ -190,6 +223,13 @@ export default function Details() {
                             <span className="details-reading-time">
                                 {article.content?.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} words
                             </span>
+                            {isInSeries && (
+                                <span className="series-inline-badge">
+                                    <Layers size={13} strokeWidth={2.25} />
+                                    Part {article.seriesPart} of {seriesParts.length} · {seriesInfo.seriesName}
+                                    {ownerUsername && <span className="series-inline-badge__author"> · by @{ownerUsername}</span>}
+                                </span>
+                            )}
                         </div>
 
                         <p className="details-summary">{article.summary}</p>
@@ -199,6 +239,35 @@ export default function Details() {
                                 <p key={i}>{paragraph}</p>
                             ))}
                         </div>
+
+                        {isInSeries && (prevPart || nextPart) && (
+                            <nav className="series-prev-next" aria-label="Series navigation">
+                                {prevPart ? (
+                                    <Link
+                                        to={`/articles/${prevPart._id}/details`}
+                                        className="series-prev-next__link series-prev-next__link--prev"
+                                    >
+                                        <ChevronLeft size={18} strokeWidth={2.25} />
+                                        <span className="series-prev-next__label">
+                                            <span className="series-prev-next__kicker">Previous · Part {prevPart.seriesPart}</span>
+                                            <span className="series-prev-next__title">{prevPart.title}</span>
+                                        </span>
+                                    </Link>
+                                ) : <span />}
+                                {nextPart ? (
+                                    <Link
+                                        to={`/articles/${nextPart._id}/details`}
+                                        className="series-prev-next__link series-prev-next__link--next"
+                                    >
+                                        <span className="series-prev-next__label">
+                                            <span className="series-prev-next__kicker">Next · Part {nextPart.seriesPart}</span>
+                                            <span className="series-prev-next__title">{nextPart.title}</span>
+                                        </span>
+                                        <ChevronRight size={18} strokeWidth={2.25} />
+                                    </Link>
+                                ) : <span />}
+                            </nav>
+                        )}
 
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
@@ -246,6 +315,46 @@ export default function Details() {
                                     <Trash2 size={16} strokeWidth={2} />
                                     Delete Article
                                 </button>
+                            </div>
+                        )}
+
+                        {isInSeries && (
+                            <div className="details-series-panel">
+                                <span className="details-action-panel-title">
+                                    <Layers size={14} strokeWidth={2.25} />
+                                    {seriesInfo.seriesName}
+                                </span>
+                                {ownerUsername && (
+                                    <Link to={`/users/${ownerId}`} className="details-series-author">
+                                        by @{ownerUsername}
+                                    </Link>
+                                )}
+                                <ol className="details-series-list">
+                                    {seriesParts.map(part => {
+                                        const isCurrent = String(part._id) === String(articleId);
+                                        return (
+                                            <li
+                                                key={part._id}
+                                                className={`details-series-item ${isCurrent ? 'details-series-item--current' : ''}`}
+                                            >
+                                                {isCurrent ? (
+                                                    <span className="details-series-link">
+                                                        <span className="details-series-part">Part {part.seriesPart}</span>
+                                                        <span className="details-series-title">{part.title}</span>
+                                                    </span>
+                                                ) : (
+                                                    <Link
+                                                        to={`/articles/${part._id}/details`}
+                                                        className="details-series-link"
+                                                    >
+                                                        <span className="details-series-part">Part {part.seriesPart}</span>
+                                                        <span className="details-series-title">{part.title}</span>
+                                                    </Link>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
                             </div>
                         )}
 
