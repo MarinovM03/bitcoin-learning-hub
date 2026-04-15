@@ -1,0 +1,93 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { Plus, SearchX, Route } from 'lucide-react';
+import * as learningPathService from '../../services/learningPathService';
+import { useAuth } from '../../contexts/AuthContext';
+import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import Spinner from '../spinner/Spinner';
+import PathCard from '../path-card/PathCard';
+
+export default function Paths() {
+    const { isAuthenticated } = useAuth();
+    const [paths, setPaths] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [difficulty, setDifficulty] = useState('All');
+
+    useEffect(() => {
+        setIsLoading(true);
+        learningPathService.getAll({ difficulty })
+            .then(result => {
+                setPaths(result.paths || []);
+                setError('');
+            })
+            .catch(err => setError(err.message))
+            .finally(() => setIsLoading(false));
+    }, [difficulty]);
+
+    return (
+        <section id="paths-page" className="page-content">
+            <div className="paths-page">
+                <header className="paths-header">
+                    <div className="paths-header-text">
+                        <span className="paths-header-kicker">
+                            <Route size={14} strokeWidth={2.5} />
+                            Learning Paths
+                        </span>
+                        <h1>Curated Learning Paths</h1>
+                        <p className="paths-subtitle">
+                            Step-by-step journeys through Bitcoin. Pick a path, track your progress, master the topic.
+                        </p>
+                    </div>
+                    {isAuthenticated && (
+                        <Link to="/paths/create" className="paths-create-btn">
+                            <Plus size={16} strokeWidth={2.25} />
+                            Create Path
+                        </Link>
+                    )}
+                </header>
+
+                <div className="paths-filters">
+                    <div className="paths-filter-group">
+                        <span className="paths-filter-label">Difficulty</span>
+                        <div className="paths-filter-buttons">
+                            {['All', ...ARTICLE_DIFFICULTIES].map(d => (
+                                <button
+                                    key={d}
+                                    type="button"
+                                    className={`paths-filter-btn ${difficulty === d ? 'paths-filter-btn--active' : ''}`}
+                                    onClick={() => setDifficulty(d)}
+                                >
+                                    {d}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {isLoading ? (
+                    <Spinner />
+                ) : error ? (
+                    <div className="paths-empty">
+                        <SearchX size={40} strokeWidth={1.5} />
+                        <p>{error}</p>
+                    </div>
+                ) : paths.length === 0 ? (
+                    <div className="paths-empty">
+                        <SearchX size={40} strokeWidth={1.5} />
+                        <p>No learning paths found.</p>
+                        {isAuthenticated && (
+                            <Link to="/paths/create" className="paths-empty-cta">Create the first one →</Link>
+                        )}
+                    </div>
+                ) : (
+                    <div className="paths-grid">
+                        {paths.map(path => (
+                            <PathCard key={path._id} path={path} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
