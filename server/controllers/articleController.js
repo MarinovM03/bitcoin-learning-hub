@@ -1,12 +1,35 @@
 import Article from '../models/Article.js';
 import Like from '../models/Like.js';
 import User from '../models/User.js';
+import ReadArticle from '../models/ReadArticle.js';
 import mongoose from 'mongoose';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
     const wordCount = content.trim().split(/\s+/).length;
     return Math.max(1, Math.round(wordCount / 200));
+};
+
+const normalizeSeriesInput = (seriesName, seriesPart) => {
+    const name = typeof seriesName === 'string' ? seriesName.trim() : '';
+    const partNum = Number.parseInt(seriesPart, 10);
+    if (!name || !Number.isFinite(partNum) || partNum < 1) {
+        return { seriesName: '', seriesPart: null };
+    }
+    return { seriesName: name, seriesPart: partNum };
+};
+
+const findDuplicateSeriesPart = async (ownerId, series, excludeArticleId = null) => {
+    if (!series.seriesName || !series.seriesPart) return null;
+    const query = {
+        _ownerId: ownerId,
+        seriesName: series.seriesName,
+        seriesPart: series.seriesPart,
+    };
+    if (excludeArticleId) {
+        query._id = { $ne: excludeArticleId };
+    }
+    return Article.findOne(query).select('_id title');
 };
 
 export const getAll = async (req, res) => {
@@ -33,7 +56,7 @@ export const getAll = async (req, res) => {
         }
 
         const [articles, total] = await Promise.all([
-            Article.find(filter).sort(sortOption).skip(skip).limit(limitNum),
+            Article.find(filter).sort(sortOption).skip(skip).limit(limitNum).populate('_ownerId', 'username'),
             Article.countDocuments(filter)
         ]);
 
@@ -54,7 +77,15 @@ export const getMyArticles = async (req, res) => {
 
 export const create = async (req, res) => {
     try {
-        const { title, category, difficulty, imageUrl, summary, content, status, quiz } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
+        const series = normalizeSeriesInput(seriesName, seriesPart);
+
+        const duplicate = await findDuplicateSeriesPart(req.user._id, series);
+        if (duplicate) {
+            return res.status(409).json({
+                message: `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`
+            });
+        }
 
         const newArticle = await Article.create({
             title,
@@ -66,6 +97,8 @@ export const create = async (req, res) => {
             readingTime: calculateReadingTime(content),
             status: status === 'draft' ? 'draft' : 'published',
             quiz: Array.isArray(quiz) ? quiz : [],
+            seriesName: series.seriesName,
+            seriesPart: series.seriesPart,
             _ownerId: req.user._id
         });
 
@@ -106,6 +139,14 @@ export const getOne = async (req, res) => {
             recordView(req, articleId);
         }
 
+        if (req.user) {
+            ReadArticle.updateOne(
+                { _ownerId: req.user._id, articleId },
+                { $setOnInsert: { _ownerId: req.user._id, articleId } },
+                { upsert: true }
+            ).catch(() => {});
+        }
+
         res.json(article);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -135,6 +176,52 @@ export const getRelated = async (req, res) => {
             .select('title summary imageUrl category _id');
 
         res.json(related);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getMySeriesParts = async (req, res) => {
+    try {
+        const name = typeof req.query.name === 'string' ? req.query.name.trim() : '';
+        if (!name) return res.json({ parts: [] });
+
+        const excludeId = req.query.excludeId;
+        const query = { _ownerId: req.user._id, seriesName: name, seriesPart: { $ne: null } };
+        if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
+            query._id = { $ne: excludeId };
+        }
+
+        const docs = await Article.find(query).select('seriesPart');
+        const parts = docs.map(d => d.seriesPart).filter(Number.isFinite);
+        res.json({ parts });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const getSeries = async (req, res) => {
+    try {
+        const { articleId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: "Article not found" });
+        }
+
+        const current = await Article.findById(articleId).select('seriesName _ownerId');
+        if (!current || !current.seriesName) {
+            return res.json({ seriesName: '', parts: [] });
+        }
+
+        const parts = await Article.find({
+            _ownerId: current._ownerId,
+            seriesName: current.seriesName,
+            status: 'published',
+        })
+            .sort({ seriesPart: 1, createdAt: 1 })
+            .select('title seriesPart imageUrl category readingTime');
+
+        res.json({ seriesName: current.seriesName, parts });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -171,7 +258,7 @@ export const getPublicProfile = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { articleId } = req.params;
-        const { title, category, difficulty, imageUrl, summary, content, status, quiz } = req.body;
+        const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(articleId)) {
             return res.status(404).json({ message: "Article not found" });
@@ -182,6 +269,18 @@ export const update = async (req, res) => {
         if (difficulty) updateData.difficulty = difficulty;
         if (status === 'draft' || status === 'published') updateData.status = status;
         if (Array.isArray(quiz)) updateData.quiz = quiz;
+        if (seriesName !== undefined || seriesPart !== undefined) {
+            const series = normalizeSeriesInput(seriesName, seriesPart);
+            updateData.seriesName = series.seriesName;
+            updateData.seriesPart = series.seriesPart;
+
+            const duplicate = await findDuplicateSeriesPart(req.user._id, series, articleId);
+            if (duplicate) {
+                return res.status(409).json({
+                    message: `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`
+                });
+            }
+        }
 
         const updatedArticle = await Article.findOneAndUpdate(
             { _id: articleId, _ownerId: req.user._id },
