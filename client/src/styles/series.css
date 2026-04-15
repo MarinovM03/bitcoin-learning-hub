@@ -1,0 +1,294 @@
+/* ============================================================
+   Series — form inputs, inline badge, prev/next nav, sidebar
+   ============================================================ */
+
+/* --- Create/Edit form inputs ------------------------------- */
+
+.create-form .series-group {
+    padding: 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+}
+
+.create-form .series-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    color: var(--text-color);
+}
+
+.series-optional {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.series-hint {
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.series-inputs {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 10px;
+}
+
+.series-inputs input[type="number"] {
+    text-align: center;
+}
+
+.create-form .series-inputs input.series-part-input--error,
+.create-form .series-inputs input.series-part-input--error:focus {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 2px var(--danger-dim);
+}
+
+.series-inline-error {
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    background: var(--danger-dim);
+    border: 1px solid var(--danger-color);
+    border-radius: 6px;
+    color: var(--danger-color);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 520px) {
+    .series-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Inline badge on details page -------------------------- */
+
+.series-inline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--btc-orange-dim);
+    border: 1px solid var(--btc-orange-glow);
+    border-radius: 999px;
+    color: var(--btc-orange);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.series-inline-badge__author {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* --- Prev/Next navigation ---------------------------------- */
+
+.series-prev-next {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 32px 0 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-light);
+}
+
+.series-prev-next__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.series-prev-next__link:hover {
+    background: var(--card-bg-hover);
+    border-color: var(--btc-orange-glow);
+    transform: translateY(-1px);
+}
+
+.series-prev-next__link--next {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.series-prev-next__label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.series-prev-next__kicker {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--btc-orange);
+}
+
+.series-prev-next__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.series-prev-next__link svg {
+    flex-shrink: 0;
+    color: var(--text-secondary);
+}
+
+.series-prev-next__link:hover svg {
+    color: var(--btc-orange);
+}
+
+@media (max-width: 640px) {
+    .series-prev-next {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Sidebar panel on details page ------------------------- */
+
+.details-series-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+}
+
+.details-series-panel .details-action-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--btc-orange);
+}
+
+.details-series-author {
+    display: inline-block;
+    margin-top: -6px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.details-series-author:hover {
+    color: var(--btc-orange);
+}
+
+.details-series-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.details-series-item {
+    position: relative;
+}
+
+.details-series-link {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+a.details-series-link:hover {
+    background: var(--card-bg-hover);
+    color: var(--btc-orange);
+}
+
+.details-series-part {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+a.details-series-link:hover .details-series-part {
+    color: var(--btc-orange);
+}
+
+.details-series-title {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.details-series-item--current .details-series-link {
+    background: var(--btc-orange-dim);
+    border: 1px solid var(--btc-orange-glow);
+    padding: 9px 11px;
+}
+
+.details-series-item--current .details-series-part,
+.details-series-item--current .details-series-title {
+    color: var(--btc-orange);
+    font-weight: 600;
+}
+
+/* --- Article card series badge ----------------------------- */
+
+.catalog-card-series {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+    padding: 3px 8px;
+    background: var(--btc-orange-dim);
+    border: 1px solid var(--btc-orange-glow);
+    border-radius: 999px;
+    color: var(--btc-orange);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    align-self: flex-start;
+    max-width: 100%;
+}
+
+.catalog-card-series__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+}
+
+.catalog-card-series__author {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+}
