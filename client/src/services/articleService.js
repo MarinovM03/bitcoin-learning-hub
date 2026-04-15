@@ -28,6 +28,18 @@ export const getRelated = async (articleId) => {
     return result;
 };
 
+export const getSeries = async (articleId) => {
+    const result = await request.get(`${baseUrl}/${articleId}/series`);
+    return result;
+};
+
+export const getMySeriesParts = async (name, excludeId) => {
+    const params = new URLSearchParams({ name });
+    if (excludeId) params.set('excludeId', excludeId);
+    const result = await request.get(`${baseUrl}/series/mine?${params.toString()}`);
+    return result;
+};
+
 export const getPublicProfile = async (userId) => {
     const result = await request.get(`${usersUrl}/${userId}/public`);
     return result;
