@@ -48,14 +48,13 @@ export default function Details() {
                 return;
             }
             const rect = el.getBoundingClientRect();
-            const elHeight = rect.height;
-            if (elHeight <= 0) {
+            if (rect.height <= 0) {
                 setReadProgress(0);
                 return;
             }
-            const elTop = rect.top + window.scrollY;
-            const viewportBottom = window.scrollY + window.innerHeight;
-            const progress = ((viewportBottom - elTop) / elHeight) * 100;
+            const vpMid = window.innerHeight / 2;
+            const midPastTop = vpMid - rect.top;
+            const progress = (midPastTop / rect.height) * 100;
             setReadProgress(Math.max(0, Math.min(100, progress)));
         };
 
