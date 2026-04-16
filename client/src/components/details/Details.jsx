@@ -169,6 +169,12 @@ export default function Details() {
         <section id="details-page" className="page-content">
             <div className="read-progress-bar" style={{ width: `${readProgress}%` }} />
 
+            <ReadingPanel
+                readProgress={readProgress}
+                readingTime={article.readingTime ?? 1}
+                hasQuiz={Array.isArray(article.quiz) && article.quiz.length > 0}
+            />
+
             {showDeleteModal && (
                 <ConfirmModal
                     title="Delete Article?"
@@ -297,12 +303,6 @@ export default function Details() {
                     </div>
 
                     <div className="details-sidebar">
-                        <ReadingPanel
-                            readProgress={readProgress}
-                            readingTime={article.readingTime ?? 1}
-                            hasQuiz={Array.isArray(article.quiz) && article.quiz.length > 0}
-                        />
-
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>

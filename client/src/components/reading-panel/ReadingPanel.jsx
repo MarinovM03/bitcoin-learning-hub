@@ -53,51 +53,47 @@ export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
     }, [hasQuiz]);
 
     return (
-        <div className="reading-panel">
-            <span className="details-action-panel-title">Reading</span>
-
-            <div className="reading-ring-wrap">
-                <div className="reading-ring" style={{ '--progress': progress }}>
-                    <svg viewBox="0 0 80 80" className="reading-ring-svg" aria-hidden="true">
-                        <circle className="reading-ring-track" cx="40" cy="40" r="34" />
-                        <circle className="reading-ring-fill"  cx="40" cy="40" r="34" />
-                    </svg>
-                    <span className="reading-ring-label">{Math.round(progress)}%</span>
-                </div>
-                <div className="reading-ring-meta">
-                    <span className="reading-ring-meta-value">{minutesLeft}</span>
-                    <span className="reading-ring-meta-label">
-                        min{minutesLeft === 1 ? '' : 's'} left
-                    </span>
-                </div>
+        <aside className="reading-rail" aria-label="Reading progress and navigation">
+            <div className="reading-rail-ring" style={{ '--progress': progress }}>
+                <svg viewBox="0 0 80 80" className="reading-rail-ring-svg" aria-hidden="true">
+                    <circle className="reading-rail-ring-track" cx="40" cy="40" r="34" />
+                    <circle className="reading-rail-ring-fill"  cx="40" cy="40" r="34" />
+                </svg>
+                <span className="reading-rail-ring-label">{Math.round(progress)}%</span>
             </div>
 
-            <div className="reading-panel-divider" />
+            <span className="reading-rail-mins">
+                {minutesLeft}m left
+            </span>
 
-            <span className="reading-panel-subtitle">On this page</span>
+            <div className="reading-rail-divider" />
 
-            <nav className="reading-jump-list" aria-label="Article sections">
-                <button
-                    type="button"
-                    className="reading-jump-link reading-jump-link--top"
-                    onClick={scrollToTop}
-                >
-                    <ArrowUp size={14} strokeWidth={2.25} />
-                    <span>Back to top</span>
-                </button>
-
+            <nav className="reading-rail-nav" aria-label="Article sections">
                 {jumpLinks.map(({ id, label, Icon }) => (
                     <button
                         key={id}
                         type="button"
-                        className={`reading-jump-link ${activeSection === id ? 'reading-jump-link--active' : ''}`}
+                        title={label}
+                        aria-label={label}
+                        className={`reading-rail-btn ${activeSection === id ? 'reading-rail-btn--active' : ''}`}
                         onClick={() => scrollToId(id)}
                     >
-                        <Icon size={14} strokeWidth={2.25} />
-                        <span>{label}</span>
+                        <Icon size={18} strokeWidth={2.25} />
                     </button>
                 ))}
             </nav>
-        </div>
+
+            <div className="reading-rail-divider" />
+
+            <button
+                type="button"
+                title="Back to top"
+                aria-label="Back to top"
+                className="reading-rail-btn reading-rail-btn--top"
+                onClick={scrollToTop}
+            >
+                <ArrowUp size={16} strokeWidth={2.25} />
+            </button>
+        </aside>
     );
 }
