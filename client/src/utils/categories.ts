@@ -1,4 +1,6 @@
-export const ARTICLE_CATEGORIES = [
+import type { ArticleCategory } from '../types';
+
+export const ARTICLE_CATEGORIES: readonly ArticleCategory[] = [
     'Basics',
     'Technology',
     'Economics',
