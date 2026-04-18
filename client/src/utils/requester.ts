@@ -1,12 +1,14 @@
 import { parseApiError } from './parseApiError';
 
-async function request(method, url, data) {
-    const options = {};
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+async function request<T>(method: HttpMethod, url: string, data?: unknown): Promise<T> {
+    const options: RequestInit = {};
 
     if (method !== 'GET') {
         options.method = method;
 
-        if (data) {
+        if (data !== undefined) {
             options.headers = {
                 'Content-Type': 'application/json',
             };
@@ -17,7 +19,7 @@ async function request(method, url, data) {
     const serializedAuth = localStorage.getItem('auth');
 
     if (serializedAuth) {
-        const auth = JSON.parse(serializedAuth);
+        const auth = JSON.parse(serializedAuth) as { accessToken?: string };
 
         if (auth.accessToken) {
             options.headers = {
@@ -30,7 +32,7 @@ async function request(method, url, data) {
     const response = await fetch(url, options);
 
     if (response.status === 204) {
-        return {};
+        return {} as T;
     }
 
     const result = await response.json();
@@ -39,10 +41,10 @@ async function request(method, url, data) {
         throw new Error(parseApiError(result));
     }
 
-    return result;
+    return result as T;
 }
 
-export const get = request.bind(null, 'GET');
-export const post = request.bind(null, 'POST');
-export const put = request.bind(null, 'PUT');
-export const del = request.bind(null, 'DELETE');
+export const get = <T>(url: string) => request<T>('GET', url);
+export const post = <T>(url: string, data?: unknown) => request<T>('POST', url, data);
+export const put = <T>(url: string, data?: unknown) => request<T>('PUT', url, data);
+export const del = <T>(url: string) => request<T>('DELETE', url);
