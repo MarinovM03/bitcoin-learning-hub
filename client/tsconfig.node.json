@@ -11,9 +11,6 @@
     "moduleDetection": "force",
     "noEmit": true,
 
-    "allowJs": true,
-    "checkJs": false,
-
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -21,5 +18,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "vite.config.js"]
+  "include": ["vite.config.ts"]
 }
