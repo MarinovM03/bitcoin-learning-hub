@@ -1,4 +1,4 @@
-export const BITCOIN_FACTS = [
+export const BITCOIN_FACTS: readonly string[] = [
     "Bitcoin's genesis block was mined on January 3, 2009 by Satoshi Nakamoto.",
     "There will only ever be 21 million Bitcoin in existence.",
     "The first real-world Bitcoin transaction bought 2 pizzas for 10,000 BTC in 2010.",
@@ -31,6 +31,7 @@ export const BITCOIN_FACTS = [
     "The word Satoshi can refer to both Bitcoin's creator and its smallest unit.",
 ];
 
-export const getRandomFact = () => {
-    return BITCOIN_FACTS[Math.floor(Math.random() * BITCOIN_FACTS.length)];
+export const getRandomFact = (): string => {
+    const index = Math.floor(Math.random() * BITCOIN_FACTS.length);
+    return BITCOIN_FACTS[index]!;
 };

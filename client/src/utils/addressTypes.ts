@@ -1,4 +1,27 @@
-export const ADDRESS_TYPES = {
+export type AddressTypeId =
+    | 'LEGACY'
+    | 'P2SH'
+    | 'P2WPKH'
+    | 'P2WSH'
+    | 'P2TR'
+    | 'LIGHTNING'
+    | 'TESTNET'
+    | 'UNKNOWN';
+
+export type AddressNetwork = 'mainnet' | 'testnet' | 'lightning' | '—';
+
+export interface AddressTypeInfo {
+    id: AddressTypeId;
+    name: string;
+    fullName: string;
+    network: AddressNetwork;
+    introduced: string;
+    encoding: string;
+    description: string;
+    characteristics: string[];
+}
+
+export const ADDRESS_TYPES: Record<AddressTypeId, AddressTypeInfo> = {
     LEGACY: {
         id: 'LEGACY',
         name: 'Legacy',
@@ -116,9 +139,14 @@ export const ADDRESS_TYPES = {
     },
 };
 
+export interface AddressDetection {
+    type: AddressTypeInfo;
+    input: string;
+}
+
 const BASE58_RE = /^[1-9A-HJ-NP-Za-km-z]+$/;
 
-export function detectAddressType(rawInput) {
+export function detectAddressType(rawInput: string | null | undefined): AddressDetection | null {
     if (!rawInput) return null;
     const input = rawInput.trim();
     if (input.length < 4) return null;
@@ -151,7 +179,7 @@ export function detectAddressType(rawInput) {
     return { type: ADDRESS_TYPES.UNKNOWN, input };
 }
 
-export function getMempoolUrl(detection) {
+export function getMempoolUrl(detection: AddressDetection | null): string | null {
     if (!detection) return null;
     const id = detection.type.id;
     if (id === 'UNKNOWN' || id === 'LIGHTNING') return null;
