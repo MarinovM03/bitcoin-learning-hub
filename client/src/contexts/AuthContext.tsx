@@ -1,28 +1,55 @@
-import { createContext, useState, useContext, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { createContext, useState, useContext, useMemo, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { useNavigate } from 'react-router';
 import * as authService from '../services/authService';
+import type { RegisterData } from '../services/authService';
+import type { AuthUser } from '../types';
 
-const AuthContext = createContext();
+interface LoginFormValues {
+    identifier: string;
+    password: string;
+}
 
-export const AuthProvider = ({ children }) => {
+type AuthState = Partial<AuthUser>;
+
+interface AuthContextValue {
+    loginSubmitHandler: (values: LoginFormValues) => Promise<void>;
+    registerSubmitHandler: (values: RegisterData) => Promise<void>;
+    logoutHandler: () => Promise<void>;
+    updateAuthState: (newAuth: AuthUser) => void;
+    username: string | undefined;
+    email: string | undefined;
+    userId: string | undefined;
+    isAuthenticated: boolean;
+    profilePicture: string | undefined;
+    usernameChangedAt: string | null;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
     const navigate = useNavigate();
 
-    const [auth, setAuth] = useState(() => {
+    const [auth, setAuth] = useState<AuthState>(() => {
         const serializedAuth = localStorage.getItem('auth');
         if (serializedAuth) {
-            return JSON.parse(serializedAuth);
+            return JSON.parse(serializedAuth) as AuthState;
         }
         return {};
     });
 
-    const loginSubmitHandler = useCallback(async (values) => {
+    const loginSubmitHandler = useCallback(async (values: LoginFormValues) => {
         const result = await authService.login(values.identifier, values.password);
         setAuth(result);
         localStorage.setItem('auth', JSON.stringify(result));
         navigate('/');
     }, [navigate]);
 
-    const registerSubmitHandler = useCallback(async (values) => {
+    const registerSubmitHandler = useCallback(async (values: RegisterData) => {
         const result = await authService.register(values);
         setAuth(result);
         localStorage.setItem('auth', JSON.stringify(result));
@@ -32,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     const logoutHandler = useCallback(async () => {
         try {
             await authService.logout();
-        } catch (err) {
+        } catch {
             console.log('Logout failed');
         }
         setAuth({});
@@ -40,12 +67,12 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     }, [navigate]);
 
-    const updateAuthState = useCallback((newAuth) => {
+    const updateAuthState = useCallback((newAuth: AuthUser) => {
         setAuth(newAuth);
         localStorage.setItem('auth', JSON.stringify(newAuth));
     }, []);
 
-    const values = useMemo(() => ({
+    const values = useMemo<AuthContextValue>(() => ({
         loginSubmitHandler,
         registerSubmitHandler,
         logoutHandler,
@@ -55,7 +82,7 @@ export const AuthProvider = ({ children }) => {
         userId: auth._id,
         isAuthenticated: !!auth.accessToken,
         profilePicture: auth.profilePicture,
-        usernameChangedAt: auth.usernameChangedAt || null,
+        usernameChangedAt: auth.usernameChangedAt ?? null,
     }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler, updateAuthState]);
 
     return (
@@ -65,7 +92,7 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextValue => {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');
