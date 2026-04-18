@@ -1,8 +1,14 @@
-export function validateQuiz(quiz) {
+interface QuizDraftQuestion {
+    question?: string;
+    options?: string[];
+    correctIndex?: number;
+}
+
+export function validateQuiz(quiz: QuizDraftQuestion[] | null | undefined): string | null {
     if (!quiz || quiz.length === 0) return null;
 
     for (let i = 0; i < quiz.length; i++) {
-        const q = quiz[i];
+        const q = quiz[i]!;
         const num = i + 1;
 
         if (!q.question?.trim()) {
@@ -21,7 +27,12 @@ export function validateQuiz(quiz) {
     return null;
 }
 
-export function getResultMessage(score, total) {
+export interface QuizResultMessage {
+    emoji: string;
+    text: string;
+}
+
+export function getResultMessage(score: number, total: number): QuizResultMessage {
     if (score === 0) return { emoji: '😅', text: "Don't worry, re-read the article and try again!" };
     if (score === total) return { emoji: '₿', text: "Perfect score! You're a Bitcoin expert!" };
 
