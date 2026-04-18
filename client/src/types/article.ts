@@ -19,6 +19,12 @@ export interface QuizQuestion {
     correctIndex: 0 | 1 | 2 | 3;
 }
 
+export interface ArticleOwnerRef {
+    _id: string;
+    username: string;
+    profilePicture?: string;
+}
+
 export interface Article {
     _id: string;
     title: string;
@@ -33,7 +39,7 @@ export interface Article {
     seriesName: string;
     seriesPart: number | null;
     quiz: QuizQuestion[];
-    _ownerId: string;
+    _ownerId: string | ArticleOwnerRef;
     createdAt: string;
     updatedAt: string;
 }

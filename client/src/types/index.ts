@@ -4,6 +4,7 @@ export type {
     ArticleDifficulty,
     ArticleStatus,
     ArticleDraft,
+    ArticleOwnerRef,
     QuizQuestion,
 } from './article';
 export type { User, AuthUser } from './user';
