@@ -74,7 +74,7 @@ export default function Details() {
         ];
 
         if (isAuthenticated) {
-            fetches.push(bookmarkService.getMyBookmarks());
+            fetches.push(bookmarkService.getMyBookmarks().catch(() => []));
         }
 
         Promise.all(fetches)
