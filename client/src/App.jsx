@@ -32,6 +32,8 @@ import CreatePath from "./components/create-path/CreatePath";
 import EditPath from "./components/edit-path/EditPath";
 import MyPaths from "./components/my-paths/MyPaths";
 import PathQuiz from "./components/path-quiz/PathQuiz";
+import Certifications from "./components/certifications/Certifications";
+import CertificationDetails from "./components/certification-details/CertificationDetails";
 
 function App() {
     return (
@@ -68,6 +70,8 @@ function App() {
                         <Route path="/my-articles" element={<MyArticles />} />
                         <Route path="/my-paths" element={<MyPaths />} />
                         <Route path="/paths/:pathId/quiz" element={<PathQuiz />} />
+                        <Route path="/certifications" element={<Certifications />} />
+                        <Route path="/certifications/:certId" element={<CertificationDetails />} />
                     </Route>
 
                     <Route element={<GuestGuard />}>

@@ -1,0 +1,172 @@
+.certifications-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 0 60px;
+}
+
+.certifications-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.certifications-header h1 {
+    margin: 0 0 6px;
+    font-size: 2rem;
+    color: var(--text-color);
+}
+
+.certifications-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 620px;
+    line-height: 1.55;
+}
+
+.certifications-count {
+    padding: 6px 14px;
+    background: var(--btc-orange-dim);
+    border: 1px solid var(--btc-orange-glow);
+    border-radius: 999px;
+    color: var(--btc-orange);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* --- Empty state ----------------------------------------- */
+
+.certifications-empty {
+    padding: 60px 24px;
+    text-align: center;
+    background: var(--card-bg);
+    border: 1px dashed var(--border-light);
+    border-radius: 14px;
+    max-width: 520px;
+    margin: 40px auto;
+}
+
+.certifications-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    color: var(--btc-orange);
+}
+
+.certifications-empty h3 {
+    margin: 0 0 8px;
+    color: var(--text-color);
+    font-size: 1.25rem;
+}
+
+.certifications-empty p {
+    margin: 0 0 20px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+.certifications-cta {
+    display: inline-block;
+}
+
+/* --- Card grid ------------------------------------------- */
+
+.certifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.certification-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.certification-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--btc-orange-glow);
+}
+
+.certification-card-cover {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--input-bg);
+    overflow: hidden;
+}
+
+.certification-card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.certification-card-cover-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--btc-orange-dim), var(--card-bg));
+    color: var(--btc-orange);
+}
+
+.certification-card-score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: rgba(46, 204, 113, 0.92);
+    color: #0f2a18;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.certification-card-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.certification-card-title {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--text-color);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.certification-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
