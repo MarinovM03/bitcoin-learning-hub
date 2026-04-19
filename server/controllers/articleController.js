@@ -139,14 +139,6 @@ export const getOne = async (req, res) => {
             recordView(req, articleId);
         }
 
-        if (req.user && !isOwner) {
-            ReadArticle.updateOne(
-                { _ownerId: req.user._id, articleId },
-                { $setOnInsert: { _ownerId: req.user._id, articleId } },
-                { upsert: true }
-            ).catch(() => {});
-        }
-
         res.json(article);
     } catch (error) {
         res.status(400).json({ message: error.message });
