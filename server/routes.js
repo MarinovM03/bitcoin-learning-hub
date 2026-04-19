@@ -7,6 +7,7 @@ import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
 import * as bookmarkController from './controllers/bookmarkController.js';
+import * as pathCertificationController from './controllers/pathCertificationController.js';
 import Article from './models/Article.js';
 import GlossaryTerm from './models/GlossaryTerm.js';
 
@@ -27,10 +28,16 @@ router.delete('/articles/:articleId', requireAuth, articleController.remove);
 // Learning path routes
 router.get('/paths/my', requireAuth, learningPathController.getMyPaths);
 router.get('/paths', learningPathController.getAll);
+router.get('/paths/:pathId/quiz', requireAuth, pathCertificationController.getQuiz);
+router.post('/paths/:pathId/quiz', requireAuth, pathCertificationController.submitQuiz);
 router.get('/paths/:pathId', learningPathController.getOne);
 router.post('/paths', requireAuth, learningPathController.create);
 router.put('/paths/:pathId', requireAuth, learningPathController.update);
 router.delete('/paths/:pathId', requireAuth, learningPathController.remove);
+
+// Path certification routes
+router.get('/users/me/certifications', requireAuth, pathCertificationController.getMyCertifications);
+router.get('/certifications/:certId', requireAuth, pathCertificationController.getOneCertification);
 
 // Auth routes
 router.post('/users/register', authController.register);
