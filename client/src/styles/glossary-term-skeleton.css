@@ -1,0 +1,46 @@
+/* =========================================================
+   Glossary term skeleton — mirrors GlossaryList.jsx shape:
+   letter-group headings + term cards. Slots directly into
+   .glossary-list so the rail + layout don't shift.
+   ========================================================= */
+
+.glossary-term-skeleton__heading {
+    height: 1.8rem;
+    width: 1.8rem;
+    border-radius: 4px;
+    margin-bottom: 0.1rem;
+}
+
+.glossary-term-skeleton__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    pointer-events: none;
+}
+
+.glossary-term-skeleton__card:hover {
+    border-color: var(--border-light);
+    transform: none;
+}
+
+.glossary-term-skeleton__name {
+    height: 1.1rem;
+    width: 8rem;
+    border-radius: 4px;
+}
+
+.glossary-term-skeleton__category {
+    height: 0.85rem;
+    width: 4.5rem;
+    border-radius: 999px;
+}
+
+.glossary-term-skeleton__definition {
+    height: 0.95rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.glossary-term-skeleton__definition--short {
+    width: 65%;
+}

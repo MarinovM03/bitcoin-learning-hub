@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus, X } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
-import Spinner from "../spinner/Spinner";
 import GlossaryAddForm from "../glossary-add-form/GlossaryAddForm";
 import GlossaryList from "../glossary-list/GlossaryList";
 import GlossaryLetterRail from "../glossary-letter-rail/GlossaryLetterRail";
+import GlossaryTermSkeleton from "../glossary-term-skeleton/GlossaryTermSkeleton";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
@@ -98,7 +98,7 @@ export default function Glossary() {
                     </div>
 
                     {isLoading ? (
-                        <Spinner />
+                        <GlossaryTermSkeleton />
                     ) : filteredTerms.length === 0 ? (
                         <p className="glossary-empty">
                             No terms found. {isAuthenticated ? 'Be the first to add one!' : 'Check back soon.'}
