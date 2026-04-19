@@ -6,7 +6,7 @@ import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import * as bookmarkService from '../../services/bookmarkService';
 import { useAuth } from "../../contexts/AuthContext";
-import Spinner from "../spinner/Spinner";
+import ArticleDetailsSkeleton from "../article-details-skeleton/ArticleDetailsSkeleton";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 import QuizSection from "../quiz/QuizSection";
@@ -163,7 +163,7 @@ export default function Details() {
             });
     };
 
-    if (isLoading) return <Spinner />;
+    if (isLoading) return <ArticleDetailsSkeleton />;
 
     return (
         <section id="details-page" className="page-content">
