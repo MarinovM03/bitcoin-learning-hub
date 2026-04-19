@@ -139,7 +139,7 @@ export const getOne = async (req, res) => {
             recordView(req, articleId);
         }
 
-        if (req.user) {
+        if (req.user && !isOwner) {
             ReadArticle.updateOne(
                 { _ownerId: req.user._id, articleId },
                 { $setOnInsert: { _ownerId: req.user._id, articleId } },
@@ -148,6 +148,44 @@ export const getOne = async (req, res) => {
         }
 
         res.json(article);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+export const markRead = async (req, res) => {
+    try {
+        const { articleId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: 'Article not found' });
+        }
+
+        const article = await Article.findById(articleId).select('status');
+        if (!article || article.status !== 'published') {
+            return res.status(404).json({ message: 'Article not found' });
+        }
+
+        await ReadArticle.updateOne(
+            { _ownerId: req.user._id, articleId },
+            { $setOnInsert: { _ownerId: req.user._id, articleId } },
+            { upsert: true }
+        );
+
+        res.json({ read: true });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+export const markUnread = async (req, res) => {
+    try {
+        const { articleId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(articleId)) {
+            return res.status(404).json({ message: 'Article not found' });
+        }
+
+        await ReadArticle.deleteOne({ _ownerId: req.user._id, articleId });
+        res.json({ read: false });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

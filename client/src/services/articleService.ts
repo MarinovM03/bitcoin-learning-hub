@@ -133,3 +133,13 @@ export const edit = (articleId: string, data: ArticleWriteData): Promise<Article
 
 export const getTrending = (): Promise<TrendingArticle[]> =>
     request.get<TrendingArticle[]>(`${baseUrl}/trending`);
+
+export interface ReadStateResponse {
+    read: boolean;
+}
+
+export const markRead = (articleId: string): Promise<ReadStateResponse> =>
+    request.post<ReadStateResponse>(`${baseUrl}/${articleId}/read`);
+
+export const markUnread = (articleId: string): Promise<ReadStateResponse> =>
+    request.del<ReadStateResponse>(`${baseUrl}/${articleId}/read`);

@@ -533,6 +533,38 @@
     color: #2ecc71;
 }
 
+.path-article-status-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.path-article-status-btn:hover:not(:disabled) {
+    background: var(--input-bg);
+    color: var(--btc-orange);
+    transform: scale(1.05);
+}
+
+.path-article-status-btn:disabled {
+    opacity: 0.5;
+    cursor: progress;
+}
+
+.path-article-status-btn--complete {
+    color: #2ecc71;
+}
+
+.path-article-status-btn--complete:hover:not(:disabled) {
+    color: var(--danger-color);
+}
+
 @media (max-width: 720px) {
     .path-article-row {
         grid-template-columns: 40px 1fr auto;

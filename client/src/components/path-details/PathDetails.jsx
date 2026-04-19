@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { PenLine, Trash2, CheckCircle2, Circle, Route, Clock } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
+import * as articleService from '../../services/articleService';
 import { useAuth } from '../../contexts/AuthContext';
 import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
 import PathExamPanel from '../path-exam-panel/PathExamPanel';
@@ -18,6 +19,7 @@ export default function PathDetails() {
     const [path, setPath] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [pendingToggleId, setPendingToggleId] = useState(null);
 
     useEffect(() => {
         setIsLoading(true);
@@ -33,6 +35,40 @@ export default function PathDetails() {
             navigate('/paths');
         } catch {
             setShowDeleteModal(false);
+        }
+    };
+
+    const toggleRead = async (e, articleId, currentlyRead) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (pendingToggleId) return;
+        setPendingToggleId(articleId);
+        try {
+            if (currentlyRead) {
+                await articleService.markUnread(articleId);
+            } else {
+                await articleService.markRead(articleId);
+            }
+            setPath(prev => {
+                if (!prev) return prev;
+                const prevIds = prev.progress?.completedIds || [];
+                const idStr = String(articleId);
+                const nextIds = currentlyRead
+                    ? prevIds.filter(id => String(id) !== idStr)
+                    : [...prevIds, idStr];
+                return {
+                    ...prev,
+                    progress: {
+                        ...prev.progress,
+                        completedIds: nextIds,
+                        completed: nextIds.length,
+                    },
+                };
+            });
+        } catch {
+            // swallow — keep UI in prior state
+        } finally {
+            setPendingToggleId(null);
         }
     };
 
@@ -156,11 +192,18 @@ export default function PathDetails() {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="path-article-status" aria-label={isComplete ? 'Completed' : 'Not read yet'}>
+                                    <button
+                                        type="button"
+                                        className={`path-article-status-btn ${isComplete ? 'path-article-status-btn--complete' : ''}`}
+                                        onClick={(e) => toggleRead(e, article._id, isComplete)}
+                                        disabled={pendingToggleId === article._id}
+                                        aria-label={isComplete ? 'Mark as unread' : 'Mark as read'}
+                                        title={isComplete ? 'Mark as unread' : 'Mark as read'}
+                                    >
                                         {isComplete
                                             ? <CheckCircle2 size={22} strokeWidth={2} />
                                             : <Circle size={22} strokeWidth={2} />}
-                                    </div>
+                                    </button>
                                 </Link>
                             );
                         })

@@ -21,6 +21,8 @@ router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', articleController.getRelated);
 router.get('/articles/:articleId/series', articleController.getSeries);
 router.get('/articles/:articleId', articleController.getOne);
+router.post('/articles/:articleId/read', requireAuth, articleController.markRead);
+router.delete('/articles/:articleId/read', requireAuth, articleController.markUnread);
 router.post('/articles', requireAuth, articleController.create);
 router.put('/articles/:articleId', requireAuth, articleController.update);
 router.delete('/articles/:articleId', requireAuth, articleController.remove);
