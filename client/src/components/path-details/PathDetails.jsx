@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { PenLine, Trash2, CheckCircle2, Circle, Route, Clock } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
 import { useAuth } from '../../contexts/AuthContext';
-import Spinner from '../spinner/Spinner';
+import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
 import ConfirmModal from '../common/ConfirmModal';
 import { handleImgError } from '../../utils/imageHelpers';
 
@@ -35,7 +35,7 @@ export default function PathDetails() {
         }
     };
 
-    if (isLoading || !path) return <Spinner />;
+    if (isLoading || !path) return <PathDetailsSkeleton />;
 
     const isOwner = userId && path._ownerId?._id && userId === String(path._ownerId._id);
     const completedSet = new Set((path.progress?.completedIds || []).map(String));

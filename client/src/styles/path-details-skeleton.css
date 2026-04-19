@@ -1,0 +1,140 @@
+/* =========================================================
+   PathDetails skeleton — mirrors PathDetails.jsx layout:
+   header card (kicker + title + description + meta + progress)
+   followed by stacked article-row placeholders.
+   ========================================================= */
+
+.path-details-skeleton__kicker {
+    height: 22px;
+    width: 7rem;
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+.path-details-skeleton__title {
+    height: 2rem;
+    width: 70%;
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+
+.path-details-skeleton__description {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 18px;
+}
+
+.path-details-skeleton__line {
+    height: 0.95rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.path-details-skeleton__line--short {
+    width: 60%;
+}
+
+.path-details-skeleton__line--xs {
+    height: 0.75rem;
+    width: 4.5rem;
+}
+
+.path-details-skeleton__line--xxs {
+    height: 0.85rem;
+    width: 2.5rem;
+}
+
+.path-details-skeleton__line--row-title {
+    height: 1rem;
+    width: 70%;
+}
+
+.path-details-skeleton__line--row-summary {
+    height: 0.8rem;
+    width: 90%;
+}
+
+.path-details-skeleton__meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.path-details-skeleton__chip {
+    height: 22px;
+    width: 5rem;
+    border-radius: 999px;
+}
+
+.path-details-skeleton__chip--sm {
+    width: 4rem;
+}
+
+.path-details-skeleton__author-chip {
+    height: 28px;
+    width: 9rem;
+    border-radius: 999px;
+}
+
+.path-details-skeleton__progress {
+    padding: 14px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+}
+
+.path-details-skeleton__progress-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.path-details-skeleton__progress-bar {
+    height: 8px;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.path-details-skeleton__row {
+    display: grid;
+    grid-template-columns: 40px 120px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+}
+
+.path-details-skeleton__index {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.path-details-skeleton__row-img {
+    width: 120px;
+    height: 72px;
+    border-radius: 8px;
+}
+
+.path-details-skeleton__row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+@media (max-width: 720px) {
+    .path-details-skeleton__row {
+        grid-template-columns: 40px 1fr;
+    }
+
+    .path-details-skeleton__row-img {
+        display: none;
+    }
+}
