@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router";
 import { ArrowLeft, ArrowRight, BookMarked, Lightbulb, Trash2, Clock, Hash, Link2, Check, Sparkles } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
-import Spinner from "../spinner/Spinner";
+import GlossaryDetailsSkeleton from "../glossary-details-skeleton/GlossaryDetailsSkeleton";
 import ConfirmModal from "../common/ConfirmModal";
 
 const WORDS_PER_MINUTE = 200;
@@ -71,11 +71,7 @@ export default function GlossaryDetails() {
     };
 
     if (isLoading) {
-        return (
-            <section className="page-content">
-                <Spinner />
-            </section>
-        );
+        return <GlossaryDetailsSkeleton />;
     }
 
     if (error || !term) {

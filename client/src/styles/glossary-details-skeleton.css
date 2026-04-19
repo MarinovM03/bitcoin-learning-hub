@@ -1,0 +1,123 @@
+/* =========================================================
+   GlossaryDetails skeleton — mirrors GlossaryDetails.jsx:
+   back chrome + hero (92px monogram + title/meta) +
+   quote card + in-depth body card.
+   ========================================================= */
+
+.glossary-details-skeleton__chrome {
+    margin-bottom: 18px;
+}
+
+.glossary-details-skeleton__back {
+    height: 32px;
+    width: 6.5rem;
+    border-radius: 8px;
+}
+
+.glossary-details-skeleton__hero {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.4rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    position: relative;
+}
+
+.glossary-details-skeleton__mark {
+    width: 92px;
+    height: 92px;
+    border-radius: 20px;
+    flex-shrink: 0;
+}
+
+.glossary-details-skeleton__hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.glossary-details-skeleton__category {
+    height: 0.8rem;
+    width: 5rem;
+    border-radius: 4px;
+}
+
+.glossary-details-skeleton__title {
+    height: 2.4rem;
+    width: 55%;
+    border-radius: 6px;
+}
+
+.glossary-details-skeleton__meta {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 0.3rem;
+}
+
+.glossary-details-skeleton__meta-item {
+    height: 0.8rem;
+    width: 4.5rem;
+    border-radius: 4px;
+}
+
+.glossary-details-skeleton__quote-card {
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.4rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--btc-orange-glow);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.glossary-details-skeleton__quote-label {
+    height: 0.7rem;
+    width: 7rem;
+    border-radius: 4px;
+    margin-bottom: 0.3rem;
+}
+
+.glossary-details-skeleton__body-card {
+    padding: 1.5rem 1.7rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.glossary-details-skeleton__section-title {
+    height: 1.2rem;
+    width: 35%;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.glossary-details-skeleton__line {
+    height: 0.95rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.glossary-details-skeleton__line--short {
+    width: 55%;
+}
+
+@media (max-width: 600px) {
+    .glossary-details-skeleton__hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .glossary-details-skeleton__title {
+        width: 80%;
+    }
+}
