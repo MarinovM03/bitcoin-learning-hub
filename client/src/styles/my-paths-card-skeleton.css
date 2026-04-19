@@ -1,0 +1,56 @@
+/* =========================================================
+   MyPathsCard skeleton — mirrors .my-paths-card dimensions
+   so it slots directly into .my-paths-grid with zero shift.
+   Includes 3 action-button placeholders for the footer row.
+   ========================================================= */
+
+.my-paths-card-skeleton {
+    pointer-events: none;
+}
+
+.my-paths-card-skeleton:hover {
+    border-color: var(--border-light);
+    transform: none;
+}
+
+.my-paths-card-skeleton__img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.my-paths-card-skeleton__title {
+    height: 16px;
+    width: 80%;
+    border-radius: 4px;
+}
+
+.my-paths-card-skeleton__description {
+    height: 13px;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.my-paths-card-skeleton__description--short {
+    width: 65%;
+}
+
+.my-paths-card-skeleton__meta {
+    height: 12px;
+    width: 5rem;
+    border-radius: 4px;
+}
+
+.my-paths-card-skeleton__footer {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light);
+}
+
+.my-paths-card-skeleton__btn {
+    flex: 1;
+    height: 30px;
+    border-radius: 6px;
+}

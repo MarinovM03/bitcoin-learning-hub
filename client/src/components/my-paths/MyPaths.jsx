@@ -5,7 +5,7 @@ import * as learningPathService from "../../services/learningPathService";
 import { useAuth } from "../../contexts/AuthContext";
 import { handleImgError } from "../../utils/imageHelpers";
 import ConfirmModal from "../common/ConfirmModal";
-import Spinner from "../spinner/Spinner";
+import MyPathsCardSkeleton from "../my-paths-card-skeleton/MyPathsCardSkeleton";
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
@@ -103,7 +103,11 @@ export default function MyPaths() {
                     </div>
 
                     {isLoading ? (
-                        <Spinner />
+                        <div className="my-paths-grid">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <MyPathsCardSkeleton key={i} />
+                            ))}
+                        </div>
                     ) : error ? (
                         <div className="my-paths-empty">
                             <p>{error}</p>
