@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import Spinner from "../spinner/Spinner";
+import MyArticleCardSkeleton from "../my-article-card-skeleton/MyArticleCardSkeleton";
 import ConfirmModal from "../common/ConfirmModal";
 import { useState } from "react";
 import * as articleService from "../../services/articleService";
@@ -56,7 +56,11 @@ export default function MyArticlesList({ publishedArticles, draftArticles, isLoa
             </div>
 
             {isLoading ? (
-                <Spinner />
+                <div className="my-articles-list">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <MyArticleCardSkeleton key={i} />
+                    ))}
+                </div>
             ) : articles.length === 0 ? (
                 <div className="my-articles-empty">
                     {activeTab === 'published' ? (

@@ -25,10 +25,12 @@
 @import "bookmarks.css";
 @import 'fear-greed-widget.css';
 @import "author-profile.css";
+@import "author-profile-skeleton.css";
 @import 'my-articles.css';
 @import 'my-articles-rail.css';
 @import "article-card.css";
 @import "article-card-skeleton.css";
+@import "my-article-card-skeleton.css";
 @import "skeleton.css";
 @import "series.css";
 @import "paths.css";

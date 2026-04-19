@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Bookmark } from "lucide-react";
 import * as bookmarkService from "../../services/bookmarkService";
-import Spinner from "../spinner/Spinner";
+import MyArticleCardSkeleton from "../my-article-card-skeleton/MyArticleCardSkeleton";
 
 export default function Bookmarks() {
     const [articles, setArticles] = useState([]);
@@ -40,7 +40,11 @@ export default function Bookmarks() {
                 </div>
 
                 {isLoading ? (
-                    <Spinner />
+                    <div className="my-articles-list">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <MyArticleCardSkeleton key={i} />
+                        ))}
+                    </div>
                 ) : articles.length === 0 ? (
                     <div className="bookmarks-empty">
                         <div className="bookmarks-empty-icon">
