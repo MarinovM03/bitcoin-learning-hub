@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import * as articleService from '../../services/articleService';
-import Spinner from "../spinner/Spinner";
 import ArticleCard from "../article-card/ArticleCard";
+import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
 import { handleImgError } from "../../utils/imageHelpers";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -20,7 +20,7 @@ export default function AuthorProfile() {
             .finally(() => setIsLoading(false));
     }, [userId, navigate]);
 
-    if (isLoading) return <Spinner />;
+    if (isLoading) return <AuthorProfileSkeleton />;
 
     const { username, profilePicture, articles, totalLikes } = profile;
 
