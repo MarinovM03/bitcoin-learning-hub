@@ -38,6 +38,9 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
     const result = await response.json();
 
     if (!response.ok) {
+        if (response.status === 401 && serializedAuth) {
+            window.dispatchEvent(new Event('auth:unauthorized'));
+        }
         throw new Error(parseApiError(result));
     }
 

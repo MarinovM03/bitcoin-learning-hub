@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useMemo, useCallback } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import * as authService from '../services/authService';
@@ -70,6 +70,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const updateAuthState = useCallback((newAuth: AuthUser) => {
         setAuth(newAuth);
         localStorage.setItem('auth', JSON.stringify(newAuth));
+    }, []);
+
+    useEffect(() => {
+        const onUnauthorized = () => {
+            setAuth({});
+            localStorage.removeItem('auth');
+        };
+        window.addEventListener('auth:unauthorized', onUnauthorized);
+        return () => window.removeEventListener('auth:unauthorized', onUnauthorized);
     }, []);
 
     const values = useMemo<AuthContextValue>(() => ({
