@@ -5,7 +5,7 @@ import * as articleService from '../../services/articleService';
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
-import Spinner from "../spinner/Spinner";
+import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -171,7 +171,7 @@ export default function Home() {
                 </div>
 
                 {isLoading ? (
-                    <Spinner />
+                    <HomeLatestSkeleton />
                 ) : latestArticles.length === 0 ? (
                     <p className="no-articles">No articles yet. Be the first to contribute!</p>
                 ) : (

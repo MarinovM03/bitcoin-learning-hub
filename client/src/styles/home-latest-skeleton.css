@@ -1,0 +1,94 @@
+/* =========================================================
+   Home "Latest Knowledge" skeleton — mirrors magazine-grid:
+   one large featured card + three small horizontal cards.
+   ========================================================= */
+
+.home-latest-skeleton__featured {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    min-height: 400px;
+    background-color: var(--card-bg);
+}
+
+.home-latest-skeleton__featured-img {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
+}
+
+.home-latest-skeleton__featured-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 2rem;
+}
+
+.home-latest-skeleton__tag {
+    height: 0.7rem;
+    width: 4.5rem;
+    border-radius: 6px;
+}
+
+.home-latest-skeleton__featured-title {
+    height: 1.4rem;
+    width: 80%;
+    border-radius: 4px;
+}
+
+.home-latest-skeleton__featured-summary {
+    height: 0.85rem;
+    width: 60%;
+    border-radius: 4px;
+}
+
+.home-latest-skeleton__read-more {
+    height: 0.85rem;
+    width: 7rem;
+    border-radius: 4px;
+    margin-top: 0.3rem;
+}
+
+/* Small stacked cards */
+
+.home-latest-skeleton__small {
+    display: flex;
+    gap: 1rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.home-latest-skeleton__small-img {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+
+.home-latest-skeleton__small-body {
+    padding: 0.8rem 0.8rem 0.8rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    justify-content: center;
+    flex: 1;
+}
+
+.home-latest-skeleton__small-title {
+    height: 0.88rem;
+    width: 85%;
+    border-radius: 4px;
+}
+
+.home-latest-skeleton__small-summary {
+    height: 0.75rem;
+    width: 65%;
+    border-radius: 4px;
+}
