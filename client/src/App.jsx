@@ -31,6 +31,7 @@ import PathDetails from "./components/path-details/PathDetails";
 import CreatePath from "./components/create-path/CreatePath";
 import EditPath from "./components/edit-path/EditPath";
 import MyPaths from "./components/my-paths/MyPaths";
+import PathQuiz from "./components/path-quiz/PathQuiz";
 
 function App() {
     return (
@@ -66,6 +67,7 @@ function App() {
                         <Route path="/bookmarks" element={<Bookmarks />} />
                         <Route path="/my-articles" element={<MyArticles />} />
                         <Route path="/my-paths" element={<MyPaths />} />
+                        <Route path="/paths/:pathId/quiz" element={<PathQuiz />} />
                     </Route>
 
                     <Route element={<GuestGuard />}>

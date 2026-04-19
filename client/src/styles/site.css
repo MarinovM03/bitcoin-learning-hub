@@ -42,6 +42,8 @@
 @import "skeleton.css";
 @import "series.css";
 @import "paths.css";
+@import "path-exam-panel.css";
+@import "path-quiz.css";
 @import "quiz.css";
 @import "dca-calculator.css";
 @import "mempool-visualizer.css";

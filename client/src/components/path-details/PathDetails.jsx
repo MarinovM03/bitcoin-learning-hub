@@ -4,6 +4,7 @@ import { PenLine, Trash2, CheckCircle2, Circle, Route, Clock } from 'lucide-reac
 import * as learningPathService from '../../services/learningPathService';
 import { useAuth } from '../../contexts/AuthContext';
 import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
+import PathExamPanel from '../path-exam-panel/PathExamPanel';
 import ConfirmModal from '../common/ConfirmModal';
 import { handleImgError } from '../../utils/imageHelpers';
 
@@ -98,6 +99,8 @@ export default function PathDetails() {
                             </div>
                         </div>
                     )}
+
+                    <PathExamPanel pathId={pathId} completed={completed} total={total} />
 
                     {isOwner && (
                         <div className="path-details-owner-actions">

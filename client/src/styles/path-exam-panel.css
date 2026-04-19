@@ -1,0 +1,118 @@
+.path-exam-panel {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+}
+
+.path-exam-panel--ready {
+    border-color: var(--btc-orange-glow);
+    background: var(--btc-orange-dim);
+}
+
+.path-exam-panel--certified {
+    border-color: rgba(46, 204, 113, 0.35);
+    background: rgba(46, 204, 113, 0.08);
+}
+
+.path-exam-panel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.path-exam-panel-icon--accent {
+    background: var(--btc-orange);
+    color: #1a1a1a;
+    border-color: transparent;
+}
+
+.path-exam-panel-icon--success {
+    background: var(--success-color);
+    color: #0f2a18;
+    border-color: transparent;
+}
+
+.path-exam-panel-body {
+    min-width: 0;
+}
+
+.path-exam-panel-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.path-exam-panel-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.path-exam-panel-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.path-exam-panel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.path-exam-panel-btn--primary {
+    background: var(--btc-orange);
+    color: #1a1a1a;
+}
+
+.path-exam-panel-btn--primary:hover {
+    background: #ffa733;
+}
+
+.path-exam-panel-btn--ghost {
+    background: transparent;
+    color: var(--text-color);
+    border-color: var(--border-light);
+}
+
+.path-exam-panel-btn--ghost:hover {
+    border-color: var(--btc-orange-glow);
+    color: var(--btc-orange);
+}
+
+@media (max-width: 620px) {
+    .path-exam-panel {
+        grid-template-columns: auto 1fr;
+    }
+
+    .path-exam-panel-actions {
+        grid-column: 1 / -1;
+        justify-content: stretch;
+    }
+
+    .path-exam-panel-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
