@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Search, X, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
 import * as articleService from '../../services/articleService';
-import Spinner from "../spinner/Spinner";
 import ArticleCard from "../article-card/ArticleCard";
+import ArticleCardSkeleton from "../article-card-skeleton/ArticleCardSkeleton";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 
@@ -171,7 +171,11 @@ export default function Catalog() {
             {error && <p className="catalog-error">{error}</p>}
 
             {isLoading ? (
-                <Spinner />
+                <div className="catalog-grid">
+                    {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+                        <ArticleCardSkeleton key={i} />
+                    ))}
+                </div>
             ) : (
                 <>
                     {articles.length === 0 && !error ? (

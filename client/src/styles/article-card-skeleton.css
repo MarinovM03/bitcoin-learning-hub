@@ -1,0 +1,65 @@
+/* =========================================================
+   Article card skeleton — mirrors .catalog-card dimensions
+   so the placeholder → content swap has zero layout shift.
+   ========================================================= */
+
+.article-card-skeleton {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+}
+
+.article-card-skeleton__img {
+    height: 180px;
+    width: 100%;
+    border-radius: 0;
+}
+
+.article-card-skeleton__body {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.article-card-skeleton__title {
+    height: 1rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.article-card-skeleton__title--short {
+    width: 65%;
+}
+
+.article-card-skeleton__summary {
+    height: 0.75rem;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.article-card-skeleton__summary:last-of-type {
+    width: 80%;
+}
+
+.article-card-skeleton__footer {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+}
+
+.article-card-skeleton__meta {
+    height: 0.7rem;
+    width: 3.5rem;
+    border-radius: 4px;
+}
+
+.article-card-skeleton__meta--wide {
+    width: 5rem;
+    margin-left: auto;
+}
