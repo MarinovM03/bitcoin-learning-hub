@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Search, BookOpen, BookMarked, SearchX } from "lucide-react";
 import * as searchService from "../../services/searchService";
-import Spinner from "../spinner/Spinner";
+import SearchResultSkeleton from "../search-result-skeleton/SearchResultSkeleton";
 
 const FULL_LIMIT = 25;
 
@@ -91,7 +91,11 @@ export default function SearchPage() {
                 {error && <p className="search-page-error">{error}</p>}
 
                 {isLoading ? (
-                    <Spinner />
+                    <div className="search-page-results">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <SearchResultSkeleton key={i} />
+                        ))}
+                    </div>
                 ) : (
                     <>
                         {!hasQuery && (

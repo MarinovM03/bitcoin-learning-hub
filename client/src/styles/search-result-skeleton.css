@@ -1,0 +1,43 @@
+/* =========================================================
+   Search result skeleton — mirrors .search-page-result rows.
+   ========================================================= */
+
+.search-result-skeleton {
+    padding: 1rem 1.25rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.search-result-skeleton__title {
+    height: 1rem;
+    width: 60%;
+    border-radius: 4px;
+}
+
+.search-result-skeleton__summary {
+    height: 0.8rem;
+    width: 90%;
+    border-radius: 4px;
+}
+
+.search-result-skeleton__meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+}
+
+.search-result-skeleton__badge {
+    height: 0.7rem;
+    width: 3.5rem;
+    border-radius: 6px;
+}
+
+.search-result-skeleton__dim {
+    height: 0.7rem;
+    width: 4.5rem;
+    border-radius: 4px;
+}
