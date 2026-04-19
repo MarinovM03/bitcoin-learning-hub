@@ -4,7 +4,7 @@ import * as glossaryService from "../../services/glossaryService";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
-export default function GlossaryAddForm({ onTermAdded, onCancel }) {
+export default function GlossaryAddForm({ onTermAdded }) {
     const [formValues, setFormValues] = useState({
         term: '',
         definition: '',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUp, BookOpen, HelpCircle, MessageSquare } from "lucide-react";
 
 const scrollToId = (id) => {
@@ -16,13 +16,13 @@ export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
     const progress = Math.min(100, Math.max(0, readProgress));
     const minutesLeft = Math.max(0, Math.ceil((readingTime || 1) * (1 - progress / 100)));
 
-    const jumpLinks = [
+    const jumpLinks = useMemo(() => [
         { id: 'article-body',     label: 'Article',  Icon: BookOpen },
         ...(hasQuiz
             ? [{ id: 'article-quiz', label: 'Quiz', Icon: HelpCircle }]
             : []),
         { id: 'article-comments', label: 'Comments', Icon: MessageSquare },
-    ];
+    ], [hasQuiz]);
 
     useEffect(() => {
         const ids = jumpLinks.map(l => l.id);
@@ -50,7 +50,7 @@ export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
 
         elements.forEach(el => observer.observe(el));
         return () => observer.disconnect();
-    }, [hasQuiz]);
+    }, [jumpLinks]);
 
     return (
         <aside className="reading-rail" aria-label="Reading progress and navigation">

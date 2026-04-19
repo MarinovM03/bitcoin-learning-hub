@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { PenLine } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
@@ -14,7 +14,6 @@ const handleImgError = (e) => {
 };
 
 export default function MyArticles() {
-    const navigate = useNavigate();
     const { userId } = useAuth();
 
     const [myArticles, setMyArticles] = useState([]);

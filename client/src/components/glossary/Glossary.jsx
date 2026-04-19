@@ -73,10 +73,7 @@ export default function Glossary() {
                     </div>
 
                     {showForm && (
-                        <GlossaryAddForm
-                            onTermAdded={handleTermAdded}
-                            onCancel={() => setShowForm(false)}
-                        />
+                        <GlossaryAddForm onTermAdded={handleTermAdded} />
                     )}
 
                     <div className="glossary-controls">
