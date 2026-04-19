@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { Layers } from "lucide-react";
 import { formatViews } from "../../utils/formatters";
 import { handleImgError } from "../../utils/imageHelpers";
+import Skeleton from "../skeleton/Skeleton";
 
 export default function ArticleCard({ article, readLabel = "Read Article →" }) {
     const inSeries = Boolean(article.seriesName) && Number.isFinite(article.seriesPart);
+    const [imgLoaded, setImgLoaded] = useState(false);
 
     return (
         <Link
@@ -12,11 +15,16 @@ export default function ArticleCard({ article, readLabel = "Read Article →" })
             className="catalog-card"
         >
             <div className="catalog-card-img-wrap">
+                {!imgLoaded && <Skeleton className="catalog-card-img-skeleton" />}
                 <img
                     src={article.imageUrl}
                     alt={article.title}
-                    className="catalog-card-img"
-                    onError={handleImgError}
+                    className={`catalog-card-img ${imgLoaded ? 'is-loaded' : ''}`}
+                    onLoad={() => setImgLoaded(true)}
+                    onError={(e) => {
+                        handleImgError(e);
+                        setImgLoaded(true);
+                    }}
                 />
                 <span className="catalog-card-category">{article.category}</span>
                 {article.difficulty && (
