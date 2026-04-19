@@ -4,8 +4,8 @@ import { Plus, SearchX, Route } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
 import { useAuth } from '../../contexts/AuthContext';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
-import Spinner from '../spinner/Spinner';
 import PathCard from '../path-card/PathCard';
+import PathCardSkeleton from '../path-card-skeleton/PathCardSkeleton';
 
 export default function Paths() {
     const { isAuthenticated } = useAuth();
@@ -66,7 +66,11 @@ export default function Paths() {
                 </div>
 
                 {isLoading ? (
-                    <Spinner />
+                    <div className="paths-grid">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <PathCardSkeleton key={i} />
+                        ))}
+                    </div>
                 ) : error ? (
                     <div className="paths-empty">
                         <SearchX size={40} strokeWidth={1.5} />
