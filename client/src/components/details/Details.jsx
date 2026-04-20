@@ -1,7 +1,7 @@
 // client/src/components/details/Details.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle } from "lucide-react";
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import * as bookmarkService from '../../services/bookmarkService';
@@ -33,6 +33,8 @@ export default function Details() {
     const [totalLikes, setTotalLikes] = useState(0);
     const [hasLiked, setHasLiked] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [hasRead, setHasRead] = useState(false);
+    const [isTogglingRead, setIsTogglingRead] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [relatedArticles, setRelatedArticles] = useState([]);
@@ -80,6 +82,7 @@ export default function Details() {
         Promise.all(fetches)
             .then(([articleData, likesArray, bookmarks]) => {
                 setArticle(articleData);
+                setHasRead(Boolean(articleData?.hasRead));
                 setTotalLikes(likesArray.length);
                 if (userId) {
                     setHasLiked(likesArray.some(like => like._ownerId === userId));
@@ -142,6 +145,24 @@ export default function Details() {
             setIsBookmarked(result.bookmarked);
         } catch (err) {
             console.log("Bookmark failed", err);
+        }
+    };
+
+    const onToggleRead = async () => {
+        if (isTogglingRead) return;
+        setIsTogglingRead(true);
+        try {
+            if (hasRead) {
+                await articleService.markUnread(articleId);
+                setHasRead(false);
+            } else {
+                await articleService.markRead(articleId);
+                setHasRead(true);
+            }
+        } catch (err) {
+            console.log("Toggle read failed", err);
+        } finally {
+            setIsTogglingRead(false);
         }
     };
 
@@ -272,6 +293,27 @@ export default function Details() {
                                     </Link>
                                 ) : <span />}
                             </nav>
+                        )}
+
+                        {isAuthenticated && (
+                            <div className="details-read-row">
+                                <button
+                                    type="button"
+                                    className={`btn-mark-read ${hasRead ? 'btn-mark-read--done' : ''}`}
+                                    onClick={onToggleRead}
+                                    disabled={isTogglingRead}
+                                >
+                                    {hasRead
+                                        ? <CheckCircle2 size={16} strokeWidth={2.25} />
+                                        : <Circle size={16} strokeWidth={2.25} />}
+                                    {hasRead ? 'Marked as Read' : 'Mark as Read'}
+                                </button>
+                                <span className="btn-mark-read-hint">
+                                    {hasRead
+                                        ? 'Counts toward learning path progress.'
+                                        : 'Track your progress through learning paths.'}
+                                </span>
+                            </div>
                         )}
 
                         {isAuthenticated && !isOwner && (

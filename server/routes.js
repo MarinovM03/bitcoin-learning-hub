@@ -37,6 +37,9 @@ router.post('/paths', requireAuth, learningPathController.create);
 router.put('/paths/:pathId', requireAuth, learningPathController.update);
 router.delete('/paths/:pathId', requireAuth, learningPathController.remove);
 
+// Reading history
+router.delete('/users/me/read-history', requireAuth, articleController.resetReadHistory);
+
 // Path certification routes
 router.get('/users/me/certifications', requireAuth, pathCertificationController.getMyCertifications);
 router.get('/certifications/:certId', requireAuth, pathCertificationController.getOneCertification);

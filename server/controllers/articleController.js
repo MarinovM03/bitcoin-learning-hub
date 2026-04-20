@@ -139,7 +139,16 @@ export const getOne = async (req, res) => {
             recordView(req, articleId);
         }
 
-        res.json(article);
+        let hasRead = false;
+        if (req.user) {
+            const readDoc = await ReadArticle.findOne({
+                _ownerId: req.user._id,
+                articleId,
+            }).select('_id');
+            hasRead = Boolean(readDoc);
+        }
+
+        res.json({ ...article.toObject(), hasRead });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -180,6 +189,15 @@ export const markUnread = async (req, res) => {
         res.json({ read: false });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+export const resetReadHistory = async (req, res) => {
+    try {
+        const result = await ReadArticle.deleteMany({ _ownerId: req.user._id });
+        res.json({ cleared: result.deletedCount || 0 });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 

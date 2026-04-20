@@ -42,6 +42,7 @@ export interface Article {
     _ownerId: string | ArticleOwnerRef;
     createdAt: string;
     updatedAt: string;
+    hasRead?: boolean;
 }
 
 export type ArticleDraft = Omit<

@@ -269,6 +269,62 @@
     color: white;
 }
 
+.details-read-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+    padding: 14px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+}
+
+.btn-mark-read {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-light);
+    font-family: 'Exo 2', sans-serif;
+}
+
+.btn-mark-read:hover:not(:disabled) {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+    background: var(--btc-orange-dim);
+}
+
+.btn-mark-read:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.btn-mark-read--done {
+    background: rgba(46, 204, 113, 0.1);
+    border-color: rgba(46, 204, 113, 0.35);
+    color: #2ecc71;
+}
+
+.btn-mark-read--done:hover:not(:disabled) {
+    background: rgba(231, 76, 60, 0.08);
+    border-color: rgba(231, 76, 60, 0.3);
+    color: var(--danger-color);
+}
+
+.btn-mark-read-hint {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
 .details-like-row {
     display: flex;
     align-items: center;
