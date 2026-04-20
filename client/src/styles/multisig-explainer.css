@@ -1,0 +1,535 @@
+.multisig-page {
+    padding-top: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* -------------------- Header -------------------- */
+
+.multisig-header {
+    position: relative;
+    margin-bottom: 2.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.multisig-hero-glow {
+    position: absolute;
+    top: -60px;
+    left: -80px;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.multisig-btc-watermark {
+    position: absolute;
+    top: -1.5rem;
+    right: -1rem;
+    font-size: 11rem;
+    font-weight: 700;
+    color: var(--btc-orange);
+    opacity: 0.04;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+.multisig-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.multisig-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--btc-orange);
+    margin: 0 0 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.multisig-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.5px;
+}
+
+.multisig-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    max-width: 680px;
+    line-height: 1.65;
+}
+
+.multisig-subtitle strong {
+    color: white;
+    font-weight: 700;
+}
+
+/* -------------------- Scenarios -------------------- */
+
+.multisig-scenarios {
+    margin-bottom: 1.5rem;
+}
+
+.multisig-scenarios-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
+.multisig-scenarios-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.multisig-scenario-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+    font-family: inherit;
+}
+
+.multisig-scenario-btn:hover {
+    border-color: var(--btc-orange);
+    transform: translateY(-2px);
+    background: var(--card-bg-hover);
+}
+
+.multisig-scenario-btn--active {
+    border-color: var(--btc-orange);
+    background: var(--btc-orange-dim);
+}
+
+.multisig-scenario-btn-sub {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--btc-orange);
+}
+
+.multisig-scenario-btn-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* -------------------- Controls -------------------- */
+
+.multisig-controls-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.multisig-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.multisig-control-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1rem;
+    align-items: baseline;
+}
+
+.multisig-control-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.02em;
+}
+
+.multisig-control-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.multisig-stepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.multisig-stepper-btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+    font-family: inherit;
+}
+
+.multisig-stepper-btn:hover:not(:disabled) {
+    border-color: var(--btc-orange);
+    color: white;
+}
+
+.multisig-stepper-btn--active {
+    background: var(--btc-orange);
+    border-color: var(--btc-orange);
+    color: white;
+}
+
+.multisig-stepper-btn--active:hover {
+    color: white;
+}
+
+.multisig-config-readout {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    background: rgba(247, 147, 26, 0.06);
+    border: 1px solid var(--btc-orange-glow);
+    border-radius: 10px;
+}
+
+.multisig-config-readout-big {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--btc-orange);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.multisig-config-readout-copy {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.55;
+}
+
+/* -------------------- Stage (keyholders + progress) -------------------- */
+
+.multisig-stage {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.multisig-stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.multisig-stage-head-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 240px;
+}
+
+.multisig-vault-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    align-self: flex-start;
+    transition: border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+}
+
+.multisig-vault-chip--open {
+    border-color: rgba(46, 204, 113, 0.45);
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.08);
+}
+
+.multisig-stage-copy {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.multisig-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.multisig-reset-btn:hover {
+    border-color: var(--btc-orange);
+    color: white;
+}
+
+.multisig-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.multisig-progress-track {
+    width: 100%;
+    height: 8px;
+    background: #0f0f0f;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.multisig-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--btc-orange), #f5a623);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+}
+
+.multisig-progress-fill--complete {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
+.multisig-progress-label {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    align-self: flex-end;
+}
+
+.multisig-progress-label strong {
+    color: white;
+    font-weight: 700;
+}
+
+/* -------------------- Keyholder cards -------------------- */
+
+.multisig-keyholders {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.8rem;
+}
+
+.multisig-keyholder {
+    --key-color: var(--btc-orange);
+    background: #141414;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.1rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease;
+    font-family: inherit;
+}
+
+.multisig-keyholder:hover:not(:disabled) {
+    border-color: var(--key-color);
+    transform: translateY(-3px);
+    background: #181818;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.multisig-keyholder:focus-visible {
+    outline: 2px solid var(--key-color);
+    outline-offset: 2px;
+}
+
+.multisig-keyholder:disabled {
+    cursor: default;
+}
+
+.multisig-keyholder-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--key-color) 15%, #1a1a1a);
+    border: 1px solid color-mix(in srgb, var(--key-color) 40%, transparent);
+    color: var(--key-color);
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.multisig-keyholder-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+}
+
+.multisig-keyholder-status {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.multisig-keyholder--signed {
+    border-color: color-mix(in srgb, var(--key-color) 55%, transparent);
+    background: color-mix(in srgb, var(--key-color) 8%, #141414);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--key-color) 20%, transparent) inset,
+                0 6px 20px color-mix(in srgb, var(--key-color) 15%, transparent);
+}
+
+.multisig-keyholder--signed .multisig-keyholder-avatar {
+    background: var(--key-color);
+    border-color: var(--key-color);
+    color: white;
+}
+
+.multisig-keyholder--signed .multisig-keyholder-status {
+    color: var(--key-color);
+}
+
+/* -------------------- Education cards -------------------- */
+
+.multisig-education {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.multisig-edu-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.multisig-edu-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    border: 1px solid var(--btc-orange-glow);
+}
+
+.multisig-edu-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.multisig-edu-body {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.65;
+}
+
+.multisig-edu-body em {
+    font-style: normal;
+    color: white;
+    font-weight: 600;
+}
+
+.multisig-edu-body strong {
+    color: white;
+    font-weight: 700;
+}
+
+.multisig-edu-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+/* -------------------- Responsive -------------------- */
+
+@media (max-width: 640px) {
+    .multisig-title {
+        font-size: 2rem;
+    }
+    .multisig-config-readout {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .multisig-stage-head {
+        flex-direction: column;
+    }
+}
+
+/* -------------------- Reduced motion -------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .multisig-scenario-btn,
+    .multisig-stepper-btn,
+    .multisig-keyholder,
+    .multisig-progress-fill,
+    .multisig-vault-chip {
+        transition: none;
+    }
+    .multisig-scenario-btn:hover,
+    .multisig-keyholder:hover:not(:disabled) {
+        transform: none;
+    }
+}

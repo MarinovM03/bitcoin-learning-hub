@@ -14,6 +14,7 @@ const NAV_LINKS = [
     { to: "/dca", label: "DCA Calculator" },
     { to: "/mempool", label: "Mempool" },
     { to: "/address", label: "Address Lookup" },
+    { to: "/multisig", label: "Multisig" },
 ];
 
 export default function Navbar() {

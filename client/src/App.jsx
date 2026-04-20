@@ -26,6 +26,7 @@ import MyArticles from "./components/my-articles/MyArticles";
 import DcaCalculator from "./components/dca-calculator/DcaCalculator";
 import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer";
 import AddressDemystifier from "./components/address-demystifier/AddressDemystifier";
+import MultisigExplainer from "./components/multisig-explainer/MultisigExplainer";
 import SearchPage from "./components/search-page/SearchPage";
 import Paths from "./components/paths/Paths";
 import PathDetails from "./components/path-details/PathDetails";
@@ -61,6 +62,7 @@ function App() {
                     <Route path="/dca" element={<DcaCalculator />} />
                     <Route path="/mempool" element={<MempoolVisualizer />} />
                     <Route path="/address" element={<AddressDemystifier />} />
+                    <Route path="/multisig" element={<MultisigExplainer />} />
 
                     <Route element={<AuthGuard />}>
                         <Route path="/articles/create" element={<Create />} />
