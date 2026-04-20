@@ -214,6 +214,24 @@
 .path-card-difficulty--intermediate { color: #f39c12; border: 1px solid rgba(243, 156, 18, 0.35); }
 .path-card-difficulty--advanced { color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.35); }
 
+.path-card-certified {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, var(--btc-orange), #f5a623);
+    color: white;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    box-shadow: 0 4px 14px rgba(247, 147, 26, 0.4);
+}
+
 .path-card-body {
     display: flex;
     flex-direction: column;

@@ -1,10 +1,10 @@
 import { Link } from 'react-router';
-import { Route, BookOpen } from 'lucide-react';
+import { Route, BookOpen, BadgeCheck } from 'lucide-react';
 import { handleImgError } from '../../utils/imageHelpers';
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
-export default function PathCard({ path }) {
+export default function PathCard({ path, certification }) {
     const cover = path.coverImage || path.articles?.[0]?.imageUrl || defaultCover;
     const articleCount = Array.isArray(path.articles) ? path.articles.length : 0;
     const authorName = path._ownerId?.username;
@@ -25,6 +25,15 @@ export default function PathCard({ path }) {
                 {path.difficulty && (
                     <span className={`path-card-difficulty path-card-difficulty--${path.difficulty.toLowerCase()}`}>
                         {path.difficulty}
+                    </span>
+                )}
+                {certification && (
+                    <span
+                        className="path-card-certified"
+                        title={`Passed with ${certification.score}%`}
+                    >
+                        <BadgeCheck size={13} strokeWidth={2.5} />
+                        Certified · {certification.score}%
                     </span>
                 )}
             </div>

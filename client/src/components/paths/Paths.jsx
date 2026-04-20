@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { Plus, SearchX, Route } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
+import * as pathCertificationService from '../../services/pathCertificationService';
 import { useAuth } from '../../contexts/AuthContext';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import PathCard from '../path-card/PathCard';
@@ -13,6 +14,7 @@ export default function Paths() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [difficulty, setDifficulty] = useState('All');
+    const [certifications, setCertifications] = useState([]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -24,6 +26,25 @@ export default function Paths() {
             .catch(err => setError(err.message))
             .finally(() => setIsLoading(false));
     }, [difficulty]);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            setCertifications([]);
+            return;
+        }
+        pathCertificationService.getMyCertifications()
+            .then(setCertifications)
+            .catch(() => setCertifications([]));
+    }, [isAuthenticated]);
+
+    const certByPathId = useMemo(() => {
+        const map = {};
+        for (const cert of certifications) {
+            const pid = cert.pathId?._id;
+            if (pid) map[pid] = cert;
+        }
+        return map;
+    }, [certifications]);
 
     return (
         <section id="paths-page" className="page-content">
@@ -87,7 +108,11 @@ export default function Paths() {
                 ) : (
                     <div className="paths-grid">
                         {paths.map(path => (
-                            <PathCard key={path._id} path={path} />
+                            <PathCard
+                                key={path._id}
+                                path={path}
+                                certification={certByPathId[path._id]}
+                            />
                         ))}
                     </div>
                 )}
