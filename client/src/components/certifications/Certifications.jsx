@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Award, GraduationCap } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
-import Spinner from '../spinner/Spinner';
+import CertificationCardSkeleton from '../certification-card-skeleton/CertificationCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
 
 const formatDate = (iso) => {
@@ -44,7 +44,11 @@ export default function Certifications() {
                 </div>
 
                 {isLoading ? (
-                    <Spinner />
+                    <div className="certifications-grid">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <CertificationCardSkeleton key={i} />
+                        ))}
+                    </div>
                 ) : certs.length === 0 ? (
                     <div className="certifications-empty">
                         <div className="certifications-empty-icon">
