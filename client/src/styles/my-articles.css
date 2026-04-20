@@ -300,3 +300,34 @@
     border-color: var(--btc-orange);
     color: var(--btc-orange);
 }
+
+.profile-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px dashed var(--border-light);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Exo 2', sans-serif;
+}
+
+.profile-reset-btn:hover:not(:disabled) {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background-color: var(--danger-dim);
+}
+
+.profile-reset-btn:disabled {
+    opacity: 0.5;
+    cursor: progress;
+}

@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { CheckCircle2, FileText, ArrowRight } from "lucide-react";
+import { CheckCircle2, FileText, ArrowRight, RotateCcw } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ProfileForm from "../profile-form/ProfileForm";
+import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Profile() {
     const { userId } = useAuth();
     const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('Profile updated successfully!');
     const [isLoading, setIsLoading] = useState(true);
     const [publishedCount, setPublishedCount] = useState(0);
     const [draftCount, setDraftCount] = useState(0);
     const [totalLikes, setTotalLikes] = useState(0);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
 
     useEffect(() => {
         articleService.getMyArticles()
@@ -34,8 +38,29 @@ export default function Profile() {
     }, [userId]);
 
     const handleSaveSuccess = () => {
+        setToastMessage('Profile updated successfully!');
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleResetReadHistory = async () => {
+        if (isResetting) return;
+        setIsResetting(true);
+        try {
+            const result = await articleService.resetReadHistory();
+            setToastMessage(
+                result.cleared === 0
+                    ? 'Your reading history was already empty.'
+                    : `Cleared reading progress for ${result.cleared} article${result.cleared === 1 ? '' : 's'}.`
+            );
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3500);
+        } catch (err) {
+            console.log('Reset failed:', err.message);
+        } finally {
+            setIsResetting(false);
+            setShowResetModal(false);
+        }
     };
 
     return (
@@ -43,8 +68,19 @@ export default function Profile() {
             {showToast && (
                 <div className="profile-toast">
                     <CheckCircle2 size={18} strokeWidth={2.25} />
-                    Profile updated successfully!
+                    {toastMessage}
                 </div>
+            )}
+
+            {showResetModal && (
+                <ConfirmModal
+                    title="Reset reading history?"
+                    message="This will clear every article you've marked as read."
+                    subMessage="Learning paths will show all articles as unread and the Final Exam gates will lock again until you re-mark them. This cannot be undone."
+                    confirmLabel={isResetting ? 'Clearing…' : 'Reset History'}
+                    onConfirm={handleResetReadHistory}
+                    onCancel={() => !isResetting && setShowResetModal(false)}
+                />
             )}
 
             <ProfileForm onSaveSuccess={handleSaveSuccess} />
@@ -70,6 +106,16 @@ export default function Profile() {
                     Manage My Articles
                     <ArrowRight size={16} strokeWidth={2} />
                 </Link>
+
+                <button
+                    type="button"
+                    className="profile-reset-btn"
+                    onClick={() => setShowResetModal(true)}
+                    disabled={isResetting}
+                >
+                    <RotateCcw size={16} strokeWidth={2} />
+                    Reset Reading History
+                </button>
             </div>
         </section>
     );
