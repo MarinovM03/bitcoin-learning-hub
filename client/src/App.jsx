@@ -17,6 +17,7 @@ import Edit from "./components/edit/Edit";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
 import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
+import ScrollReset from "./components/scroll-reset/ScrollReset";
 import Glossary from "./components/glossary/Glossary";
 import GlossaryDetails from "./components/glossary-details/GlossaryDetails";
 import Bookmarks from "./components/bookmarks/Bookmarks";
@@ -44,6 +45,7 @@ function App() {
             </header>
 
             <div className="main-area">
+                <ScrollReset />
                 <ScrollToTop />
 
                 <Routes>
