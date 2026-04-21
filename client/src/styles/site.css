@@ -52,6 +52,7 @@
 @import "mempool-visualizer.css";
 @import "address-demystifier.css";
 @import "multisig-explainer.css";
+@import "sats-converter.css";
 
 :root {
     --btc-orange: #F7931A;

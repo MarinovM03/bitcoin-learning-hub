@@ -27,6 +27,7 @@ import DcaCalculator from "./components/dca-calculator/DcaCalculator";
 import MempoolVisualizer from "./components/mempool-visualizer/MempoolVisualizer";
 import AddressDemystifier from "./components/address-demystifier/AddressDemystifier";
 import MultisigExplainer from "./components/multisig-explainer/MultisigExplainer";
+import SatsConverter from "./components/sats-converter/SatsConverter";
 import SearchPage from "./components/search-page/SearchPage";
 import Paths from "./components/paths/Paths";
 import PathDetails from "./components/path-details/PathDetails";
@@ -63,6 +64,7 @@ function App() {
                     <Route path="/mempool" element={<MempoolVisualizer />} />
                     <Route path="/address" element={<AddressDemystifier />} />
                     <Route path="/multisig" element={<MultisigExplainer />} />
+                    <Route path="/converter" element={<SatsConverter />} />
 
                     <Route element={<AuthGuard />}>
                         <Route path="/articles/create" element={<Create />} />

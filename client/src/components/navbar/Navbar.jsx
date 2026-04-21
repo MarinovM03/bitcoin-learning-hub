@@ -15,6 +15,7 @@ const NAV_LINKS = [
     { to: "/mempool", label: "Mempool" },
     { to: "/address", label: "Address Lookup" },
     { to: "/multisig", label: "Multisig" },
+    { to: "/converter", label: "Converter" },
 ];
 
 export default function Navbar() {
