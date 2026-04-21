@@ -4,6 +4,8 @@ import { Link, NavLink, useLocation } from "react-router";
 import { Menu, X, PenLine, Search } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import AccountMenu from "./AccountMenu";
+import ToolsDropdown from "./ToolsDropdown";
+import { TOOLS } from "../../utils/navTools";
 import SearchOverlay from "../search-overlay/SearchOverlay";
 
 const NAV_LINKS = [
@@ -11,11 +13,6 @@ const NAV_LINKS = [
     { to: "/articles", label: "Articles" },
     { to: "/paths", label: "Paths" },
     { to: "/glossary", label: "Glossary" },
-    { to: "/dca", label: "DCA Calculator" },
-    { to: "/mempool", label: "Mempool" },
-    { to: "/address", label: "Address Lookup" },
-    { to: "/multisig", label: "Multisig" },
-    { to: "/converter", label: "Converter" },
 ];
 
 export default function Navbar() {
@@ -82,6 +79,7 @@ export default function Navbar() {
 
                 <div className="navbar-links">
                     {renderLinks()}
+                    <ToolsDropdown />
                 </div>
 
                 <div className="navbar-actions">
@@ -143,6 +141,19 @@ export default function Navbar() {
 
                     <div className="navbar-mobile-links">
                         {renderLinks(() => setIsMobileOpen(false))}
+                        <span className="navbar-mobile-section-label">Tools</span>
+                        {TOOLS.map(tool => (
+                            <NavLink
+                                key={tool.to}
+                                to={tool.to}
+                                onClick={() => setIsMobileOpen(false)}
+                                className={({ isActive }) =>
+                                    `navbar-link ${isActive ? "navbar-link--active" : ""}`
+                                }
+                            >
+                                {tool.label}
+                            </NavLink>
+                        ))}
                     </div>
 
                     {!isAuthenticated && (
