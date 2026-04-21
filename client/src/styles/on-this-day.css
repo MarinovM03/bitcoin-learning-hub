@@ -1,0 +1,174 @@
+.otd-widget {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-top: 2px solid var(--btc-orange);
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    margin: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow: hidden;
+}
+
+.otd-glow {
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.otd-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.otd-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--btc-orange);
+}
+
+.otd-category {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.otd-category--milestone {
+    color: var(--btc-orange);
+    background: var(--btc-orange-dim);
+    border-color: rgba(247, 147, 26, 0.35);
+}
+
+.otd-category--market {
+    color: var(--success-color);
+    background: rgba(46, 204, 113, 0.1);
+    border-color: rgba(46, 204, 113, 0.35);
+}
+
+.otd-category--protocol {
+    color: var(--accent-blue);
+    background: rgba(52, 152, 219, 0.1);
+    border-color: rgba(52, 152, 219, 0.35);
+}
+
+.otd-category--incident {
+    color: var(--danger-color);
+    background: var(--danger-dim);
+    border-color: rgba(231, 76, 60, 0.35);
+}
+
+.otd-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+
+.otd-year-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 130px;
+    padding: 0.9rem 1rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.otd-year {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--btc-orange);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.otd-years-ago {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.otd-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.otd-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.25;
+}
+
+.otd-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+@media (max-width: 720px) {
+    .otd-widget {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .otd-body {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+    }
+
+    .otd-year-block {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.9rem;
+        min-width: 0;
+        padding: 0.75rem 1rem;
+    }
+
+    .otd-year {
+        font-size: 1.85rem;
+    }
+
+    .otd-title {
+        font-size: 1.2rem;
+    }
+
+    .otd-top {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+}

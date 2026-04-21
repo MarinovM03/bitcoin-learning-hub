@@ -53,6 +53,7 @@
 @import "address-demystifier.css";
 @import "multisig-explainer.css";
 @import "sats-converter.css";
+@import "on-this-day.css";
 
 :root {
     --btc-orange: #F7931A;

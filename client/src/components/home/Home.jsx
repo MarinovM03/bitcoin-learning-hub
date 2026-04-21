@@ -6,6 +6,7 @@ import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
+import OnThisDay from "../on-this-day/OnThisDay";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -160,6 +161,8 @@ export default function Home() {
                     <FearGreedWidget />
                 </div>
             </div>
+
+            <OnThisDay />
 
             <div className="latest-articles">
                 <div className="section-heading">
