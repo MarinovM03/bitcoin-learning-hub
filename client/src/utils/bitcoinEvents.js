@@ -17,6 +17,12 @@ export const BITCOIN_EVENTS = {
         body: 'After more than a decade of rejections, the US SEC approves 11 spot Bitcoin ETFs, opening Bitcoin exposure to conventional brokerage accounts worldwide.',
         category: 'Market',
     },
+    '01-11': {
+        year: 2024,
+        title: 'Spot ETFs Begin Trading',
+        body: 'The 11 newly approved spot BTC ETFs begin trading, pulling in over $4B in volume on day one — the most successful ETF debut in US history.',
+        category: 'Market',
+    },
     '01-12': {
         year: 2009,
         title: 'First Bitcoin Transaction',
@@ -28,6 +34,12 @@ export const BITCOIN_EVENTS = {
         title: 'Lightning Network Whitepaper',
         body: 'Joseph Poon and Thaddeus Dryja publish the Lightning Network paper, proposing an off-chain payment layer that lets Bitcoin scale to millions of transactions per second.',
         category: 'Protocol',
+    },
+    '01-30': {
+        year: 2018,
+        title: 'Facebook Bans Crypto Ads',
+        body: 'Facebook prohibits all cryptocurrency and ICO advertising, citing "misleading or deceptive" practices. Google and Twitter follow within months.',
+        category: 'Market',
     },
     '02-07': {
         year: 2014,
@@ -53,6 +65,12 @@ export const BITCOIN_EVENTS = {
         body: 'Mastercard announces plans to support select cryptocurrencies directly on its network, a major payments-industry nod to digital assets.',
         category: 'Market',
     },
+    '02-16': {
+        year: 2021,
+        title: 'BTC Crosses $50,000',
+        body: 'Bitcoin breaks $50,000 for the first time, pushing the network\'s market cap above $1 trillion and placing it among the world\'s top 10 assets.',
+        category: 'Market',
+    },
     '02-24': {
         year: 2014,
         title: 'Mt. Gox Goes Offline',
@@ -65,6 +83,12 @@ export const BITCOIN_EVENTS = {
         body: 'Mt. Gox files for bankruptcy protection in Tokyo, triggering a multi-year legal saga that still pays out creditors today.',
         category: 'Incident',
     },
+    '03-05': {
+        year: 2024,
+        title: 'BTC Breaks 2021 All-Time High',
+        body: 'Bitcoin breaks its November 2021 peak of ~$69,000, rallying into its first pre-halving run as an SEC-approved spot ETF asset.',
+        category: 'Market',
+    },
     '03-06': {
         year: 2014,
         title: 'Newsweek "Unmasks" Satoshi',
@@ -75,6 +99,12 @@ export const BITCOIN_EVENTS = {
         year: 2020,
         title: 'Black Thursday',
         body: 'Bitcoin crashes over 50% in 24 hours amid global COVID panic, briefly dipping below $4,000 — the steepest single-day drop in its history.',
+        category: 'Market',
+    },
+    '03-14': {
+        year: 2024,
+        title: 'BTC Hits $73,000 ATH',
+        body: 'Bitcoin reaches a new all-time high near $73,750 — the cycle peak before the April 2024 halving, driven by record ETF inflows.',
         category: 'Market',
     },
     '03-16': {
@@ -99,6 +129,12 @@ export const BITCOIN_EVENTS = {
         year: 2018,
         title: 'India\'s RBI Bans Crypto Banking',
         body: 'The Reserve Bank of India orders regulated banks to sever ties with crypto businesses — a ban later overturned by the Supreme Court in 2020.',
+        category: 'Market',
+    },
+    '04-10': {
+        year: 2013,
+        title: 'Mt. Gox Flash Crash',
+        body: 'After rallying to ~$266, Bitcoin collapses to ~$50 in hours as Mt. Gox buckles under its own trading volume — the first bubble-and-burst cycle.',
         category: 'Market',
     },
     '04-14': {
@@ -131,6 +167,12 @@ export const BITCOIN_EVENTS = {
         body: 'Australian developer Craig Wright publicly claims to be Satoshi Nakamoto. The cryptographic "proof" is quickly debunked and the claim is widely rejected.',
         category: 'Milestone',
     },
+    '05-07': {
+        year: 2021,
+        title: 'Colonial Pipeline Ransomware',
+        body: 'Colonial Pipeline pays 75 BTC (~$4.4M) to the DarkSide ransomware group. The FBI later recovers most of the coins, spotlighting BTC forensics.',
+        category: 'Incident',
+    },
     '05-11': {
         year: 2020,
         title: '3rd Halving',
@@ -149,17 +191,35 @@ export const BITCOIN_EVENTS = {
         body: 'Laszlo Hanyecz pays 10,000 BTC for two Papa John\'s pizzas — the first documented real-world purchase ever made with Bitcoin.',
         category: 'Milestone',
     },
+    '05-29': {
+        year: 2015,
+        title: 'Ross Ulbricht Sentenced',
+        body: 'Silk Road founder Ross Ulbricht is sentenced to life in prison without parole. He would receive a full presidential pardon nearly a decade later.',
+        category: 'Incident',
+    },
     '06-09': {
         year: 2021,
         title: 'El Salvador Passes Bitcoin Law',
         body: 'El Salvador\'s Legislative Assembly passes the Bitcoin Law 62-22, making it the first country ever to grant Bitcoin legal-tender status.',
         category: 'Milestone',
     },
+    '06-15': {
+        year: 2023,
+        title: 'BlackRock Files Spot BTC ETF',
+        body: 'BlackRock — the world\'s largest asset manager — files for a spot Bitcoin ETF, instantly shifting Wall Street\'s posture and reigniting the approval race.',
+        category: 'Market',
+    },
     '06-19': {
         year: 2011,
         title: 'Mt. Gox 2011 Hack',
         body: 'An attacker with Mt. Gox auditor credentials briefly crashes BTC from $17 to $0.01. The exchange survives, but the warning signs for 2014 were already there.',
         category: 'Incident',
+    },
+    '06-22': {
+        year: 2021,
+        title: 'China Mining Crackdown Crash',
+        body: 'China\'s provincial mining bans force ~50% of global hashrate offline. BTC briefly drops below $30,000 as miners scramble to relocate abroad.',
+        category: 'Market',
     },
     '06-27': {
         year: 2022,
@@ -231,6 +291,12 @@ export const BITCOIN_EVENTS = {
         year: 2023,
         title: 'Grayscale Wins ETF Appeal',
         body: 'A DC Circuit court rules the SEC\'s rejection of Grayscale\'s spot BTC ETF conversion was "arbitrary and capricious" — the legal turning point that paved the way for ETF approval.',
+        category: 'Market',
+    },
+    '09-04': {
+        year: 2017,
+        title: 'China Bans ICOs',
+        body: 'The People\'s Bank of China declares all initial coin offerings illegal, forcing exchanges to refund investors and triggering a broad market drawdown.',
         category: 'Market',
     },
     '09-07': {
