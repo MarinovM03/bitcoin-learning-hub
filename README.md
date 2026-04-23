@@ -17,11 +17,12 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 ## ✨ Features
 
 ### Public Area (Guest)
-- **Home Page** — Hero section with platform tools panel, live Bitcoin market stats bar, halving countdown timer, Fear & Greed Index widget, latest articles feed, and a "Trending This Week" section.
+- **Home Page** — Hero section with platform tools panel, live Bitcoin market stats bar, halving countdown timer, Fear & Greed Index widget, an "On This Day in Bitcoin" historical events widget, latest articles feed, and a "Trending This Week" section.
 - **Articles Catalog** — Browse all articles with server-side search, category filtering, difficulty tag filter, sort by latest or most viewed, and smart pagination.
 - **Article Details** — Full article view with reading progress bar, drop-cap typography, reading time, view counter, like count, related articles sidebar, and a comments section.
 - **Author Profiles** — Public profile pages showing an author's published articles and total likes received.
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
+- **Learning Paths** — Curated multi-article learning tracks organized by skill level, with progress tracking and a certifying quiz at the end of each path.
 - **Global Search** — `Ctrl+K` search overlay and a dedicated search page that covers articles and glossary terms.
 - **Authentication** — Login by email or username, and Register with full validation.
 
@@ -29,16 +30,22 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
 - **Article Drafts** — Save works-in-progress as drafts. Drafts are private and never appear in the public catalog.
 - **My Articles Page** — Dedicated page with a full grid view of all published articles and drafts, with edit and delete actions.
+- **Create Learning Paths** — Build multi-article learning tracks with ordered lessons and a final quiz.
+- **My Paths Page** — Manage your published paths and drafts with edit and delete actions.
+- **Path Quiz Mode** — Take the end-of-path quiz to earn a certification, with scored feedback per question.
+- **Certifications** — Personal dashboard of every path certification you have earned, viewable on a dedicated details page.
 - **Like Articles** — Like any article you did not author. One like per user per article.
 - **Bookmark Articles** — Save articles to a personal bookmarks list for later reading.
 - **Post Comments** — Join the discussion on any article with a 500-character limit and live character counter.
 - **Contribute Glossary Terms** — Add new terms with a definition and category.
-- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, and My Articles pages.
+- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, My Articles, My Paths, and Certifications pages.
 
 ### Bitcoin Tools
+- **Sats / BTC / USD Converter** — Three linked inputs that convert between satoshis, BTC, and USD live against the current BTC spot price, with common preset amounts.
 - **DCA Calculator** — Simulate dollar-cost-averaging strategies against historical BTC price data and visualize returns.
 - **Mempool Visualizer** — Live view of the Bitcoin mempool powered by public explorers, with transaction activity, fee tiers, and block space stats.
 - **Address Demystifier** — Paste any Bitcoin address to identify its format (Legacy, P2SH, SegWit, Taproot, Lightning, Testnet), read a plain-English explanation, and jump to the address on mempool.space.
+- **Multisig Explainer** — Interactive walkthrough of multi-signature wallets with visual breakdowns of M-of-N thresholds and common real-world setups.
 
 ### Author Capabilities (Owner)
 - **Edit Article** — Update any article you created. Choose to save as draft or publish directly from the edit page.
@@ -64,6 +71,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Halving Countdown** — Live countdown timer to the next Bitcoin halving event.
 - **Fear & Greed Index** — Live market sentiment widget powered by CoinStats.
 - **Responsive Navbar** — Desktop, tablet, and mobile breakpoints with a portal-rendered full-screen mobile menu.
+- **Tools Dropdown** — Consolidated hover/click dropdown in the navbar grouping every Bitcoin tool (Converter, DCA, Address, Mempool, Multisig) behind one entry point.
 - **Loading Spinners** — Bitcoin-themed spinner shown during all async data fetches.
 - **Toast Notifications** — Fixed-position success notifications visible regardless of scroll position.
 - **Form Loading States** — All submit buttons disable and show feedback text while requests are in flight.
@@ -102,13 +110,23 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/articles/:id/edit` | Edit Article | Owner only |
 | `/glossary` | Bitcoin Glossary | Public |
 | `/glossary/:id` | Glossary Term Details | Public |
+| `/paths` | Learning Paths Catalog | Public |
+| `/paths/:id` | Learning Path Details | Public |
+| `/paths/create` | Create Learning Path | Authenticated |
+| `/paths/:id/edit` | Edit Learning Path | Owner only |
+| `/paths/:id/quiz` | Take Path Quiz | Authenticated |
 | `/search` | Global Search Results | Public |
+| `/converter` | Sats / BTC / USD Converter | Public |
 | `/dca` | DCA Calculator | Public |
 | `/mempool` | Mempool Visualizer | Public |
 | `/address` | Address Demystifier | Public |
+| `/multisig` | Multisig Explainer | Public |
 | `/users/:id` | Public Author Profile | Public |
 | `/profile` | User Profile & Settings | Authenticated |
 | `/my-articles` | My Articles Manager | Authenticated |
+| `/my-paths` | My Paths Manager | Authenticated |
+| `/certifications` | Earned Certifications | Authenticated |
+| `/certifications/:id` | Certification Details | Authenticated |
 | `/bookmarks` | Saved Bookmarks | Authenticated |
 | `*` | 404 Not Found | Public |
 
