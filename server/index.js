@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import router from './routes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import { mongoSanitize } from './middlewares/mongoSanitize.js';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 
@@ -44,6 +45,9 @@ try {
 }
 
 app.use(router);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
