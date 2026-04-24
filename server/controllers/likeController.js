@@ -1,39 +1,33 @@
 import Like from '../models/Like.js';
 import mongoose from 'mongoose';
+import { AppError } from '../utils/AppError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
-export const likeArticle = async (req, res) => {
-    try {
-        const { articleId } = req.body;
-        const _ownerId = req.user._id;
+export const likeArticle = asyncHandler(async (req, res) => {
+    const { articleId } = req.body;
+    const _ownerId = req.user._id;
 
-        if (!articleId || !mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(400).json({ message: "Invalid article ID." });
-        }
-
-        const existingLike = await Like.findOne({ articleId, _ownerId });
-
-        if (existingLike) {
-            return res.status(400).json({ message: "You already liked this article!" });
-        }
-
-        const like = await Like.create({ articleId, _ownerId });
-        res.status(201).json(like);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (!articleId || !mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(400, 'Invalid article ID.');
     }
-};
 
-export const getLikes = async (req, res) => {
-    try {
-        const { articleId } = req.params;
+    const existingLike = await Like.findOne({ articleId, _ownerId });
 
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(400).json({ message: "Invalid article ID." });
-        }
-
-        const likes = await Like.find({ articleId });
-        res.json(likes);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (existingLike) {
+        throw new AppError(400, 'You already liked this article!');
     }
-};
+
+    const like = await Like.create({ articleId, _ownerId });
+    res.status(201).json(like);
+});
+
+export const getLikes = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(400, 'Invalid article ID.');
+    }
+
+    const likes = await Like.find({ articleId });
+    res.json(likes);
+});

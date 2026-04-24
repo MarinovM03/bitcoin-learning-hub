@@ -1,63 +1,48 @@
 import Comment from '../models/Comment.js';
+import { AppError } from '../utils/AppError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
-export const getAllForArticle = async (req, res) => {
-    try {
-        const { articleId } = req.params;
-        const comments = await Comment.find({ articleId })
-            .populate('_ownerId', 'username profilePicture')
-            .sort({ createdAt: -1 });
-        res.json(comments);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+export const getAllForArticle = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    const comments = await Comment.find({ articleId })
+        .populate('_ownerId', 'username profilePicture')
+        .sort({ createdAt: -1 });
+    res.json(comments);
+});
+
+export const create = asyncHandler(async (req, res) => {
+    const { articleId, text } = req.body;
+
+    if (!text || text.trim().length < 2) {
+        throw new AppError(400, 'Comment must be at least 2 characters long!');
     }
-};;
 
-export const create = async (req, res) => {
-    try {
-        if (!req.user) {
-            return res.status(401).json({ message: "You must be logged in to comment!" });
-        }
+    const comment = await Comment.create({
+        articleId,
+        text: text.trim(),
+        _ownerId: req.user._id,
+        ownerUsername: req.user.username,
+        ownerProfilePicture: req.user.profilePicture || '',
+    });
 
-        const { articleId, text } = req.body;
+    const populated = await comment.populate('_ownerId', 'username profilePicture');
 
-        if (!text || text.trim().length < 2) {
-            return res.status(400).json({ message: "Comment must be at least 2 characters long!" });
-        }
+    res.status(201).json(populated);
+});
 
-        const comment = await Comment.create({
-            articleId,
-            text: text.trim(),
-            _ownerId: req.user._id,
-            ownerUsername: req.user.username,
-            ownerProfilePicture: req.user.profilePicture || '',
-        });
+export const remove = asyncHandler(async (req, res) => {
+    const { commentId } = req.params;
 
-        const populated = await comment.populate('_ownerId', 'username profilePicture');
+    const deleted = await Comment.findOneAndDelete({
+        _id: commentId,
+        _ownerId: req.user._id,
+    });
 
-        res.status(201).json(populated);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (!deleted) {
+        const exists = await Comment.exists({ _id: commentId });
+        if (!exists) throw new AppError(404, 'Comment not found');
+        throw new AppError(403, 'Forbidden');
     }
-};
 
-export const remove = async (req, res) => {
-    try {
-        const { commentId } = req.params;
-
-        const comment = await Comment.findById(commentId);
-
-        if (!comment) {
-            return res.status(404).json({ message: "Comment not found" });
-        }
-
-        if (String(comment._ownerId) !== String(req.user._id)) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        await Comment.findByIdAndDelete(commentId);
-
-        res.json({ message: "Comment deleted successfully" });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
+    res.json({ message: 'Comment deleted successfully' });
+});
