@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from './middlewares/requireAuth.js';
+import { validate } from './middlewares/validate.js';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
 import * as learningPathController from './controllers/learningPathController.js';
@@ -12,6 +13,21 @@ import Article from './models/Article.js';
 import GlossaryTerm from './models/GlossaryTerm.js';
 import { AppError } from './utils/AppError.js';
 import { asyncHandler } from './utils/asyncHandler.js';
+import { registerSchema, loginSchema, updateProfileSchema } from './validators/authSchemas.js';
+import { createArticleSchema, updateArticleSchema } from './validators/articleSchemas.js';
+import { createGlossarySchema } from './validators/glossarySchemas.js';
+import { createCommentSchema } from './validators/commentSchemas.js';
+import { likeArticleSchema } from './validators/likeSchemas.js';
+import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
+import { createPathSchema, updatePathSchema, submitQuizSchema } from './validators/pathSchemas.js';
+import {
+    articleIdParam,
+    pathIdParam,
+    termIdParam,
+    commentIdParam,
+    certIdParam,
+    userIdParam,
+} from './validators/shared.js';
 
 const router = Router();
 
@@ -20,58 +36,58 @@ router.get('/articles/my', requireAuth, articleController.getMyArticles);
 router.get('/articles/series/mine', requireAuth, articleController.getMySeriesParts);
 router.get('/articles/trending', articleController.getTrending);
 router.get('/articles', articleController.getAll);
-router.get('/articles/:articleId/related', articleController.getRelated);
-router.get('/articles/:articleId/series', articleController.getSeries);
-router.get('/articles/:articleId', articleController.getOne);
-router.post('/articles/:articleId/read', requireAuth, articleController.markRead);
-router.delete('/articles/:articleId/read', requireAuth, articleController.markUnread);
-router.post('/articles', requireAuth, articleController.create);
-router.put('/articles/:articleId', requireAuth, articleController.update);
-router.delete('/articles/:articleId', requireAuth, articleController.remove);
+router.get('/articles/:articleId/related', validate({ params: articleIdParam }), articleController.getRelated);
+router.get('/articles/:articleId/series', validate({ params: articleIdParam }), articleController.getSeries);
+router.get('/articles/:articleId', validate({ params: articleIdParam }), articleController.getOne);
+router.post('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markRead);
+router.delete('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markUnread);
+router.post('/articles', requireAuth, validate({ body: createArticleSchema }), articleController.create);
+router.put('/articles/:articleId', requireAuth, validate({ params: articleIdParam, body: updateArticleSchema }), articleController.update);
+router.delete('/articles/:articleId', requireAuth, validate({ params: articleIdParam }), articleController.remove);
 
 // Learning path routes
 router.get('/paths/my', requireAuth, learningPathController.getMyPaths);
 router.get('/paths', learningPathController.getAll);
-router.get('/paths/:pathId/quiz', requireAuth, pathCertificationController.getQuiz);
-router.post('/paths/:pathId/quiz', requireAuth, pathCertificationController.submitQuiz);
-router.get('/paths/:pathId', learningPathController.getOne);
-router.post('/paths', requireAuth, learningPathController.create);
-router.put('/paths/:pathId', requireAuth, learningPathController.update);
-router.delete('/paths/:pathId', requireAuth, learningPathController.remove);
+router.get('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam }), pathCertificationController.getQuiz);
+router.post('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam, body: submitQuizSchema }), pathCertificationController.submitQuiz);
+router.get('/paths/:pathId', validate({ params: pathIdParam }), learningPathController.getOne);
+router.post('/paths', requireAuth, validate({ body: createPathSchema }), learningPathController.create);
+router.put('/paths/:pathId', requireAuth, validate({ params: pathIdParam, body: updatePathSchema }), learningPathController.update);
+router.delete('/paths/:pathId', requireAuth, validate({ params: pathIdParam }), learningPathController.remove);
 
 // Reading history
 router.delete('/users/me/read-history', requireAuth, articleController.resetReadHistory);
 
 // Path certification routes
 router.get('/users/me/certifications', requireAuth, pathCertificationController.getMyCertifications);
-router.get('/certifications/:certId', requireAuth, pathCertificationController.getOneCertification);
+router.get('/certifications/:certId', requireAuth, validate({ params: certIdParam }), pathCertificationController.getOneCertification);
 
 // Auth routes
-router.post('/users/register', authController.register);
-router.post('/users/login', authController.login);
+router.post('/users/register', validate({ body: registerSchema }), authController.register);
+router.post('/users/login', validate({ body: loginSchema }), authController.login);
 router.post('/users/logout', authController.logout);
 router.get('/users/profile', requireAuth, authController.getProfile);
-router.put('/users/profile', requireAuth, authController.updateProfile);
-router.get('/users/:userId/public', articleController.getPublicProfile);
+router.put('/users/profile', requireAuth, validate({ body: updateProfileSchema }), authController.updateProfile);
+router.get('/users/:userId/public', validate({ params: userIdParam }), articleController.getPublicProfile);
 
 // Like routes
-router.post('/likes', requireAuth, likeController.likeArticle);
-router.get('/likes/:articleId', likeController.getLikes);
+router.post('/likes', requireAuth, validate({ body: likeArticleSchema }), likeController.likeArticle);
+router.get('/likes/:articleId', validate({ params: articleIdParam }), likeController.getLikes);
 
 // Bookmark routes
-router.post('/bookmarks', requireAuth, bookmarkController.toggle);
+router.post('/bookmarks', requireAuth, validate({ body: toggleBookmarkSchema }), bookmarkController.toggle);
 router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 
 // Glossary routes
 router.get('/glossary', glossaryController.getAll);
-router.get('/glossary/:termId', glossaryController.getOne);
-router.post('/glossary', requireAuth, glossaryController.create);
-router.delete('/glossary/:termId', requireAuth, glossaryController.remove);
+router.get('/glossary/:termId', validate({ params: termIdParam }), glossaryController.getOne);
+router.post('/glossary', requireAuth, validate({ body: createGlossarySchema }), glossaryController.create);
+router.delete('/glossary/:termId', requireAuth, validate({ params: termIdParam }), glossaryController.remove);
 
 // Comment routes
-router.get('/comments/:articleId', commentController.getAllForArticle);
-router.post('/comments', requireAuth, commentController.create);
-router.delete('/comments/:commentId', requireAuth, commentController.remove);
+router.get('/comments/:articleId', validate({ params: articleIdParam }), commentController.getAllForArticle);
+router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
+router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
 
 // Search route — unified substring search across articles and glossary
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
