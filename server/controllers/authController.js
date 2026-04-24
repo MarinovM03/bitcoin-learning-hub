@@ -43,34 +43,21 @@ const buildUserResponse = (user, token) => ({
 });
 
 export const register = asyncHandler(async (req, res) => {
-    const { username, email, password, confirmPassword, profilePicture } = req.body;
-
-    if (!username || username.trim().length < 3) {
-        throw new AppError(400, 'Username must be at least 3 characters long!');
-    }
-    if (!/^[a-zA-Z0-9]+$/.test(username)) {
-        throw new AppError(400, 'Username can only contain letters and numbers!');
-    }
-    if (password.length < 8) {
-        throw new AppError(400, 'Password must be at least 8 characters long!');
-    }
-    if (password !== confirmPassword) {
-        throw new AppError(400, 'Passwords do not match!');
-    }
+    const { username, email, password, profilePicture } = req.body;
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
         throw new AppError(400, 'User already exists!');
     }
 
-    const existingUsername = await User.findOne({ username: username.trim() });
+    const existingUsername = await User.findOne({ username });
     if (existingUsername) {
         throw new AppError(400, 'Username is already taken!');
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
-        username: username.trim(),
+        username,
         email,
         password: hashPassword,
         profilePicture,
@@ -82,10 +69,6 @@ export const register = asyncHandler(async (req, res) => {
 
 export const login = asyncHandler(async (req, res) => {
     const { identifier, password } = req.body;
-
-    if (!identifier) {
-        throw new AppError(400, 'Please enter your email or username!');
-    }
 
     const isEmail = identifier.includes('@');
     const user = isEmail
@@ -117,29 +100,23 @@ export const getProfile = asyncHandler(async (req, res) => {
 
 export const updateProfile = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const { username, email, profilePicture, password, confirmPassword } = req.body;
+    const { username, email, profilePicture, password } = req.body;
 
     const user = await User.findById(userId);
     if (!user) {
         throw new AppError(404, 'User not found');
     }
 
-    if (username && username.trim() !== user.username) {
+    if (username && username !== user.username) {
         if (isUsernameLocked(user.usernameChangedAt)) {
             const days = daysUntilUnlock(user.usernameChangedAt);
             throw new AppError(400, `You can change your username again in ${days} day${days === 1 ? '' : 's'}.`);
         }
-        if (!/^[a-zA-Z0-9]+$/.test(username)) {
-            throw new AppError(400, 'Username can only contain letters and numbers!');
-        }
-        if (username.trim().length < 3) {
-            throw new AppError(400, 'Username must be at least 3 characters long!');
-        }
-        const taken = await User.findOne({ username: username.trim(), _id: { $ne: userId } });
+        const taken = await User.findOne({ username, _id: { $ne: userId } });
         if (taken) {
             throw new AppError(400, 'Username is already taken!');
         }
-        user.username = username.trim();
+        user.username = username;
         user.usernameChangedAt = new Date();
     }
 
@@ -156,12 +133,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
 
     if (password) {
-        if (password.length < 8) {
-            throw new AppError(400, 'Password must be at least 8 characters long!');
-        }
-        if (password !== confirmPassword) {
-            throw new AppError(400, 'Passwords do not match!');
-        }
         user.password = await bcrypt.hash(password, 10);
     }
 

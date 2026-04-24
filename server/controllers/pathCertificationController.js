@@ -86,10 +86,6 @@ export const submitQuiz = asyncHandler(async (req, res) => {
     const { pathId } = req.params;
     const { answers } = req.body;
 
-    if (!Array.isArray(answers)) {
-        throw new AppError(400, 'Answers must be an array.');
-    }
-
     const path = await loadPathWithQuizzes(pathId);
     if (!path) throw new AppError(404, 'Path not found');
 
@@ -168,9 +164,6 @@ export const getMyCertifications = asyncHandler(async (req, res) => {
 
 export const getOneCertification = asyncHandler(async (req, res) => {
     const { certId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(certId)) {
-        throw new AppError(404, 'Certification not found');
-    }
 
     const cert = await PathCertification.findOne({
         _id: certId,

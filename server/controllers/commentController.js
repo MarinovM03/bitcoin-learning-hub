@@ -13,13 +13,9 @@ export const getAllForArticle = asyncHandler(async (req, res) => {
 export const create = asyncHandler(async (req, res) => {
     const { articleId, text } = req.body;
 
-    if (!text || text.trim().length < 2) {
-        throw new AppError(400, 'Comment must be at least 2 characters long!');
-    }
-
     const comment = await Comment.create({
         articleId,
-        text: text.trim(),
+        text,
         _ownerId: req.user._id,
         ownerUsername: req.user.username,
         ownerProfilePicture: req.user.profilePicture || '',
