@@ -23,16 +23,29 @@ app.use(cors({
 app.use(mongoSanitize);
 app.use(authMiddleware);
 
-const loginLimiter = rateLimit({
+const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 20,
-    message: { message: "Too many login attempts. Please try again in 15 minutes." },
+    message: { message: "Too many authentication attempts. Please try again in 15 minutes." },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
-app.use('/users/login', loginLimiter);
-app.use('/users/register', loginLimiter);
+app.use('/users/login', authLimiter);
+app.use('/users/register', authLimiter);
+
+const writeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { message: "Too many requests. Please try again in 15 minutes." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+app.use((req, res, next) => {
+    if (req.method === 'GET') return next();
+    return writeLimiter(req, res, next);
+});
 
 const connectionString = process.env.MONGO_URI;
 
