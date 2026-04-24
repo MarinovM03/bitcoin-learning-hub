@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AppError } from '../utils/AppError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
@@ -40,152 +42,131 @@ const buildUserResponse = (user, token) => ({
     usernameChangedAt: user.usernameChangedAt,
 });
 
-export const register = async (req, res) => {
-    try {
-        const { username, email, password, confirmPassword, profilePicture } = req.body;
+export const register = asyncHandler(async (req, res) => {
+    const { username, email, password, confirmPassword, profilePicture } = req.body;
 
-        if (!username || username.trim().length < 3) {
-            return res.status(400).json({ message: 'Username must be at least 3 characters long!' });
-        }
-        if (!/^[a-zA-Z0-9]+$/.test(username)) {
-            return res.status(400).json({ message: 'Username can only contain letters and numbers!' });
-        }
-        if (password.length < 8) {
-            return res.status(400).json({ message: 'Password must be at least 8 characters long!' });
-        }
-        if (password !== confirmPassword) {
-            return res.status(400).json({ message: 'Passwords do not match!' });
-        }
-
-        const existingEmail = await User.findOne({ email });
-        if (existingEmail) {
-            return res.status(400).json({ message: 'User already exists!' });
-        }
-
-        const existingUsername = await User.findOne({ username: username.trim() });
-        if (existingUsername) {
-            return res.status(400).json({ message: 'Username is already taken!' });
-        }
-
-        const hashPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({
-            username: username.trim(),
-            email,
-            password: hashPassword,
-            profilePicture,
-        });
-
-        const token = generateToken(user);
-        res.json(buildUserResponse(user, token));
-
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (!username || username.trim().length < 3) {
+        throw new AppError(400, 'Username must be at least 3 characters long!');
     }
-};
-
-export const login = async (req, res) => {
-    try {
-        const { identifier, password } = req.body;
-
-        if (!identifier) {
-            return res.status(400).json({ message: "Please enter your email or username!" });
-        }
-
-        const isEmail = identifier.includes('@');
-        const user = isEmail
-            ? await User.findOne({ email: identifier })
-            : await User.findOne({ username: identifier });
-
-        if (!user) {
-            return res.status(403).json({ message: "Invalid credentials" });
-        }
-
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-            return res.status(403).json({ message: "Invalid credentials" });
-        }
-
-        const token = generateToken(user);
-        res.json(buildUserResponse(user, token));
-
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+        throw new AppError(400, 'Username can only contain letters and numbers!');
     }
-};
+    if (password.length < 8) {
+        throw new AppError(400, 'Password must be at least 8 characters long!');
+    }
+    if (password !== confirmPassword) {
+        throw new AppError(400, 'Passwords do not match!');
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+        throw new AppError(400, 'User already exists!');
+    }
+
+    const existingUsername = await User.findOne({ username: username.trim() });
+    if (existingUsername) {
+        throw new AppError(400, 'Username is already taken!');
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+        username: username.trim(),
+        email,
+        password: hashPassword,
+        profilePicture,
+    });
+
+    const token = generateToken(user);
+    res.json(buildUserResponse(user, token));
+});
+
+export const login = asyncHandler(async (req, res) => {
+    const { identifier, password } = req.body;
+
+    if (!identifier) {
+        throw new AppError(400, 'Please enter your email or username!');
+    }
+
+    const isEmail = identifier.includes('@');
+    const user = isEmail
+        ? await User.findOne({ email: identifier })
+        : await User.findOne({ username: identifier });
+
+    if (!user) {
+        throw new AppError(403, 'Invalid credentials');
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+        throw new AppError(403, 'Invalid credentials');
+    }
+
+    const token = generateToken(user);
+    res.json(buildUserResponse(user, token));
+});
 
 export const logout = (req, res) => {
     res.json({ message: 'Logged out successfully' });
 };
 
-export const getProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id).select('-password');
-        if (!user) return res.status(404).json({ message: "User not found" });
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+export const getProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) throw new AppError(404, 'User not found');
+    res.json(user);
+});
+
+export const updateProfile = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { username, email, profilePicture, password, confirmPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new AppError(404, 'User not found');
     }
-};
 
-export const updateProfile = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const { username, email, profilePicture, password, confirmPassword } = req.body;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
+    if (username && username.trim() !== user.username) {
+        if (isUsernameLocked(user.usernameChangedAt)) {
+            const days = daysUntilUnlock(user.usernameChangedAt);
+            throw new AppError(400, `You can change your username again in ${days} day${days === 1 ? '' : 's'}.`);
         }
-
-        if (username && username.trim() !== user.username) {
-            if (isUsernameLocked(user.usernameChangedAt)) {
-                const days = daysUntilUnlock(user.usernameChangedAt);
-                return res.status(400).json({
-                    message: `You can change your username again in ${days} day${days === 1 ? '' : 's'}.`
-                });
-            }
-            if (!/^[a-zA-Z0-9]+$/.test(username)) {
-                return res.status(400).json({ message: "Username can only contain letters and numbers!" });
-            }
-            if (username.trim().length < 3) {
-                return res.status(400).json({ message: "Username must be at least 3 characters long!" });
-            }
-            const taken = await User.findOne({ username: username.trim(), _id: { $ne: userId } });
-            if (taken) {
-                return res.status(400).json({ message: "Username is already taken!" });
-            }
-            user.username = username.trim();
-            user.usernameChangedAt = new Date();
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            throw new AppError(400, 'Username can only contain letters and numbers!');
         }
-
-        if (email && email !== user.email) {
-            const taken = await User.findOne({ email, _id: { $ne: userId } });
-            if (taken) {
-                return res.status(400).json({ message: "Email is already in use!" });
-            }
-            user.email = email;
+        if (username.trim().length < 3) {
+            throw new AppError(400, 'Username must be at least 3 characters long!');
         }
-
-        if (profilePicture !== undefined) {
-            user.profilePicture = profilePicture;
+        const taken = await User.findOne({ username: username.trim(), _id: { $ne: userId } });
+        if (taken) {
+            throw new AppError(400, 'Username is already taken!');
         }
-
-        if (password) {
-            if (password.length < 8) {
-                return res.status(400).json({ message: "Password must be at least 8 characters long!" });
-            }
-            if (password !== confirmPassword) {
-                return res.status(400).json({ message: "Passwords do not match!" });
-            }
-            user.password = await bcrypt.hash(password, 10);
-        }
-
-        await user.save();
-
-        const token = generateToken(user);
-        res.json(buildUserResponse(user, token));
-
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+        user.username = username.trim();
+        user.usernameChangedAt = new Date();
     }
-};
+
+    if (email && email !== user.email) {
+        const taken = await User.findOne({ email, _id: { $ne: userId } });
+        if (taken) {
+            throw new AppError(400, 'Email is already in use!');
+        }
+        user.email = email;
+    }
+
+    if (profilePicture !== undefined) {
+        user.profilePicture = profilePicture;
+    }
+
+    if (password) {
+        if (password.length < 8) {
+            throw new AppError(400, 'Password must be at least 8 characters long!');
+        }
+        if (password !== confirmPassword) {
+            throw new AppError(400, 'Passwords do not match!');
+        }
+        user.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+
+    const token = generateToken(user);
+    res.json(buildUserResponse(user, token));
+});

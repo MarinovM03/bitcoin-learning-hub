@@ -3,6 +3,8 @@ import Like from '../models/Like.js';
 import User from '../models/User.js';
 import ReadArticle from '../models/ReadArticle.js';
 import mongoose from 'mongoose';
+import { AppError } from '../utils/AppError.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
@@ -32,379 +34,319 @@ const findDuplicateSeriesPart = async (ownerId, series, excludeArticleId = null)
     return Article.findOne(query).select('_id title');
 };
 
-export const getAll = async (req, res) => {
-    try {
-        const { limit, sort, page, search, category, difficulty } = req.query;
+export const getAll = asyncHandler(async (req, res) => {
+    const { limit, sort, page, search, category, difficulty } = req.query;
 
-        const pageNum = parseInt(page) || 1;
-        const limitNum = parseInt(limit) || 12;
-        const skip = (pageNum - 1) * limitNum;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 12;
+    const skip = (pageNum - 1) * limitNum;
 
-        let sortOption = { createdAt: -1 };
-        if (sort === 'views') sortOption = { views: -1 };
+    let sortOption = { createdAt: -1 };
+    if (sort === 'views') sortOption = { views: -1 };
 
-        const filter = { status: 'published' };
+    const filter = { status: 'published' };
 
-        if (search && search.trim() !== '') {
-            filter.title = { $regex: search.trim(), $options: 'i' };
-        }
-        if (category && category !== 'All') {
-            filter.category = category;
-        }
-        if (difficulty && difficulty !== 'All') {
-            filter.difficulty = difficulty;
-        }
-
-        const [articles, total] = await Promise.all([
-            Article.find(filter).sort(sortOption).skip(skip).limit(limitNum).populate('_ownerId', 'username'),
-            Article.countDocuments(filter)
-        ]);
-
-        res.json({ articles, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (search && search.trim() !== '') {
+        filter.title = { $regex: search.trim(), $options: 'i' };
     }
-};
-
-export const getMyArticles = async (req, res) => {
-    try {
-        const articles = await Article.find({ _ownerId: req.user._id }).sort({ createdAt: -1 });
-        res.json(articles);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (category && category !== 'All') {
+        filter.category = category;
     }
-};
-
-export const create = async (req, res) => {
-    try {
-        const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
-        const series = normalizeSeriesInput(seriesName, seriesPart);
-
-        const duplicate = await findDuplicateSeriesPart(req.user._id, series);
-        if (duplicate) {
-            return res.status(409).json({
-                message: `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`
-            });
-        }
-
-        const newArticle = await Article.create({
-            title,
-            category,
-            difficulty: difficulty || 'Beginner',
-            imageUrl,
-            summary,
-            content,
-            readingTime: calculateReadingTime(content),
-            status: status === 'draft' ? 'draft' : 'published',
-            quiz: Array.isArray(quiz) ? quiz : [],
-            seriesName: series.seriesName,
-            seriesPart: series.seriesPart,
-            _ownerId: req.user._id
-        });
-
-        res.status(201).json(newArticle);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (difficulty && difficulty !== 'All') {
+        filter.difficulty = difficulty;
     }
-};
 
-export const getOne = async (req, res) => {
-    try {
-        const { articleId } = req.params;
+    const [articles, total] = await Promise.all([
+        Article.find(filter).sort(sortOption).skip(skip).limit(limitNum).populate('_ownerId', 'username'),
+        Article.countDocuments(filter)
+    ]);
 
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+    res.json({ articles, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
+});
 
-        const existing = await Article.findById(articleId);
-        if (!existing) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+export const getMyArticles = asyncHandler(async (req, res) => {
+    const articles = await Article.find({ _ownerId: req.user._id }).sort({ createdAt: -1 });
+    res.json(articles);
+});
 
-        const isOwner = req.user && String(req.user._id) === String(existing._ownerId);
+export const create = asyncHandler(async (req, res) => {
+    const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
+    const series = normalizeSeriesInput(seriesName, seriesPart);
 
-        if (existing.status === 'draft' && !isOwner) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+    const duplicate = await findDuplicateSeriesPart(req.user._id, series);
+    if (duplicate) {
+        throw new AppError(409, `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`);
+    }
 
-        const shouldIncrementView = !isOwner && !hasViewedRecently(req, articleId);
+    const newArticle = await Article.create({
+        title,
+        category,
+        difficulty: difficulty || 'Beginner',
+        imageUrl,
+        summary,
+        content,
+        readingTime: calculateReadingTime(content),
+        status: status === 'draft' ? 'draft' : 'published',
+        quiz: Array.isArray(quiz) ? quiz : [],
+        seriesName: series.seriesName,
+        seriesPart: series.seriesPart,
+        _ownerId: req.user._id
+    });
 
-        const article = await Article.findByIdAndUpdate(
+    res.status(201).json(newArticle);
+});
+
+export const getOne = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const existing = await Article.findById(articleId);
+    if (!existing) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const isOwner = req.user && String(req.user._id) === String(existing._ownerId);
+
+    if (existing.status === 'draft' && !isOwner) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const shouldIncrementView = !isOwner && !hasViewedRecently(req, articleId);
+
+    const article = await Article.findByIdAndUpdate(
+        articleId,
+        shouldIncrementView ? { $inc: { views: 1 } } : {},
+        { new: true }
+    ).populate('_ownerId', 'username profilePicture');
+
+    if (shouldIncrementView) {
+        recordView(req, articleId);
+    }
+
+    let hasRead = false;
+    if (req.user) {
+        const readDoc = await ReadArticle.findOne({
+            _ownerId: req.user._id,
             articleId,
-            shouldIncrementView ? { $inc: { views: 1 } } : {},
-            { new: true }
-        ).populate('_ownerId', 'username profilePicture');
-
-        if (shouldIncrementView) {
-            recordView(req, articleId);
-        }
-
-        let hasRead = false;
-        if (req.user) {
-            const readDoc = await ReadArticle.findOne({
-                _ownerId: req.user._id,
-                articleId,
-            }).select('_id');
-            hasRead = Boolean(readDoc);
-        }
-
-        res.json({ ...article.toObject(), hasRead });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+        }).select('_id');
+        hasRead = Boolean(readDoc);
     }
-};
 
-export const markRead = async (req, res) => {
-    try {
-        const { articleId } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: 'Article not found' });
-        }
+    res.json({ ...article.toObject(), hasRead });
+});
 
-        const article = await Article.findById(articleId).select('status');
-        if (!article || article.status !== 'published') {
-            return res.status(404).json({ message: 'Article not found' });
-        }
-
-        await ReadArticle.updateOne(
-            { _ownerId: req.user._id, articleId },
-            { $setOnInsert: { _ownerId: req.user._id, articleId } },
-            { upsert: true }
-        );
-
-        res.json({ read: true });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+export const markRead = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const markUnread = async (req, res) => {
-    try {
-        const { articleId } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: 'Article not found' });
-        }
-
-        await ReadArticle.deleteOne({ _ownerId: req.user._id, articleId });
-        res.json({ read: false });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    const article = await Article.findById(articleId).select('status');
+    if (!article || article.status !== 'published') {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const resetReadHistory = async (req, res) => {
-    try {
-        const result = await ReadArticle.deleteMany({ _ownerId: req.user._id });
-        res.json({ cleared: result.deletedCount || 0 });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    await ReadArticle.updateOne(
+        { _ownerId: req.user._id, articleId },
+        { $setOnInsert: { _ownerId: req.user._id, articleId } },
+        { upsert: true }
+    );
+
+    res.json({ read: true });
+});
+
+export const markUnread = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const getRelated = async (req, res) => {
-    try {
-        const { articleId } = req.params;
+    await ReadArticle.deleteOne({ _ownerId: req.user._id, articleId });
+    res.json({ read: false });
+});
 
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+export const resetReadHistory = asyncHandler(async (req, res) => {
+    const result = await ReadArticle.deleteMany({ _ownerId: req.user._id });
+    res.json({ cleared: result.deletedCount || 0 });
+});
 
-        const article = await Article.findById(articleId);
-        if (!article) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+export const getRelated = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
 
-        const related = await Article.find({
-            category: article.category,
-            _id: { $ne: article._id },
-            status: 'published',
-        })
-            .sort({ createdAt: -1 })
-            .limit(3)
-            .select('title summary imageUrl category _id');
-
-        res.json(related);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const getMySeriesParts = async (req, res) => {
-    try {
-        const name = typeof req.query.name === 'string' ? req.query.name.trim() : '';
-        if (!name) return res.json({ parts: [] });
-
-        const excludeId = req.query.excludeId;
-        const query = { _ownerId: req.user._id, seriesName: name, seriesPart: { $ne: null } };
-        if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
-            query._id = { $ne: excludeId };
-        }
-
-        const docs = await Article.find(query).select('seriesPart');
-        const parts = docs.map(d => d.seriesPart).filter(Number.isFinite);
-        res.json({ parts });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    const article = await Article.findById(articleId);
+    if (!article) {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const getSeries = async (req, res) => {
-    try {
-        const { articleId } = req.params;
+    const related = await Article.find({
+        category: article.category,
+        _id: { $ne: article._id },
+        status: 'published',
+    })
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select('title summary imageUrl category _id');
 
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: "Article not found" });
-        }
+    res.json(related);
+});
 
-        const current = await Article.findById(articleId).select('seriesName _ownerId');
-        if (!current || !current.seriesName) {
-            return res.json({ seriesName: '', parts: [] });
-        }
+export const getMySeriesParts = asyncHandler(async (req, res) => {
+    const name = typeof req.query.name === 'string' ? req.query.name.trim() : '';
+    if (!name) return res.json({ parts: [] });
 
-        const parts = await Article.find({
-            _ownerId: current._ownerId,
-            seriesName: current.seriesName,
-            status: 'published',
-        })
-            .sort({ seriesPart: 1, createdAt: 1 })
-            .select('title seriesPart imageUrl category readingTime');
-
-        res.json({ seriesName: current.seriesName, parts });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    const excludeId = req.query.excludeId;
+    const query = { _ownerId: req.user._id, seriesName: name, seriesPart: { $ne: null } };
+    if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
+        query._id = { $ne: excludeId };
     }
-};
 
-export const getPublicProfile = async (req, res) => {
-    try {
-        const { userId } = req.params;
+    const docs = await Article.find(query).select('seriesPart');
+    const parts = docs.map(d => d.seriesPart).filter(Number.isFinite);
+    res.json({ parts });
+});
 
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(404).json({ message: "User not found" });
-        }
+export const getSeries = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
 
-        const [user, articles] = await Promise.all([
-            User.findById(userId).select('username profilePicture'),
-            Article.find({ _ownerId: userId, status: 'published' }).sort({ createdAt: -1 })
-        ]);
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const articleIds = articles.map(a => a._id);
-        const totalLikes = articleIds.length > 0
-            ? await Like.countDocuments({ articleId: { $in: articleIds } })
-            : 0;
-
-        res.json({ username: user.username, profilePicture: user.profilePicture, articles, totalLikes });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
     }
-};
 
-export const update = async (req, res) => {
-    try {
-        const { articleId } = req.params;
-        const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
+    const current = await Article.findById(articleId).select('seriesName _ownerId');
+    if (!current || !current.seriesName) {
+        return res.json({ seriesName: '', parts: [] });
+    }
 
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: "Article not found" });
+    const parts = await Article.find({
+        _ownerId: current._ownerId,
+        seriesName: current.seriesName,
+        status: 'published',
+    })
+        .sort({ seriesPart: 1, createdAt: 1 })
+        .select('title seriesPart imageUrl category readingTime');
+
+    res.json({ seriesName: current.seriesName, parts });
+});
+
+export const getPublicProfile = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new AppError(404, 'User not found');
+    }
+
+    const [user, articles] = await Promise.all([
+        User.findById(userId).select('username profilePicture'),
+        Article.find({ _ownerId: userId, status: 'published' }).sort({ createdAt: -1 })
+    ]);
+
+    if (!user) {
+        throw new AppError(404, 'User not found');
+    }
+
+    const articleIds = articles.map(a => a._id);
+    const totalLikes = articleIds.length > 0
+        ? await Like.countDocuments({ articleId: { $in: articleIds } })
+        : 0;
+
+    res.json({ username: user.username, profilePicture: user.profilePicture, articles, totalLikes });
+});
+
+export const update = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    const { title, category, difficulty, imageUrl, summary, content, status, quiz, seriesName, seriesPart } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const updateData = { title, category, imageUrl, summary, content };
+    if (content) updateData.readingTime = calculateReadingTime(content);
+    if (difficulty) updateData.difficulty = difficulty;
+    if (status === 'draft' || status === 'published') updateData.status = status;
+    if (Array.isArray(quiz)) updateData.quiz = quiz;
+    if (seriesName !== undefined || seriesPart !== undefined) {
+        const series = normalizeSeriesInput(seriesName, seriesPart);
+        updateData.seriesName = series.seriesName;
+        updateData.seriesPart = series.seriesPart;
+
+        const duplicate = await findDuplicateSeriesPart(req.user._id, series, articleId);
+        if (duplicate) {
+            throw new AppError(409, `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`);
         }
+    }
 
-        const updateData = { title, category, imageUrl, summary, content };
-        if (content) updateData.readingTime = calculateReadingTime(content);
-        if (difficulty) updateData.difficulty = difficulty;
-        if (status === 'draft' || status === 'published') updateData.status = status;
-        if (Array.isArray(quiz)) updateData.quiz = quiz;
-        if (seriesName !== undefined || seriesPart !== undefined) {
-            const series = normalizeSeriesInput(seriesName, seriesPart);
-            updateData.seriesName = series.seriesName;
-            updateData.seriesPart = series.seriesPart;
+    const updatedArticle = await Article.findOneAndUpdate(
+        { _id: articleId, _ownerId: req.user._id },
+        updateData,
+        { new: true, runValidators: true }
+    );
 
-            const duplicate = await findDuplicateSeriesPart(req.user._id, series, articleId);
-            if (duplicate) {
-                return res.status(409).json({
-                    message: `Part ${series.seriesPart} already exists in "${series.seriesName}" ("${duplicate.title}"). Pick a different part number or edit the existing article.`
-                });
+    if (!updatedArticle) {
+        throw new AppError(403, 'Forbidden');
+    }
+
+    res.json(updatedArticle);
+});
+
+export const remove = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(articleId)) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const deletedArticle = await Article.findOneAndDelete({
+        _id: articleId,
+        _ownerId: req.user._id
+    });
+
+    if (!deletedArticle) {
+        throw new AppError(403, 'Forbidden');
+    }
+
+    res.json({ message: 'Article deleted successfully' });
+});
+
+export const getTrending = asyncHandler(async (req, res) => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const trending = await Like.aggregate([
+        { $match: { createdAt: { $gte: sevenDaysAgo } } },
+        { $group: { _id: '$articleId', likeCount: { $sum: 1 } } },
+        { $sort: { likeCount: -1 } },
+        { $limit: 3 },
+        {
+            $lookup: {
+                from: 'articles',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'article'
+            }
+        },
+        { $unwind: '$article' },
+        { $match: { 'article.status': 'published' } },
+        {
+            $project: {
+                _id: '$article._id',
+                title: '$article.title',
+                summary: '$article.summary',
+                imageUrl: '$article.imageUrl',
+                category: '$article.category',
+                likeCount: 1,
             }
         }
+    ]);
 
-        const updatedArticle = await Article.findOneAndUpdate(
-            { _id: articleId, _ownerId: req.user._id },
-            updateData,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedArticle) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        res.json(updatedArticle);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-export const remove = async (req, res) => {
-    try {
-        const { articleId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(articleId)) {
-            return res.status(404).json({ message: "Article not found" });
-        }
-
-        const deletedArticle = await Article.findOneAndDelete({
-            _id: articleId,
-            _ownerId: req.user._id
-        });
-
-        if (!deletedArticle) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        res.json({ message: "Article deleted successfully" });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-};
-
-export const getTrending = async (req, res) => {
-    try {
-        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-        const trending = await Like.aggregate([
-            { $match: { createdAt: { $gte: sevenDaysAgo } } },
-            { $group: { _id: '$articleId', likeCount: { $sum: 1 } } },
-            { $sort: { likeCount: -1 } },
-            { $limit: 3 },
-            {
-                $lookup: {
-                    from: 'articles',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'article'
-                }
-            },
-            { $unwind: '$article' },
-            { $match: { 'article.status': 'published' } },
-            {
-                $project: {
-                    _id: '$article._id',
-                    title: '$article.title',
-                    summary: '$article.summary',
-                    imageUrl: '$article.imageUrl',
-                    category: '$article.category',
-                    likeCount: 1,
-                }
-            }
-        ]);
-
-        res.json(trending);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+    res.json(trending);
+});
 
 const recentViews = new Map();
 const VIEW_TTL_MS = 24 * 60 * 60 * 1000;
