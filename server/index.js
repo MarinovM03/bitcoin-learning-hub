@@ -2,18 +2,24 @@ import 'dotenv/config';
 
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import router from './routes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
+import { mongoSanitize } from './middlewares/mongoSanitize.js';
 
 const app = express();
 
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
 }));
+app.use(mongoSanitize);
 app.use(authMiddleware);
 
 const loginLimiter = rateLimit({
