@@ -1,35 +1,30 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
+import { loginSchema } from "../../validators/authSchemas";
 
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [serverError, setServerError] = useState('');
 
-    const [formValues, setFormValues] = useState({
-        identifier: '',
-        password: '',
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { identifier: '', password: '' },
     });
 
-    const changeHandler = (e) => {
-        setFormValues(state => ({
-            ...state,
-            [e.target.name]: e.target.value
-        }));
-        setError('');
-    };
-
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
+    const onSubmit = async (values) => {
+        setServerError('');
         try {
-            await loginSubmitHandler(formValues);
+            await loginSubmitHandler(values);
         } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message);
         }
     };
 
@@ -40,18 +35,16 @@ export default function Login() {
                 <h1>Welcome Back</h1>
                 <p className="login-subtitle">Sign in to your account to continue</p>
 
-                <form id="login" className="login-form" onSubmit={onSubmit}>
+                <form id="login" className="login-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="form-group">
                         <label htmlFor="identifier">Email or Username</label>
                         <input
                             type="text"
                             id="identifier"
-                            name="identifier"
                             placeholder="Enter email or username..."
-                            required
-                            value={formValues.identifier}
-                            onChange={changeHandler}
+                            {...register('identifier')}
                         />
+                        {errors.identifier && <p className="field-error">{errors.identifier.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -59,15 +52,13 @@ export default function Login() {
                         <input
                             type="password"
                             id="password"
-                            name="password"
                             placeholder="Enter your password..."
-                            required
-                            value={formValues.password}
-                            onChange={changeHandler}
+                            {...register('password')}
                         />
+                        {errors.password && <p className="field-error">{errors.password.message}</p>}
                     </div>
 
-                    {error && <p className="field-error">{error}</p>}
+                    {serverError && <p className="field-error">{serverError}</p>}
 
                     <input
                         type="submit"

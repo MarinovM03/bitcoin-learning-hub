@@ -1,55 +1,36 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
+import { registerSchema } from "../../validators/authSchemas";
 
 export default function Register() {
     const { registerSubmitHandler } = useAuth();
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [serverError, setServerError] = useState('');
 
-    const [formValues, setFormValues] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(registerSchema),
+        defaultValues: {
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            profilePicture: '',
+        },
     });
 
-    const changeHandler = (e) => {
-        setFormValues(state => ({
-            ...state,
-            [e.target.name]: e.target.value
-        }));
-        setError('');
-    };
-
-    const onSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formValues.username.trim().length < 3) {
-            setError("Username must be at least 3 characters long!");
-            return;
-        }
-        if (!/^[a-zA-Z0-9]+$/.test(formValues.username)) {
-            setError("Username can only contain letters and numbers!");
-            return;
-        }
-        if (formValues.password.length < 8) {
-            setError("Password must be at least 8 characters long!");
-            return;
-        }
-        if (formValues.password !== formValues.confirmPassword) {
-            setError("Passwords do not match!");
-            return;
-        }
-
-        setIsSubmitting(true);
+    const onSubmit = async (values) => {
+        setServerError('');
         try {
-            await registerSubmitHandler(formValues);
+            await registerSubmitHandler(values);
         } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message);
         }
     };
 
@@ -60,18 +41,16 @@ export default function Register() {
                 <h1>Create Account</h1>
                 <p className="register-subtitle">Join the Bitcoin Learning Hub community</p>
 
-                <form id="register" className="register-form" onSubmit={onSubmit}>
+                <form id="register" className="register-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
                         <input
                             type="text"
                             id="username"
-                            name="username"
                             placeholder="e.g. SatoshiNakamoto"
-                            required
-                            value={formValues.username}
-                            onChange={changeHandler}
+                            {...register('username')}
                         />
+                        {errors.username && <p className="field-error">{errors.username.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -79,12 +58,10 @@ export default function Register() {
                         <input
                             type="email"
                             id="email"
-                            name="email"
                             placeholder="your@email.com"
-                            required
-                            value={formValues.email}
-                            onChange={changeHandler}
+                            {...register('email')}
                         />
+                        {errors.email && <p className="field-error">{errors.email.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -92,12 +69,10 @@ export default function Register() {
                         <input
                             type="password"
                             id="password"
-                            name="password"
                             placeholder="Min. 8 characters"
-                            required
-                            value={formValues.password}
-                            onChange={changeHandler}
+                            {...register('password')}
                         />
+                        {errors.password && <p className="field-error">{errors.password.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -105,15 +80,13 @@ export default function Register() {
                         <input
                             type="password"
                             id="confirmPassword"
-                            name="confirmPassword"
                             placeholder="Repeat your password"
-                            required
-                            value={formValues.confirmPassword}
-                            onChange={changeHandler}
+                            {...register('confirmPassword')}
                         />
+                        {errors.confirmPassword && <p className="field-error">{errors.confirmPassword.message}</p>}
                     </div>
 
-                    {error && <p className="field-error">{error}</p>}
+                    {serverError && <p className="field-error">{serverError}</p>}
 
                     <input
                         type="submit"
