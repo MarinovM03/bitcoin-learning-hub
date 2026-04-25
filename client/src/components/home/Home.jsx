@@ -7,6 +7,7 @@ import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 import OnThisDay from "../on-this-day/OnThisDay";
+import PageMeta from "../page-meta/PageMeta";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -37,6 +38,7 @@ export default function Home() {
 
     return (
         <section id="home-page" className="page-content">
+            <PageMeta description="Learn Bitcoin from the ground up — articles, glossary, learning paths, live market data, halving countdown, and interactive tools." />
 
             <div className="hero-section">
                 <div className="hero-dot-grid" />
