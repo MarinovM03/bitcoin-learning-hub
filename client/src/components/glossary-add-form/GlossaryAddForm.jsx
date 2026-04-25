@@ -1,108 +1,91 @@
 import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
 import * as glossaryService from "../../services/glossaryService";
+import { createGlossarySchema } from "../../validators/glossarySchemas";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
 export default function GlossaryAddForm({ onTermAdded }) {
-    const [formValues, setFormValues] = useState({
-        term: '',
-        definition: '',
-        category: 'Technology',
-        extendedDefinition: '',
+    const [serverError, setServerError] = useState('');
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(createGlossarySchema),
+        defaultValues: {
+            term: '',
+            definition: '',
+            category: 'Technology',
+            extendedDefinition: '',
+            examples: [{ value: '' }],
+        },
     });
-    const [examples, setExamples] = useState(['']);
-    const [formError, setFormError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const changeHandler = (e) => {
-        setFormValues(state => ({ ...state, [e.target.name]: e.target.value }));
-        setFormError('');
-    };
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'examples',
+    });
 
-    const updateExample = (index, value) => {
-        setExamples(state => state.map((item, i) => (i === index ? value : item)));
-    };
+    const onSubmit = async (values) => {
+        setServerError('');
+        const cleanedExamples = (values.examples || [])
+            .map(item => (typeof item === 'string' ? item : item.value || '').trim())
+            .filter(Boolean);
 
-    const addExample = () => {
-        if (examples.length >= 10) return;
-        setExamples(state => [...state, '']);
-    };
-
-    const removeExample = (index) => {
-        setExamples(state => (state.length === 1 ? [''] : state.filter((_, i) => i !== index)));
-    };
-
-    const onSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formValues.term.trim().length < 2) {
-            setFormError("Term must be at least 2 characters long!");
-            return;
-        }
-        if (formValues.definition.trim().length < 10) {
-            setFormError("Definition must be at least 10 characters long!");
-            return;
-        }
-
-        const cleanedExamples = examples.map(ex => ex.trim()).filter(Boolean);
-
-        setIsSubmitting(true);
         try {
             const newTerm = await glossaryService.create({
-                ...formValues,
-                extendedDefinition: formValues.extendedDefinition.trim(),
+                term: values.term,
+                definition: values.definition,
+                category: values.category,
+                extendedDefinition: values.extendedDefinition?.trim() || '',
                 examples: cleanedExamples,
             });
+            reset();
             onTermAdded(newTerm);
         } catch (err) {
-            setFormError(err.message || "Failed to add term.");
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message || "Failed to add term.");
         }
     };
 
     return (
         <div className="glossary-form-container">
             <h3>Contribute a New Term</h3>
-            <form className="glossary-form" onSubmit={onSubmit}>
+            <form className="glossary-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="form-group">
                     <label htmlFor="term">Term</label>
                     <input
                         type="text"
                         id="term"
-                        name="term"
                         placeholder="e.g. Lightning Network"
-                        value={formValues.term}
-                        onChange={changeHandler}
-                        required
+                        {...register('term')}
                     />
+                    {errors.term && <p className="field-error">{errors.term.message}</p>}
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="category">Category</label>
-                    <select
-                        id="category"
-                        name="category"
-                        value={formValues.category}
-                        onChange={changeHandler}
-                    >
+                    <select id="category" {...register('category')}>
                         {CATEGORIES.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
+                    {errors.category && <p className="field-error">{errors.category.message}</p>}
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="definition">Short definition</label>
                     <textarea
                         id="definition"
-                        name="definition"
                         placeholder="A one-to-two line explanation shown in lists and search results..."
-                        value={formValues.definition}
-                        onChange={changeHandler}
-                        required
+                        {...register('definition')}
                     ></textarea>
+                    {errors.definition && <p className="field-error">{errors.definition.message}</p>}
                 </div>
 
                 <div className="form-group">
@@ -111,11 +94,9 @@ export default function GlossaryAddForm({ onTermAdded }) {
                     </label>
                     <textarea
                         id="extendedDefinition"
-                        name="extendedDefinition"
                         className="glossary-form-textarea-tall"
                         placeholder="Flesh out the concept with a few paragraphs. Separate paragraphs with a blank line."
-                        value={formValues.extendedDefinition}
-                        onChange={changeHandler}
+                        {...register('extendedDefinition')}
                     ></textarea>
                 </div>
 
@@ -124,29 +105,28 @@ export default function GlossaryAddForm({ onTermAdded }) {
                         Examples <span className="form-group-optional">(optional)</span>
                     </label>
                     <div className="glossary-form-examples">
-                        {examples.map((example, index) => (
-                            <div key={index} className="glossary-form-example-row">
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="glossary-form-example-row">
                                 <input
                                     type="text"
-                                    value={example}
-                                    onChange={(e) => updateExample(index, e.target.value)}
                                     placeholder={`Example ${index + 1}`}
+                                    {...register(`examples.${index}.value`)}
                                 />
                                 <button
                                     type="button"
                                     className="glossary-form-example-remove"
-                                    onClick={() => removeExample(index)}
+                                    onClick={() => fields.length === 1 ? null : remove(index)}
                                     aria-label="Remove example"
                                 >
                                     <X size={14} strokeWidth={2.5} />
                                 </button>
                             </div>
                         ))}
-                        {examples.length < 10 && (
+                        {fields.length < 10 && (
                             <button
                                 type="button"
                                 className="glossary-form-example-add"
-                                onClick={addExample}
+                                onClick={() => append({ value: '' })}
                             >
                                 <Plus size={14} strokeWidth={2.5} />
                                 Add example
@@ -155,7 +135,7 @@ export default function GlossaryAddForm({ onTermAdded }) {
                     </div>
                 </div>
 
-                {formError && <p className="field-error">{formError}</p>}
+                {serverError && <p className="field-error">{serverError}</p>}
 
                 <input
                     type="submit"
