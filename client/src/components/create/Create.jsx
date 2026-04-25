@@ -1,34 +1,50 @@
 import { useNavigate } from 'react-router';
 import { Save } from 'lucide-react';
-import * as articleService from '../../services/articleService';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { validateQuiz } from '../../utils/quizHelpers';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
+import { createArticleSchema } from '../../validators/articleSchemas';
 
 export default function Create() {
     const navigate = useNavigate();
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [formValues, setFormValues] = useState({
-        title: '',
-        category: '',
-        difficulty: 'Beginner',
-        imageUrl: '',
-        summary: '',
-        content: '',
-        seriesName: '',
-        seriesPart: '',
-    });
+    const [serverError, setServerError] = useState('');
     const [quiz, setQuiz] = useState([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
     const [takenParts, setTakenParts] = useState([]);
 
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(createArticleSchema),
+        defaultValues: {
+            title: '',
+            category: '',
+            difficulty: 'Beginner',
+            imageUrl: '',
+            summary: '',
+            content: '',
+            seriesName: '',
+            seriesPart: '',
+        },
+    });
+
+    const seriesName = watch('seriesName') || '';
+    const seriesPartRaw = watch('seriesPart');
+    const summary = watch('summary') || '';
+    const difficulty = watch('difficulty');
+
     useEffect(() => {
-        const name = formValues.seriesName.trim();
+        const name = seriesName.trim();
         if (!name) {
             setTakenParts([]);
             return;
@@ -39,93 +55,51 @@ export default function Create() {
                 .catch(() => setTakenParts([]));
         }, 300);
         return () => clearTimeout(timer);
-    }, [formValues.seriesName]);
+    }, [seriesName]);
 
-    const partNum = Number(formValues.seriesPart);
+    const partNum = Number(seriesPartRaw);
     const seriesPartTaken = Boolean(
-        formValues.seriesName.trim() &&
+        seriesName.trim() &&
         Number.isInteger(partNum) &&
         partNum >= 1 &&
         takenParts.includes(partNum)
     );
 
-    const changeHandler = (e) => {
-        setFormValues((state) => ({
-            ...state,
-            [e.target.name]: e.target.value,
-        }));
-        setError('');
-    };
+    const submitWithStatus = (status) => handleSubmit(async (values) => {
+        setServerError('');
 
-    const validate = () => {
-        if (formValues.title.length < 5) {
-            setError("Title must be at least 5 characters long!");
-            return false;
-        }
-        if (!formValues.category) {
-            setError("Please select a category!");
-            return false;
-        }
-        if (formValues.summary.length < 10) {
-            setError("Summary must be at least 10 characters long!");
-            return false;
-        }
-        if (formValues.summary.length > 250) {
-            setError("Summary must be no longer than 250 characters!");
-            return false;
-        }
-        if (formValues.content.length < 10) {
-            setError("Content must be at least 10 characters long!");
-            return false;
-        }
-        const hasSeriesName = formValues.seriesName.trim().length > 0;
-        const hasSeriesPart = String(formValues.seriesPart).trim().length > 0;
+        const hasSeriesName = (values.seriesName || '').trim().length > 0;
+        const hasSeriesPart = String(values.seriesPart || '').trim().length > 0;
         if (hasSeriesName !== hasSeriesPart) {
-            setError("Series name and part number must be filled together (or leave both empty).");
-            return false;
+            setServerError('Series name and part number must be filled together (or leave both empty).');
+            return;
         }
         if (hasSeriesName) {
-            if (formValues.seriesName.trim().length > 80) {
-                setError("Series name must be 80 characters or fewer.");
-                return false;
-            }
-            const partNumValue = Number(formValues.seriesPart);
+            const partNumValue = Number(values.seriesPart);
             if (!Number.isInteger(partNumValue) || partNumValue < 1 || partNumValue > 99) {
-                setError("Series part must be a whole number between 1 and 99.");
-                return false;
+                setServerError('Series part must be a whole number between 1 and 99.');
+                return;
             }
             if (seriesPartTaken) {
-                setError(`Part ${partNumValue} is already used in "${formValues.seriesName.trim()}". Pick another part number.`);
-                return false;
+                setServerError(`Part ${partNumValue} is already used in "${values.seriesName.trim()}". Pick another part number.`);
+                return;
             }
         }
+
         const quizError = validateQuiz(quiz);
         if (quizError) {
-            setError(quizError);
+            setServerError(quizError);
             setShowQuizErrors(true);
-            return false;
+            return;
         }
-        return true;
-    };
 
-    const handleSubmit = async (status) => {
-        if (!validate()) return;
-
-        setIsSubmitting(true);
         try {
-            await articleService.create({ ...formValues, status, quiz });
-            if (status === 'draft') {
-                navigate('/my-articles');
-            } else {
-                navigate('/articles');
-            }
+            await articleService.create({ ...values, status, quiz });
+            navigate(status === 'draft' ? '/my-articles' : '/articles');
         } catch (err) {
-            console.log("Error creating article:", err.message);
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message);
         }
-    };
+    });
 
     return (
         <section id="create-page" className="page-content">
@@ -134,34 +108,27 @@ export default function Create() {
                 <h1>Write Article</h1>
                 <p className="create-subtitle">Share your Bitcoin knowledge with the community</p>
 
-                <form id="create" className="create-form" onSubmit={(e) => e.preventDefault()}>
+                <form id="create" className="create-form" onSubmit={(e) => e.preventDefault()} noValidate>
                     <div className="form-group">
                         <label htmlFor="title">Article Title</label>
                         <input
                             type="text"
                             id="title"
-                            name="title"
                             placeholder="Enter title..."
-                            required
-                            value={formValues.title}
-                            onChange={changeHandler}
+                            {...register('title')}
                         />
+                        {errors.title && <p className="field-error">{errors.title.message}</p>}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="category">Category</label>
-                        <select
-                            id="category"
-                            name="category"
-                            value={formValues.category}
-                            onChange={changeHandler}
-                            required
-                        >
+                        <select id="category" {...register('category')}>
                             <option value="" disabled>Select a category...</option>
                             {ARTICLE_CATEGORIES.map(cat => (
                                 <option key={cat} value={cat}>{cat}</option>
                             ))}
                         </select>
+                        {errors.category && <p className="field-error">{errors.category.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -171,8 +138,8 @@ export default function Create() {
                                 <button
                                     key={d}
                                     type="button"
-                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${formValues.difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
-                                    onClick={() => setFormValues(state => ({ ...state, difficulty: d }))}
+                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
+                                    onClick={() => setValue('difficulty', d, { shouldDirty: true })}
                                 >
                                     {d}
                                 </button>
@@ -187,27 +154,23 @@ export default function Create() {
                             <input
                                 type="text"
                                 id="seriesName"
-                                name="seriesName"
                                 placeholder="Series name (e.g. Bitcoin 101)"
                                 maxLength={80}
-                                value={formValues.seriesName}
-                                onChange={changeHandler}
+                                {...register('seriesName')}
                             />
                             <input
                                 type="number"
                                 id="seriesPart"
-                                name="seriesPart"
                                 placeholder="Part #"
                                 min={1}
                                 max={99}
-                                value={formValues.seriesPart}
-                                onChange={changeHandler}
+                                {...register('seriesPart')}
                                 className={seriesPartTaken ? 'series-part-input--error' : ''}
                             />
                         </div>
                         {seriesPartTaken && (
                             <p className="series-inline-error">
-                                Part {partNum} is already used in "{formValues.seriesName.trim()}". Pick another number{takenParts.length > 0 && <> (taken: {takenParts.sort((a, b) => a - b).join(', ')})</>}.
+                                Part {partNum} is already used in "{seriesName.trim()}". Pick another number{takenParts.length > 0 && <> (taken: {takenParts.sort((a, b) => a - b).join(', ')})</>}.
                             </p>
                         )}
                     </div>
@@ -217,55 +180,49 @@ export default function Create() {
                         <input
                             type="text"
                             id="imageUrl"
-                            name="imageUrl"
                             placeholder="https://..."
-                            required
-                            value={formValues.imageUrl}
-                            onChange={changeHandler}
+                            {...register('imageUrl')}
                         />
+                        {errors.imageUrl && <p className="field-error">{errors.imageUrl.message}</p>}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="summary">
                             Summary
                             <span className="summary-char-count">
-                                {formValues.summary.length}/250
+                                {summary.length}/250
                             </span>
                         </label>
                         <textarea
                             id="summary"
-                            name="summary"
                             placeholder="Short description shown on article cards..."
-                            required
                             maxLength={250}
-                            value={formValues.summary}
-                            onChange={changeHandler}
+                            {...register('summary')}
                         />
+                        {errors.summary && <p className="field-error">{errors.summary.message}</p>}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="content">Content</label>
                         <textarea
                             id="content"
-                            name="content"
                             className="content-input"
                             placeholder="Full article content..."
-                            required
-                            value={formValues.content}
-                            onChange={changeHandler}
+                            {...register('content')}
                         />
+                        {errors.content && <p className="field-error">{errors.content.message}</p>}
                     </div>
 
                     <QuizBuilder quiz={quiz} onChange={setQuiz} showErrors={showQuizErrors} />
 
-                    {error && <p className="field-error">{error}</p>}
+                    {serverError && <p className="field-error">{serverError}</p>}
 
                     <div className="create-actions">
                         <button
                             type="button"
                             className="btn-save-draft"
                             disabled={isSubmitting}
-                            onClick={() => handleSubmit('draft')}
+                            onClick={submitWithStatus('draft')}
                         >
                             {isSubmitting ? "Saving..." : (
                                 <>
@@ -278,7 +235,7 @@ export default function Create() {
                             type="button"
                             className="btn-submit"
                             disabled={isSubmitting}
-                            onClick={() => handleSubmit('published')}
+                            onClick={submitWithStatus('published')}
                         >
                             {isSubmitting ? "Publishing..." : "Publish Article"}
                         </button>
