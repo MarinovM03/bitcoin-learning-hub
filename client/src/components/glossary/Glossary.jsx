@@ -6,6 +6,7 @@ import GlossaryAddForm from "../glossary-add-form/GlossaryAddForm";
 import GlossaryList from "../glossary-list/GlossaryList";
 import GlossaryLetterRail from "../glossary-letter-rail/GlossaryLetterRail";
 import GlossaryTermSkeleton from "../glossary-term-skeleton/GlossaryTermSkeleton";
+import PageMeta from "../page-meta/PageMeta";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
@@ -43,6 +44,7 @@ export default function Glossary() {
 
     return (
         <section id="glossary-page" className="page-content">
+            <PageMeta title="Glossary" description="A-Z Bitcoin and cryptocurrency glossary. Look up terminology across technology, economics, trading, security, and culture." />
             <div className="glossary-page">
                 <div className="glossary-main">
                     <div className="glossary-header">

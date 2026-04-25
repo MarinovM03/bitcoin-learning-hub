@@ -4,6 +4,7 @@ import { Award, GraduationCap } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
 import CertificationCardSkeleton from '../certification-card-skeleton/CertificationCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
+import PageMeta from '../page-meta/PageMeta';
 
 const formatDate = (iso) => {
     try {
@@ -30,6 +31,7 @@ export default function Certifications() {
 
     return (
         <section className="page-content">
+            <PageMeta title="My Certifications" description="Certifications you've earned by completing learning paths." />
             <div className="certifications-page">
                 <div className="certifications-header">
                     <div>

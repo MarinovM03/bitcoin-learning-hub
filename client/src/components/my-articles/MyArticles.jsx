@@ -7,6 +7,7 @@ import ConfirmModal from "../common/ConfirmModal";
 import Spinner from "../spinner/Spinner";
 import MyArticlesRail from "../my-articles-rail/MyArticlesRail";
 import { useAuth } from "../../contexts/AuthContext";
+import PageMeta from "../page-meta/PageMeta";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -86,6 +87,7 @@ export default function MyArticles() {
 
     return (
         <section id="my-articles-page" className="page-content">
+            <PageMeta title="My Articles" description="Manage your published articles and drafts." />
             {deleteTarget && (
                 <ConfirmModal
                     title="Delete Article?"

@@ -6,6 +6,7 @@ import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { validateQuiz } from '../../utils/quizHelpers';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function Create() {
     const navigate = useNavigate();
@@ -128,6 +129,7 @@ export default function Create() {
 
     return (
         <section id="create-page" className="page-content">
+            <PageMeta title="Write Article" description="Publish a new Bitcoin or cryptocurrency article on the platform." />
             <div className="create-page">
                 <h1>Write Article</h1>
                 <p className="create-subtitle">Share your Bitcoin knowledge with the community</p>

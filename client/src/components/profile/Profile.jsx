@@ -6,6 +6,7 @@ import * as likeService from "../../services/likeService";
 import ProfileForm from "../profile-form/ProfileForm";
 import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
+import PageMeta from "../page-meta/PageMeta";
 
 export default function Profile() {
     const { userId } = useAuth();
@@ -65,6 +66,7 @@ export default function Profile() {
 
     return (
         <section id="profile-page" className="page-content">
+            <PageMeta title="Profile" description="Manage your account, profile picture, and reading history." />
             {showToast && (
                 <div className="profile-toast">
                     <CheckCircle2 size={18} strokeWidth={2.25} />

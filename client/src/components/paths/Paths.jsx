@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import PathCard from '../path-card/PathCard';
 import PathCardSkeleton from '../path-card-skeleton/PathCardSkeleton';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function Paths() {
     const { isAuthenticated } = useAuth();
@@ -48,6 +49,7 @@ export default function Paths() {
 
     return (
         <section id="paths-page" className="page-content">
+            <PageMeta title="Learning Paths" description="Structured Bitcoin learning paths — work through curated articles and earn a certification at the end of each path." />
             <div className="paths-page">
                 <header className="paths-header">
                     <div className="paths-header-text">

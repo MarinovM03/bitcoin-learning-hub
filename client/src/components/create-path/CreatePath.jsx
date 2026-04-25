@@ -5,6 +5,7 @@ import * as learningPathService from '../../services/learningPathService';
 import * as articleService from '../../services/articleService';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { handleImgError } from '../../utils/imageHelpers';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function CreatePath() {
     const navigate = useNavigate();
@@ -107,6 +108,7 @@ export default function CreatePath() {
 
     return (
         <section id="create-path-page" className="page-content">
+            <PageMeta title="Create Learning Path" description="Curate a sequence of Bitcoin articles into a guided learning journey with an end-of-path certification." />
             <div className="create-page">
                 <h1>Create Learning Path</h1>
                 <p className="create-subtitle">Curate a sequence of articles into a guided journey.</p>

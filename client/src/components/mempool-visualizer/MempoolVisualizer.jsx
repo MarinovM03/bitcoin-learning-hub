@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Network, AlertCircle, Info } from 'lucide-react';
 import Spinner from '../spinner/Spinner';
 import MempoolInfoModal from '../mempool-info-modal/MempoolInfoModal';
+import PageMeta from '../page-meta/PageMeta';
 import {
     FEE_TIERS,
     MAX_BUBBLES,
@@ -229,6 +230,7 @@ export default function MempoolVisualizer() {
 
     return (
         <div className="page-content mempool-page">
+            <PageMeta title="Mempool Visualizer" description="Live visualization of unconfirmed Bitcoin transactions waiting in the mempool, grouped by fee tier." />
             <div className="mempool-header">
                 <div className="mempool-hero-glow" />
                 <div className="mempool-btc-watermark">₿</div>

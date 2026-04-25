@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
+import PageMeta from "../page-meta/PageMeta";
 
 export default function Register() {
     const { registerSubmitHandler } = useAuth();
@@ -54,6 +55,7 @@ export default function Register() {
 
     return (
         <section id="register-page" className="page-content">
+            <PageMeta title="Create Account" description="Join the Bitcoin Learning Hub community to publish articles, save bookmarks, and earn certifications." />
             <div className="register-page">
                 <h1>Create Account</h1>
                 <p className="register-subtitle">Join the Bitcoin Learning Hub community</p>

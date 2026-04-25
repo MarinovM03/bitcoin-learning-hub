@@ -6,6 +6,7 @@ import ArticleCard from "../article-card/ArticleCard";
 import ArticleCardSkeleton from "../article-card-skeleton/ArticleCardSkeleton";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import PageMeta from "../page-meta/PageMeta";
 
 const SORT_LABELS = {
     latest: 'Latest',
@@ -88,6 +89,7 @@ export default function Catalog() {
 
     return (
         <section id="catalog-page" className="page-content catalog-page">
+            <PageMeta title="All Articles" description="Browse the full collection of Bitcoin and cryptocurrency articles. Filter by category, difficulty, and topic." />
             <h1>All Articles</h1>
             <p className="catalog-subtitle">Browse the full collection of Bitcoin and cryptocurrency knowledge.</p>
 

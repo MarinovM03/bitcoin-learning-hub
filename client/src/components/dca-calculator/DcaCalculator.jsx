@@ -22,6 +22,7 @@ import {
 } from '../../utils/dcaHelpers';
 import Spinner from '../spinner/Spinner';
 import DcaChartTooltip from '../dca-chart-tooltip/DcaChartTooltip';
+import PageMeta from '../page-meta/PageMeta';
 
 const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -75,6 +76,7 @@ export default function DcaCalculator() {
 
     return (
         <div className="page-content dca-page">
+            <PageMeta title="DCA Calculator" description="Simulate dollar-cost-averaging strategies for Bitcoin using historical price data from Binance." />
             <div className="dca-header">
                 <div className="dca-hero-glow" />
                 <div className="dca-btc-watermark">₿</div>

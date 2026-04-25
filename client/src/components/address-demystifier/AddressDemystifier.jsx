@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { ExternalLink, Search, X, Sparkles, CircleAlert, Info, Clipboard } from 'lucide-react';
 import { detectAddressType, getMempoolUrl } from '../../utils/addressTypes';
 import AddressInfoModal from '../address-info-modal/AddressInfoModal';
+import PageMeta from '../page-meta/PageMeta';
 
 const SAMPLE_ADDRESSES = [
     { label: 'Legacy', value: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' },
@@ -24,6 +25,7 @@ export default function AddressDemystifier() {
 
     return (
         <section className="page-content address-page">
+            <PageMeta title="Address Demystifier" description="Identify Bitcoin address formats — Legacy, P2SH, SegWit, and Taproot — and learn what each one means." />
             <div className="address-header">
                 <div className="address-hero-glow" />
                 <div className="address-btc-watermark">₿</div>

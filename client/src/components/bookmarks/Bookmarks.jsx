@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { Bookmark } from "lucide-react";
 import * as bookmarkService from "../../services/bookmarkService";
 import MyArticleCardSkeleton from "../my-article-card-skeleton/MyArticleCardSkeleton";
+import PageMeta from "../page-meta/PageMeta";
 
 export default function Bookmarks() {
     const [articles, setArticles] = useState([]);
@@ -26,6 +27,7 @@ export default function Bookmarks() {
 
     return (
         <section className="page-content">
+            <PageMeta title="Bookmarks" description="Articles you've saved for later." />
             <div className="bookmarks-page">
                 <div className="bookmarks-header">
                     <div>

@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { handleImgError } from "../../utils/imageHelpers";
 import ConfirmModal from "../common/ConfirmModal";
 import MyPathsCardSkeleton from "../my-paths-card-skeleton/MyPathsCardSkeleton";
+import PageMeta from "../page-meta/PageMeta";
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
@@ -72,6 +73,7 @@ export default function MyPaths() {
 
     return (
         <section id="my-paths-page" className="page-content">
+            <PageMeta title="My Learning Paths" description="Manage your authored learning paths." />
             {deleteTarget && (
                 <ConfirmModal
                     title="Delete Learning Path?"

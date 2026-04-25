@@ -7,6 +7,7 @@ import {
     SCENARIOS,
     describeConfig,
 } from '../../utils/multisigScenarios';
+import PageMeta from '../page-meta/PageMeta';
 
 const BROADCAST_DURATION_MS = 1200;
 
@@ -74,6 +75,7 @@ export default function MultisigExplainer() {
 
     return (
         <section className="page-content multisig-page">
+            <PageMeta title="Multisig Explainer" description="Interactive walkthrough of M-of-N multi-signature Bitcoin wallets — see how shared custody actually works." />
             <div className="multisig-header">
                 <div className="multisig-hero-glow" />
                 <div className="multisig-btc-watermark" aria-hidden="true">₿</div>

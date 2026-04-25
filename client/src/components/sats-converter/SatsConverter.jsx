@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Zap } from 'lucide-react';
+import PageMeta from '../page-meta/PageMeta';
 
 const PRESETS = [
     { label: '1 sat', field: 'sats', value: '1' },
@@ -118,6 +119,7 @@ export default function SatsConverter() {
 
     return (
         <div className="page-content sc-page">
+            <PageMeta title="Sats Converter" description="Convert between satoshis, BTC, and USD with live pricing — three linked inputs that update each other in real time." />
             <div className="sc-header">
                 <div className="sc-hero-glow" />
                 <div className="sc-btc-watermark">₿</div>
