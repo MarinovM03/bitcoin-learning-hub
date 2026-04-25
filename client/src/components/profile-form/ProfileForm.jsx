@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
+import { updateProfileSchema } from "../../validators/authSchemas";
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
@@ -16,87 +19,67 @@ const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-prof
 
 export default function ProfileForm({ onSaveSuccess }) {
     const { updateAuthState, usernameChangedAt } = useAuth();
-    const [error, setError] = useState('');
+    const [serverError, setServerError] = useState('');
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
 
     const { locked: usernameLocked, daysLeft } = getUsernameStatus(usernameChangedAt);
 
-    const [user, setUser] = useState({
-        username: '',
-        email: '',
-        profilePicture: '',
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(updateProfileSchema),
+        defaultValues: {
+            username: '',
+            email: '',
+            profilePicture: '',
+            password: '',
+            confirmPassword: '',
+        },
     });
 
-    const [passwords, setPasswords] = useState({
-        password: '',
-        confirmPassword: '',
-    });
+    const profilePictureValue = watch('profilePicture');
 
     useEffect(() => {
         authService.getProfile().then(result => {
-            setUser({
+            reset({
                 username: result.username || '',
-                email: result.email,
+                email: result.email || '',
                 profilePicture: result.profilePicture || '',
+                password: '',
+                confirmPassword: '',
             });
         });
-    }, []);
+    }, [reset]);
 
-    const onProfileChange = (e) => {
-        setUser(state => ({ ...state, [e.target.name]: e.target.value }));
-        setError('');
-    };
+    const onSubmit = async (values) => {
+        setServerError('');
 
-    const onPasswordChange = (e) => {
-        setPasswords(state => ({ ...state, [e.target.name]: e.target.value }));
-        setError('');
-    };
-
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-
-        if (user.username.trim().length < 3) {
-            setError("Username must be at least 3 characters long!");
+        if (values.password && !values.confirmPassword) {
+            setServerError("Please re-enter your new password in the confirmation field.");
             return;
         }
-        if (!/^[a-zA-Z0-9]+$/.test(user.username)) {
-            setError("Username can only contain letters and numbers!");
+        if (!values.password && values.confirmPassword) {
+            setServerError("Please enter a value for the New Password field.");
             return;
-        }
-        if (passwords.password && !passwords.confirmPassword) {
-            setError("Please re-enter your new password in the confirmation field.");
-            return;
-        }
-        if (!passwords.password && passwords.confirmPassword) {
-            setError("Please enter a value for the New Password field.");
-            return;
-        }
-        if (passwords.password) {
-            if (passwords.password.length < 8) {
-                setError("Password must be at least 8 characters long!");
-                return;
-            }
-            if (passwords.password !== passwords.confirmPassword) {
-                setError("Passwords do not match!");
-                return;
-            }
         }
 
         try {
-            const updatedUser = await authService.updateProfile({
-                username: user.username,
-                email: user.email,
-                profilePicture: user.profilePicture,
-                ...passwords,
-            });
-
+            const updatedUser = await authService.updateProfile(values);
             updateAuthState(updatedUser);
-
-            setPasswords({ password: '', confirmPassword: '' });
+            reset({
+                username: updatedUser.username || '',
+                email: updatedUser.email || '',
+                profilePicture: updatedUser.profilePicture || '',
+                password: '',
+                confirmPassword: '',
+            });
             onSaveSuccess();
         } catch (err) {
-            setError(err.message || "Failed to update profile.");
+            setServerError(err.message || "Failed to update profile.");
         }
     };
 
@@ -104,7 +87,7 @@ export default function ProfileForm({ onSaveSuccess }) {
         <div className="profile-card">
             <div className="profile-avatar-container">
                 <img
-                    src={user.profilePicture || defaultAvatar}
+                    src={profilePictureValue || defaultAvatar}
                     alt="Profile"
                     className="profile-avatar"
                 />
@@ -113,9 +96,9 @@ export default function ProfileForm({ onSaveSuccess }) {
             <h1>Edit Profile</h1>
             <p className="profile-card-subtitle">Manage your account details</p>
 
-            {error && <div className="profile-error-message">{error}</div>}
+            {serverError && <div className="profile-error-message">{serverError}</div>}
 
-            <form className="register-form" onSubmit={onSubmit}>
+            <form className="register-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <p className="profile-section-label">Account Info</p>
 
                 <div className="form-group">
@@ -130,15 +113,15 @@ export default function ProfileForm({ onSaveSuccess }) {
                     </label>
                     <input
                         type="text"
-                        name="username"
-                        value={user.username}
-                        onChange={onProfileChange}
                         placeholder="e.g. SatoshiNakamoto"
                         disabled={usernameLocked}
                         className={usernameLocked ? 'input-locked' : ''}
+                        {...register('username', {
+                            onBlur: () => setUsernameWarningVisible(false),
+                        })}
                         onFocus={() => !usernameLocked && setUsernameWarningVisible(true)}
-                        onBlur={() => setUsernameWarningVisible(false)}
                     />
+                    {errors.username && <p className="field-error">{errors.username.message}</p>}
                     {usernameLocked ? (
                         <p className="username-locked-hint">
                             Locked for {daysLeft} more day{daysLeft === 1 ? '' : 's'}.
@@ -153,23 +136,18 @@ export default function ProfileForm({ onSaveSuccess }) {
 
                 <div className="form-group">
                     <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={user.email}
-                        onChange={onProfileChange}
-                    />
+                    <input type="email" {...register('email')} />
+                    {errors.email && <p className="field-error">{errors.email.message}</p>}
                 </div>
 
                 <div className="form-group">
                     <label>Profile Picture URL</label>
                     <input
                         type="text"
-                        name="profilePicture"
-                        value={user.profilePicture}
-                        onChange={onProfileChange}
                         placeholder="https://..."
+                        {...register('profilePicture')}
                     />
+                    {errors.profilePicture && <p className="field-error">{errors.profilePicture.message}</p>}
                 </div>
 
                 <p className="profile-password-heading">Change Password</p>
@@ -178,25 +156,28 @@ export default function ProfileForm({ onSaveSuccess }) {
                     <label>New Password</label>
                     <input
                         type="password"
-                        name="password"
-                        value={passwords.password}
-                        onChange={onPasswordChange}
                         placeholder="Leave blank to keep current"
+                        {...register('password')}
                     />
+                    {errors.password && <p className="field-error">{errors.password.message}</p>}
                 </div>
 
                 <div className="form-group">
                     <label>Confirm New Password</label>
                     <input
                         type="password"
-                        name="confirmPassword"
-                        value={passwords.confirmPassword}
-                        onChange={onPasswordChange}
                         placeholder="Repeat new password"
+                        {...register('confirmPassword')}
                     />
+                    {errors.confirmPassword && <p className="field-error">{errors.confirmPassword.message}</p>}
                 </div>
 
-                <input type="submit" value="Save Changes" className="btn-submit" />
+                <input
+                    type="submit"
+                    value={isSubmitting ? "Saving..." : "Save Changes"}
+                    className="btn-submit"
+                    disabled={isSubmitting}
+                />
             </form>
         </div>
     );
