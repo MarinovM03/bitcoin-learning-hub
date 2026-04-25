@@ -6,6 +6,7 @@ import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { validateQuiz } from '../../utils/quizHelpers';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function Edit() {
     const navigate = useNavigate();
@@ -144,6 +145,7 @@ export default function Edit() {
 
     return (
         <section id="create-page" className="page-content">
+            <PageMeta title={formValues.title ? `Edit: ${formValues.title}` : 'Edit Article'} />
             <div className="create-page">
                 <h1>Edit Article</h1>
                 <p className="create-subtitle">Update your article details below</p>

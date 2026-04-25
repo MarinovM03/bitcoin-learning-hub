@@ -5,6 +5,7 @@ import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import GlossaryDetailsSkeleton from "../glossary-details-skeleton/GlossaryDetailsSkeleton";
 import ConfirmModal from "../common/ConfirmModal";
+import PageMeta from "../page-meta/PageMeta";
 
 const WORDS_PER_MINUTE = 200;
 
@@ -104,6 +105,11 @@ export default function GlossaryDetails() {
 
     return (
         <section className="page-content">
+            <PageMeta
+                title={term.term}
+                description={term.definition}
+                type="article"
+            />
             {showDeleteModal && (
                 <ConfirmModal
                     title="Remove Glossary Term?"

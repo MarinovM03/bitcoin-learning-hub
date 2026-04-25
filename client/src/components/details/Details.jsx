@@ -13,6 +13,7 @@ import QuizSection from "../quiz/QuizSection";
 import ReadingPanel from "../reading-panel/ReadingPanel";
 import { formatViews } from '../../utils/formatters';
 import { handleImgError } from '../../utils/imageHelpers';
+import PageMeta from "../page-meta/PageMeta";
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -188,6 +189,12 @@ export default function Details() {
 
     return (
         <section id="details-page" className="page-content">
+            <PageMeta
+                title={article.title}
+                description={article.summary}
+                image={article.imageUrl}
+                type="article"
+            />
             <div className="read-progress-bar" style={{ width: `${readProgress}%` }} />
 
             <ReadingPanel

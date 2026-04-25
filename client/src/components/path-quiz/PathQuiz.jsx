@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { GraduationCap, ArrowLeft, ArrowRight, CheckCircle2, XCircle, Award, RotateCcw } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
 import Spinner from '../spinner/Spinner';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function PathQuiz() {
     const { pathId } = useParams();
@@ -220,6 +221,7 @@ export default function PathQuiz() {
 
     return (
         <section className="page-content path-quiz-page">
+            <PageMeta title={`Final Exam — ${quiz.pathTitle}`} description={`Take the final exam for the "${quiz.pathTitle}" learning path.`} />
             <header className="path-quiz-header">
                 <div className="path-quiz-kicker">
                     <GraduationCap size={14} strokeWidth={2.5} />

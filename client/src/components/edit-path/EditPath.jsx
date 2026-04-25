@@ -6,6 +6,7 @@ import * as articleService from '../../services/articleService';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { handleImgError } from '../../utils/imageHelpers';
 import Spinner from '../spinner/Spinner';
+import PageMeta from '../page-meta/PageMeta';
 
 export default function EditPath() {
     const navigate = useNavigate();
@@ -127,6 +128,7 @@ export default function EditPath() {
 
     return (
         <section id="edit-path-page" className="page-content">
+            <PageMeta title={formValues.title ? `Edit: ${formValues.title}` : 'Edit Learning Path'} />
             <div className="create-page">
                 <h1>Edit Learning Path</h1>
                 <p className="create-subtitle">Update your path details and article order.</p>

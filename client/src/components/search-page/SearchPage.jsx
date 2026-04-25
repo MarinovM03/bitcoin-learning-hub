@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { Search, BookOpen, BookMarked, SearchX } from "lucide-react";
 import * as searchService from "../../services/searchService";
 import SearchResultSkeleton from "../search-result-skeleton/SearchResultSkeleton";
+import PageMeta from "../page-meta/PageMeta";
 
 const FULL_LIMIT = 25;
 
@@ -59,6 +60,7 @@ export default function SearchPage() {
 
     return (
         <section id="search-page" className="page-content">
+            <PageMeta title={query ? `Search: ${query}` : 'Search'} description="Search articles and glossary terms across Bitcoin Learning Hub." />
             <div className="search-page">
                 <div className="search-page-header">
                     <h1>Search</h1>

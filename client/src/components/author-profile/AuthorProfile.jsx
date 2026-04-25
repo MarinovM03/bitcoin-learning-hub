@@ -4,6 +4,7 @@ import * as articleService from '../../services/articleService';
 import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
 import { handleImgError } from "../../utils/imageHelpers";
+import PageMeta from "../page-meta/PageMeta";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
@@ -26,6 +27,12 @@ export default function AuthorProfile() {
 
     return (
         <section className="page-content author-profile-page">
+            <PageMeta
+                title={username}
+                description={`Articles by ${username} on Bitcoin Learning Hub.`}
+                image={profilePicture}
+                type="profile"
+            />
             <div className="author-profile-header">
                 <img
                     src={profilePicture || defaultAvatar}

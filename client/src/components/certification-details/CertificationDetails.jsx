@@ -4,6 +4,7 @@ import { ArrowLeft, Printer, Award } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
 import Spinner from '../spinner/Spinner';
 import { handleImgError } from '../../utils/imageHelpers';
+import PageMeta from '../page-meta/PageMeta';
 
 const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
@@ -50,6 +51,10 @@ export default function CertificationDetails() {
 
     return (
         <section className="page-content certificate-page">
+            <PageMeta
+                title={`Certificate — ${pathTitle}`}
+                description={`${ownerUsername} earned a certification in "${pathTitle}".`}
+            />
             <div className="certificate-toolbar">
                 <Link to="/certifications" className="certificate-toolbar-btn certificate-toolbar-btn--ghost">
                     <ArrowLeft size={14} strokeWidth={2.25} />

@@ -8,6 +8,7 @@ import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
 import PathExamPanel from '../path-exam-panel/PathExamPanel';
 import ConfirmModal from '../common/ConfirmModal';
 import { handleImgError } from '../../utils/imageHelpers';
+import PageMeta from '../page-meta/PageMeta';
 
 const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
@@ -82,6 +83,12 @@ export default function PathDetails() {
 
     return (
         <section id="path-details-page" className="page-content">
+            <PageMeta
+                title={path.title}
+                description={path.description}
+                image={path.coverImage}
+                type="article"
+            />
             {showDeleteModal && (
                 <ConfirmModal
                     title="Delete Path?"
