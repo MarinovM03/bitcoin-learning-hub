@@ -1,28 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, Plus, X, ArrowUp, ArrowDown, Search } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
 import * as articleService from '../../services/articleService';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
+import { createPathSchema } from '../../validators/pathSchemas';
 
 export default function CreatePath() {
     const navigate = useNavigate();
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [formValues, setFormValues] = useState({
-        title: '',
-        description: '',
-        difficulty: 'Beginner',
-        coverImage: '',
-    });
-
+    const [serverError, setServerError] = useState('');
     const [selectedArticles, setSelectedArticles] = useState([]);
     const [articleSearch, setArticleSearch] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(createPathSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            difficulty: 'Beginner',
+            coverImage: '',
+        },
+    });
+
+    const description = watch('description') || '';
+    const difficulty = watch('difficulty');
 
     useEffect(() => {
         const query = articleSearch.trim();
@@ -39,11 +52,6 @@ export default function CreatePath() {
         }, 300);
         return () => clearTimeout(timer);
     }, [articleSearch]);
-
-    const changeHandler = (e) => {
-        setFormValues(state => ({ ...state, [e.target.name]: e.target.value }));
-        setError('');
-    };
 
     const addArticle = (article) => {
         if (selectedArticles.some(a => String(a._id) === String(article._id))) return;
@@ -64,43 +72,20 @@ export default function CreatePath() {
         });
     };
 
-    const validate = () => {
-        if (formValues.title.trim().length < 5) {
-            setError('Title must be at least 5 characters.');
-            return false;
-        }
-        if (formValues.description.trim().length < 10) {
-            setError('Description must be at least 10 characters.');
-            return false;
-        }
-        if (formValues.description.length > 300) {
-            setError('Description must be no longer than 300 characters.');
-            return false;
-        }
-        if (formValues.coverImage && !/^https?:\/\//.test(formValues.coverImage)) {
-            setError('Cover image must be a valid URL.');
-            return false;
-        }
+    const onSubmit = async (values) => {
+        setServerError('');
         if (selectedArticles.length === 0) {
-            setError('Add at least one article to the path.');
-            return false;
+            setServerError('Add at least one article to the path.');
+            return;
         }
-        return true;
-    };
-
-    const handleSubmit = async () => {
-        if (!validate()) return;
-        setIsSubmitting(true);
         try {
             const created = await learningPathService.create({
-                ...formValues,
+                ...values,
                 articles: selectedArticles.map(a => a._id),
             });
             navigate(`/paths/${created._id}`);
         } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message);
         }
     };
 
@@ -113,33 +98,31 @@ export default function CreatePath() {
                 <h1>Create Learning Path</h1>
                 <p className="create-subtitle">Curate a sequence of articles into a guided journey.</p>
 
-                <form className="create-form" onSubmit={(e) => e.preventDefault()}>
+                <form className="create-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="form-group">
                         <label htmlFor="title">Path Title</label>
                         <input
                             type="text"
                             id="title"
-                            name="title"
                             placeholder="e.g. Bitcoin Fundamentals"
-                            value={formValues.title}
-                            onChange={changeHandler}
                             maxLength={100}
+                            {...register('title')}
                         />
+                        {errors.title && <p className="field-error">{errors.title.message}</p>}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="description">
                             Description
-                            <span className="summary-char-count">{formValues.description.length}/300</span>
+                            <span className="summary-char-count">{description.length}/300</span>
                         </label>
                         <textarea
                             id="description"
-                            name="description"
                             placeholder="What will learners take away from this path?"
-                            value={formValues.description}
-                            onChange={changeHandler}
                             maxLength={300}
+                            {...register('description')}
                         />
+                        {errors.description && <p className="field-error">{errors.description.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -149,8 +132,8 @@ export default function CreatePath() {
                                 <button
                                     key={d}
                                     type="button"
-                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${formValues.difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
-                                    onClick={() => setFormValues(state => ({ ...state, difficulty: d }))}
+                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
+                                    onClick={() => setValue('difficulty', d, { shouldDirty: true })}
                                 >
                                     {d}
                                 </button>
@@ -163,11 +146,10 @@ export default function CreatePath() {
                         <input
                             type="text"
                             id="coverImage"
-                            name="coverImage"
                             placeholder="https://..."
-                            value={formValues.coverImage}
-                            onChange={changeHandler}
+                            {...register('coverImage')}
                         />
+                        {errors.coverImage && <p className="field-error">{errors.coverImage.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -268,14 +250,13 @@ export default function CreatePath() {
                         </div>
                     </div>
 
-                    {error && <p className="field-error">{error}</p>}
+                    {serverError && <p className="field-error">{serverError}</p>}
 
                     <div className="create-actions">
                         <button
-                            type="button"
+                            type="submit"
                             className="btn-submit"
                             disabled={isSubmitting}
-                            onClick={handleSubmit}
                         >
                             {isSubmitting ? 'Creating...' : (
                                 <>

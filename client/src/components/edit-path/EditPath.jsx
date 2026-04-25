@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, Plus, X, ArrowUp, ArrowDown, Search } from 'lucide-react';
 import * as learningPathService from '../../services/learningPathService';
 import * as articleService from '../../services/articleService';
@@ -7,30 +9,43 @@ import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { handleImgError } from '../../utils/imageHelpers';
 import Spinner from '../spinner/Spinner';
 import PageMeta from '../page-meta/PageMeta';
+import { createPathSchema } from '../../validators/pathSchemas';
 
 export default function EditPath() {
     const navigate = useNavigate();
     const { pathId } = useParams();
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [serverError, setServerError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-
-    const [formValues, setFormValues] = useState({
-        title: '',
-        description: '',
-        difficulty: 'Beginner',
-        coverImage: '',
-    });
-
     const [selectedArticles, setSelectedArticles] = useState([]);
     const [articleSearch, setArticleSearch] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(createPathSchema),
+        defaultValues: {
+            title: '',
+            description: '',
+            difficulty: 'Beginner',
+            coverImage: '',
+        },
+    });
+
+    const description = watch('description') || '';
+    const difficulty = watch('difficulty');
+    const title = watch('title');
+
     useEffect(() => {
         learningPathService.getOne(pathId)
             .then(result => {
-                setFormValues({
+                reset({
                     title: result.title || '',
                     description: result.description || '',
                     difficulty: result.difficulty || 'Beginner',
@@ -40,7 +55,7 @@ export default function EditPath() {
             })
             .catch(() => navigate('/not-found'))
             .finally(() => setIsLoading(false));
-    }, [pathId, navigate]);
+    }, [pathId, navigate, reset]);
 
     useEffect(() => {
         const query = articleSearch.trim();
@@ -57,11 +72,6 @@ export default function EditPath() {
         }, 300);
         return () => clearTimeout(timer);
     }, [articleSearch]);
-
-    const changeHandler = (e) => {
-        setFormValues(state => ({ ...state, [e.target.name]: e.target.value }));
-        setError('');
-    };
 
     const addArticle = (article) => {
         if (selectedArticles.some(a => String(a._id) === String(article._id))) return;
@@ -82,43 +92,20 @@ export default function EditPath() {
         });
     };
 
-    const validate = () => {
-        if (formValues.title.trim().length < 5) {
-            setError('Title must be at least 5 characters.');
-            return false;
-        }
-        if (formValues.description.trim().length < 10) {
-            setError('Description must be at least 10 characters.');
-            return false;
-        }
-        if (formValues.description.length > 300) {
-            setError('Description must be no longer than 300 characters.');
-            return false;
-        }
-        if (formValues.coverImage && !/^https?:\/\//.test(formValues.coverImage)) {
-            setError('Cover image must be a valid URL.');
-            return false;
-        }
+    const onSubmit = async (values) => {
+        setServerError('');
         if (selectedArticles.length === 0) {
-            setError('Add at least one article to the path.');
-            return false;
+            setServerError('Add at least one article to the path.');
+            return;
         }
-        return true;
-    };
-
-    const handleSubmit = async () => {
-        if (!validate()) return;
-        setIsSubmitting(true);
         try {
             await learningPathService.edit(pathId, {
-                ...formValues,
+                ...values,
                 articles: selectedArticles.map(a => a._id),
             });
             navigate(`/paths/${pathId}`);
         } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSubmitting(false);
+            setServerError(err.message);
         }
     };
 
@@ -128,36 +115,34 @@ export default function EditPath() {
 
     return (
         <section id="edit-path-page" className="page-content">
-            <PageMeta title={formValues.title ? `Edit: ${formValues.title}` : 'Edit Learning Path'} />
+            <PageMeta title={title ? `Edit: ${title}` : 'Edit Learning Path'} />
             <div className="create-page">
                 <h1>Edit Learning Path</h1>
                 <p className="create-subtitle">Update your path details and article order.</p>
 
-                <form className="create-form" onSubmit={(e) => e.preventDefault()}>
+                <form className="create-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="form-group">
                         <label htmlFor="title">Path Title</label>
                         <input
                             type="text"
                             id="title"
-                            name="title"
-                            value={formValues.title}
-                            onChange={changeHandler}
                             maxLength={100}
+                            {...register('title')}
                         />
+                        {errors.title && <p className="field-error">{errors.title.message}</p>}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="description">
                             Description
-                            <span className="summary-char-count">{formValues.description.length}/300</span>
+                            <span className="summary-char-count">{description.length}/300</span>
                         </label>
                         <textarea
                             id="description"
-                            name="description"
-                            value={formValues.description}
-                            onChange={changeHandler}
                             maxLength={300}
+                            {...register('description')}
                         />
+                        {errors.description && <p className="field-error">{errors.description.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -167,8 +152,8 @@ export default function EditPath() {
                                 <button
                                     key={d}
                                     type="button"
-                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${formValues.difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
-                                    onClick={() => setFormValues(state => ({ ...state, difficulty: d }))}
+                                    className={`difficulty-toggle-btn difficulty-toggle-btn--${d.toLowerCase()} ${difficulty === d ? 'difficulty-toggle-btn--active' : ''}`}
+                                    onClick={() => setValue('difficulty', d, { shouldDirty: true })}
                                 >
                                     {d}
                                 </button>
@@ -181,11 +166,10 @@ export default function EditPath() {
                         <input
                             type="text"
                             id="coverImage"
-                            name="coverImage"
                             placeholder="https://..."
-                            value={formValues.coverImage}
-                            onChange={changeHandler}
+                            {...register('coverImage')}
                         />
+                        {errors.coverImage && <p className="field-error">{errors.coverImage.message}</p>}
                     </div>
 
                     <div className="form-group">
@@ -286,14 +270,13 @@ export default function EditPath() {
                         </div>
                     </div>
 
-                    {error && <p className="field-error">{error}</p>}
+                    {serverError && <p className="field-error">{serverError}</p>}
 
                     <div className="create-actions">
                         <button
-                            type="button"
+                            type="submit"
                             className="btn-submit"
                             disabled={isSubmitting}
-                            onClick={handleSubmit}
                         >
                             {isSubmitting ? 'Saving...' : (
                                 <>
