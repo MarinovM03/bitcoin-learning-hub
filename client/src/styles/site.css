@@ -54,6 +54,7 @@
 @import "multisig-explainer.css";
 @import "sats-converter.css";
 @import "on-this-day.css";
+@import "error-boundary.css";
 
 :root {
     --btc-orange: #F7931A;
