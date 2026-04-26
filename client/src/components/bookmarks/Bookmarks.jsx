@@ -1,25 +1,17 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Bookmark } from "lucide-react";
-import * as bookmarkService from "../../services/bookmarkService";
 import MyArticleCardSkeleton from "../my-article-card-skeleton/MyArticleCardSkeleton";
 import PageMeta from "../page-meta/PageMeta";
+import { useMyBookmarks } from "../../hooks/queries/useBookmarks";
+import { useToggleBookmark } from "../../hooks/mutations/useBookmarkMutations";
 
 export default function Bookmarks() {
-    const [articles, setArticles] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        bookmarkService.getMyBookmarks()
-            .then(result => setArticles(result))
-            .catch(err => console.log("Failed to load bookmarks:", err.message))
-            .finally(() => setIsLoading(false));
-    }, []);
+    const { data: articles = [], isPending: isLoading } = useMyBookmarks();
+    const toggleBookmark = useToggleBookmark();
 
     const handleRemove = async (articleId) => {
         try {
-            await bookmarkService.toggle(articleId);
-            setArticles(prev => prev.filter(a => a._id !== articleId));
+            await toggleBookmark.mutateAsync(articleId);
         } catch (err) {
             console.log("Failed to remove bookmark:", err.message);
         }

@@ -5,6 +5,7 @@ import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, Chevron
 import * as articleService from '../../services/articleService';
 import * as likeService from '../../services/likeService';
 import * as bookmarkService from '../../services/bookmarkService';
+import { useToggleBookmark } from '../../hooks/mutations/useBookmarkMutations';
 import { useAuth } from "../../contexts/AuthContext";
 import ArticleDetailsSkeleton from "../article-details-skeleton/ArticleDetailsSkeleton";
 import CommentsSection from "../comments/CommentsSection";
@@ -29,6 +30,7 @@ export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
     const { userId, isAuthenticated } = useAuth();
+    const toggleBookmarkMutation = useToggleBookmark();
 
     const [article, setArticle] = useState({});
     const [totalLikes, setTotalLikes] = useState(0);
@@ -142,7 +144,7 @@ export default function Details() {
 
     const onBookmark = async () => {
         try {
-            const result = await bookmarkService.toggle(articleId);
+            const result = await toggleBookmarkMutation.mutateAsync(articleId);
             setIsBookmarked(result.bookmarked);
         } catch (err) {
             console.log("Bookmark failed", err);
