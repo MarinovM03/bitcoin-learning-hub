@@ -3,13 +3,13 @@ import { useNavigate, useParams } from "react-router";
 import { Save } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MDEditor from '@uiw/react-md-editor';
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import { validateQuiz } from '../../utils/quizHelpers';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
+import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
 import { createArticleSchema } from '../../validators/articleSchemas';
 
 export default function Edit() {
@@ -229,22 +229,19 @@ export default function Edit() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="content">Content <span className="series-optional">(supports markdown)</span></label>
+                        <label htmlFor="content">Content</label>
                         <Controller
                             name="content"
                             control={control}
                             render={({ field }) => (
-                                <div data-color-mode="dark">
-                                    <MDEditor
-                                        value={field.value}
-                                        onChange={(val) => field.onChange(val || '')}
-                                        height={500}
-                                        preview="edit"
-                                        textareaProps={{
-                                            placeholder: 'Full article content... use **bold**, # headings, lists, code blocks, links — anything markdown.',
-                                        }}
-                                    />
-                                </div>
+                                <MarkdownWritePreview
+                                    name={field.name}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                    ref={field.ref}
+                                    placeholder="Full article content... use **bold**, # headings, lists, code blocks, links — anything markdown."
+                                />
                             )}
                         />
                         {errors.content && <p className="field-error">{errors.content.message}</p>}
