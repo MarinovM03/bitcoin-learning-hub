@@ -55,6 +55,8 @@
 @import "sats-converter.css";
 @import "on-this-day.css";
 @import "error-boundary.css";
+@import "markdown-content.css";
+@import "markdown-editor.css";
 
 :root {
     --btc-orange: #F7931A;
