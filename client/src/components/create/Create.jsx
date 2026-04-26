@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router';
 import { Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import MDEditor from '@uiw/react-md-editor';
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
@@ -20,6 +21,7 @@ export default function Create() {
 
     const {
         register,
+        control,
         handleSubmit,
         watch,
         setValue,
@@ -203,12 +205,23 @@ export default function Create() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="content">Content</label>
-                        <textarea
-                            id="content"
-                            className="content-input"
-                            placeholder="Full article content..."
-                            {...register('content')}
+                        <label htmlFor="content">Content <span className="series-optional">(supports markdown)</span></label>
+                        <Controller
+                            name="content"
+                            control={control}
+                            render={({ field }) => (
+                                <div data-color-mode="dark">
+                                    <MDEditor
+                                        value={field.value}
+                                        onChange={(val) => field.onChange(val || '')}
+                                        height={500}
+                                        preview="edit"
+                                        textareaProps={{
+                                            placeholder: 'Full article content... use **bold**, # headings, lists, code blocks, links — anything markdown.',
+                                        }}
+                                    />
+                                </div>
+                            )}
                         />
                         {errors.content && <p className="field-error">{errors.content.message}</p>}
                     </div>

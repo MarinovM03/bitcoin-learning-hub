@@ -15,6 +15,7 @@ import ReadingPanel from "../reading-panel/ReadingPanel";
 import { formatViews } from '../../utils/formatters';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
+import MarkdownContent from "../markdown-content/MarkdownContent";
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -270,9 +271,7 @@ export default function Details() {
                         <p className="details-summary">{article.summary}</p>
 
                         <div className="details-content" id="article-body">
-                            {article.content?.split('\n').filter(Boolean).map((paragraph, i) => (
-                                <p key={i}>{paragraph}</p>
-                            ))}
+                            <MarkdownContent content={article.content} />
                         </div>
 
                         {isInSeries && (prevPart || nextPart) && (
