@@ -1,35 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Plus, Route, BookOpen, Pencil, Trash2, Eye } from "lucide-react";
-import * as learningPathService from "../../services/learningPathService";
-import { useAuth } from "../../contexts/AuthContext";
 import { handleImgError } from "../../utils/imageHelpers";
 import ConfirmModal from "../common/ConfirmModal";
 import MyPathsCardSkeleton from "../my-paths-card-skeleton/MyPathsCardSkeleton";
 import PageMeta from "../page-meta/PageMeta";
+import { useMyPaths } from "../../hooks/queries/usePaths";
+import { useDeletePath } from "../../hooks/mutations/usePathMutations";
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
 export default function MyPaths() {
-    const { userId } = useAuth();
+    const { data: rawPaths, isPending: isLoading, error: queryError } = useMyPaths();
+    const deletePath = useDeletePath();
 
-    const [myPaths, setMyPaths] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
+    const myPaths = useMemo(
+        () => (Array.isArray(rawPaths) ? rawPaths : (rawPaths?.paths || [])),
+        [rawPaths]
+    );
+    const error = queryError?.message || '';
+
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [activeDifficulty, setActiveDifficulty] = useState('All');
     const [sortMode, setSortMode] = useState('newest');
-
-    useEffect(() => {
-        learningPathService.getMyPaths()
-            .then(result => {
-                const list = Array.isArray(result) ? result : (result?.paths || []);
-                setMyPaths(list);
-                setError('');
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setIsLoading(false));
-    }, [userId]);
 
     const availableDifficulties = useMemo(() => {
         const set = new Set(myPaths.map(p => p.difficulty).filter(Boolean));
@@ -62,8 +55,7 @@ export default function MyPaths() {
 
     const confirmDelete = async () => {
         try {
-            await learningPathService.remove(deleteTarget.id);
-            setMyPaths(prev => prev.filter(p => p._id !== deleteTarget.id));
+            await deletePath.mutateAsync(deleteTarget.id);
         } catch (err) {
             console.log("Delete failed:", err.message);
         } finally {

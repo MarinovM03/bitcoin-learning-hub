@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { PenLine, Trash2, CheckCircle2, Circle, Route, Clock } from 'lucide-react';
-import * as learningPathService from '../../services/learningPathService';
+import { useQueryClient } from '@tanstack/react-query';
 import * as articleService from '../../services/articleService';
 import { useAuth } from '../../contexts/AuthContext';
 import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
@@ -9,6 +9,9 @@ import PathExamPanel from '../path-exam-panel/PathExamPanel';
 import ConfirmModal from '../common/ConfirmModal';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
+import { usePath } from '../../hooks/queries/usePaths';
+import { useDeletePath } from '../../hooks/mutations/usePathMutations';
+import { queryKeys } from '../../lib/queryKeys';
 
 const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
@@ -16,23 +19,21 @@ export default function PathDetails() {
     const { pathId } = useParams();
     const navigate = useNavigate();
     const { userId } = useAuth();
+    const queryClient = useQueryClient();
 
-    const [path, setPath] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: path, isPending: isLoading, error: queryError } = usePath(pathId);
+    const deletePath = useDeletePath();
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [pendingToggleId, setPendingToggleId] = useState(null);
 
-    useEffect(() => {
-        setIsLoading(true);
-        learningPathService.getOne(pathId)
-            .then(result => setPath(result))
-            .catch(() => navigate('/not-found'))
-            .finally(() => setIsLoading(false));
-    }, [pathId, navigate]);
+    if (queryError) {
+        navigate('/not-found');
+    }
 
     const confirmDelete = async () => {
         try {
-            await learningPathService.remove(pathId);
+            await deletePath.mutateAsync(pathId);
             navigate('/paths');
         } catch {
             setShowDeleteModal(false);
@@ -44,30 +45,34 @@ export default function PathDetails() {
         e.stopPropagation();
         if (pendingToggleId) return;
         setPendingToggleId(articleId);
+
+        const detailKey = queryKeys.paths.detail(pathId);
+
+        queryClient.setQueryData(detailKey, (prev) => {
+            if (!prev) return prev;
+            const prevIds = prev.progress?.completedIds || [];
+            const idStr = String(articleId);
+            const nextIds = currentlyRead
+                ? prevIds.filter(id => String(id) !== idStr)
+                : [...prevIds, idStr];
+            return {
+                ...prev,
+                progress: {
+                    ...prev.progress,
+                    completedIds: nextIds,
+                    completed: nextIds.length,
+                },
+            };
+        });
+
         try {
             if (currentlyRead) {
                 await articleService.markUnread(articleId);
             } else {
                 await articleService.markRead(articleId);
             }
-            setPath(prev => {
-                if (!prev) return prev;
-                const prevIds = prev.progress?.completedIds || [];
-                const idStr = String(articleId);
-                const nextIds = currentlyRead
-                    ? prevIds.filter(id => String(id) !== idStr)
-                    : [...prevIds, idStr];
-                return {
-                    ...prev,
-                    progress: {
-                        ...prev.progress,
-                        completedIds: nextIds,
-                        completed: nextIds.length,
-                    },
-                };
-            });
         } catch {
-            // swallow — keep UI in prior state
+            queryClient.invalidateQueries({ queryKey: detailKey });
         } finally {
             setPendingToggleId(null);
         }

@@ -1,42 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { Plus, SearchX, Route } from 'lucide-react';
-import * as learningPathService from '../../services/learningPathService';
-import * as pathCertificationService from '../../services/pathCertificationService';
 import { useAuth } from '../../contexts/AuthContext';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import PathCard from '../path-card/PathCard';
 import PathCardSkeleton from '../path-card-skeleton/PathCardSkeleton';
 import PageMeta from '../page-meta/PageMeta';
+import { usePaths } from '../../hooks/queries/usePaths';
+import { useMyCertifications } from '../../hooks/queries/useCertifications';
 
 export default function Paths() {
     const { isAuthenticated } = useAuth();
-    const [paths, setPaths] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
     const [difficulty, setDifficulty] = useState('All');
-    const [certifications, setCertifications] = useState([]);
 
-    useEffect(() => {
-        setIsLoading(true);
-        learningPathService.getAll({ difficulty })
-            .then(result => {
-                setPaths(result.paths || []);
-                setError('');
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setIsLoading(false));
-    }, [difficulty]);
+    const { data: pathsData, isPending: isLoading, error: pathsError } = usePaths({ difficulty });
+    const { data: certifications = [] } = useMyCertifications(isAuthenticated);
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            setCertifications([]);
-            return;
-        }
-        pathCertificationService.getMyCertifications()
-            .then(setCertifications)
-            .catch(() => setCertifications([]));
-    }, [isAuthenticated]);
+    const paths = pathsData?.paths || [];
+    const error = pathsError?.message || '';
 
     const certByPathId = useMemo(() => {
         const map = {};
