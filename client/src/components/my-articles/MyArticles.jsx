@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { PenLine } from "lucide-react";
-import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ConfirmModal from "../common/ConfirmModal";
 import Spinner from "../spinner/Spinner";
 import MyArticlesRail from "../my-articles-rail/MyArticlesRail";
-import { useAuth } from "../../contexts/AuthContext";
 import PageMeta from "../page-meta/PageMeta";
+import { useMyArticles } from "../../hooks/queries/useArticles";
+import { useDeleteArticle } from "../../hooks/mutations/useArticleMutations";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -15,10 +15,9 @@ const handleImgError = (e) => {
 };
 
 export default function MyArticles() {
-    const { userId } = useAuth();
+    const { data: myArticles = [], isPending: isLoading } = useMyArticles();
+    const deleteArticle = useDeleteArticle();
 
-    const [myArticles, setMyArticles] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('published');
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [totalLikes, setTotalLikes] = useState(0);
@@ -26,25 +25,25 @@ export default function MyArticles() {
     const [sortMode, setSortMode] = useState('newest');
 
     useEffect(() => {
-        articleService.getMyArticles()
-            .then(async (result) => {
-                setMyArticles(result);
-                const published = result.filter(a => a.status === 'published');
-                const likeCounts = await Promise.all(
-                    published.map(a =>
-                        likeService.getAllForArticle(a._id).then(likes => likes.length).catch(() => 0)
-                    )
-                );
-                setTotalLikes(likeCounts.reduce((sum, n) => sum + n, 0));
-            })
-            .catch(err => console.log("Failed to load articles:", err.message))
-            .finally(() => setIsLoading(false));
-    }, [userId]);
+        const published = myArticles.filter(a => a.status === 'published');
+        if (published.length === 0) {
+            setTotalLikes(0);
+            return;
+        }
+        let cancelled = false;
+        Promise.all(
+            published.map(a =>
+                likeService.getAllForArticle(a._id).then(likes => likes.length).catch(() => 0)
+            )
+        ).then(counts => {
+            if (!cancelled) setTotalLikes(counts.reduce((sum, n) => sum + n, 0));
+        });
+        return () => { cancelled = true; };
+    }, [myArticles]);
 
     const confirmDelete = async () => {
         try {
-            await articleService.remove(deleteTarget.id);
-            setMyArticles(prev => prev.filter(a => a._id !== deleteTarget.id));
+            await deleteArticle.mutateAsync(deleteTarget.id);
         } catch (err) {
             console.log("Delete failed:", err.message);
         } finally {

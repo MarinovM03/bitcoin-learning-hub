@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { Search, X, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
-import * as articleService from '../../services/articleService';
 import ArticleCard from "../article-card/ArticleCard";
 import ArticleCardSkeleton from "../article-card-skeleton/ArticleCardSkeleton";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import PageMeta from "../page-meta/PageMeta";
+import { useArticles } from '../../hooks/queries/useArticles';
 
 const SORT_LABELS = {
     latest: 'Latest',
@@ -41,27 +41,20 @@ export default function Catalog() {
     const sort = searchParams.get('sort') || 'latest';
     const page = parseInt(searchParams.get('page') || '1');
 
-    const [articles, setArticles] = useState([]);
-    const [totalPages, setTotalPages] = useState(1);
-    const [total, setTotal] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
+    const { data, isPending, isError } = useArticles({
+        page,
+        limit: ITEMS_PER_PAGE,
+        sort,
+        search,
+        category: activeCategory,
+        difficulty: activeDifficulty,
+    });
 
-    useEffect(() => {
-        setIsLoading(true);
-        setError('');
-        articleService.getAll({ page, limit: ITEMS_PER_PAGE, sort, search, category: activeCategory, difficulty: activeDifficulty })
-            .then(result => {
-                setArticles(result.articles);
-                setTotalPages(result.totalPages);
-                setTotal(result.total);
-            })
-            .catch(err => {
-                setError("Failed to load articles. Please try again later.");
-                console.error(err.message);
-            })
-            .finally(() => setIsLoading(false));
-    }, [page, sort, search, activeCategory, activeDifficulty]);
+    const articles = data?.articles || [];
+    const totalPages = data?.totalPages || 1;
+    const total = data?.total || 0;
+    const error = isError ? "Failed to load articles. Please try again later." : '';
+    const isLoading = isPending;
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(searchParams);

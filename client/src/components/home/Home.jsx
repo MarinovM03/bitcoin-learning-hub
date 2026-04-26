@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { BookOpen, Library, LineChart, Network, ScanLine, TrendingUp, Heart } from "lucide-react";
-import * as articleService from '../../services/articleService';
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 import OnThisDay from "../on-this-day/OnThisDay";
 import PageMeta from "../page-meta/PageMeta";
+import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -15,24 +14,11 @@ const handleImgError = (e) => {
 };
 
 export default function Home() {
-    const [latestArticles, setLatestArticles] = useState([]);
-    const [trendingArticles, setTrendingArticles] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isTrendingLoading, setIsTrendingLoading] = useState(true);
+    const { data: latestData, isPending: isLoading } = useArticles({ limit: 4, sort: 'latest' });
+    const { data: trendingData, isPending: isTrendingLoading } = useTrendingArticles();
 
-    useEffect(() => {
-        articleService.getAll({ limit: 4, sort: 'latest' })
-            .then(result => setLatestArticles(result.articles ?? []))
-            .catch(err => console.log(err.message))
-            .finally(() => setIsLoading(false));
-    }, []);
-
-    useEffect(() => {
-        articleService.getTrending()
-            .then(result => setTrendingArticles(Array.isArray(result) ? result : []))
-            .catch(err => console.log(err.message))
-            .finally(() => setIsTrendingLoading(false));
-    }, []);
+    const latestArticles = latestData?.articles ?? [];
+    const trendingArticles = Array.isArray(trendingData) ? trendingData : [];
 
     const [featured, ...rest] = latestArticles;
 
