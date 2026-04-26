@@ -1,33 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, X } from "lucide-react";
-import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import GlossaryAddForm from "../glossary-add-form/GlossaryAddForm";
 import GlossaryList from "../glossary-list/GlossaryList";
 import GlossaryLetterRail from "../glossary-letter-rail/GlossaryLetterRail";
 import GlossaryTermSkeleton from "../glossary-term-skeleton/GlossaryTermSkeleton";
 import PageMeta from "../page-meta/PageMeta";
+import { useGlossaryTerms } from "../../hooks/queries/useGlossary";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
 export default function Glossary() {
     const { isAuthenticated } = useAuth();
+    const { data: terms = [], isPending: isLoading } = useGlossaryTerms();
 
-    const [terms, setTerms] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [activeCategory, setActiveCategory] = useState("All");
     const [showForm, setShowForm] = useState(false);
 
-    useEffect(() => {
-        glossaryService.getAll()
-            .then(result => setTerms(result))
-            .catch(err => console.log("Failed to load glossary:", err.message))
-            .finally(() => setIsLoading(false));
-    }, []);
-
-    const handleTermAdded = (newTerm) => {
-        setTerms(state => [...state, newTerm].sort((a, b) => a.term.localeCompare(b.term)));
+    const handleTermAdded = () => {
         setShowForm(false);
     };
 

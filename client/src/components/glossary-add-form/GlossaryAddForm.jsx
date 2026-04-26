@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
-import * as glossaryService from "../../services/glossaryService";
 import { createGlossarySchema } from "../../validators/glossarySchemas";
+import { useCreateGlossaryTerm } from "../../hooks/mutations/useGlossaryMutations";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
 export default function GlossaryAddForm({ onTermAdded }) {
     const [serverError, setServerError] = useState('');
+    const createTerm = useCreateGlossaryTerm();
 
     const {
         register,
@@ -39,7 +40,7 @@ export default function GlossaryAddForm({ onTermAdded }) {
             .filter(Boolean);
 
         try {
-            const newTerm = await glossaryService.create({
+            const newTerm = await createTerm.mutateAsync({
                 term: values.term,
                 definition: values.definition,
                 category: values.category,

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { ArrowLeft, ArrowRight, BookMarked, Lightbulb, Trash2, Clock, Hash, Link2, Check, Sparkles } from "lucide-react";
-import * as glossaryService from "../../services/glossaryService";
 import { useAuth } from "../../contexts/AuthContext";
 import GlossaryDetailsSkeleton from "../glossary-details-skeleton/GlossaryDetailsSkeleton";
 import ConfirmModal from "../common/ConfirmModal";
 import PageMeta from "../page-meta/PageMeta";
+import { useGlossaryTerm } from "../../hooks/queries/useGlossary";
+import { useDeleteGlossaryTerm } from "../../hooks/mutations/useGlossaryMutations";
 
 const WORDS_PER_MINUTE = 200;
 
@@ -14,35 +15,15 @@ export default function GlossaryDetails() {
     const navigate = useNavigate();
     const { userId } = useAuth();
 
-    const [term, setTerm] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState("");
+    const { data: term, isPending: isLoading, error: queryError } = useGlossaryTerm(termId);
+    const deleteTerm = useDeleteGlossaryTerm();
+
+    const [deleteError, setDeleteError] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [copied, setCopied] = useState(false);
     const copyTimeoutRef = useRef(null);
 
-    useEffect(() => {
-        let cancelled = false;
-        setIsLoading(true);
-        setError("");
-
-        glossaryService.getOne(termId)
-            .then((data) => {
-                if (cancelled) return;
-                setTerm(data);
-            })
-            .catch((err) => {
-                if (cancelled) return;
-                setError(err.message || "Failed to load term.");
-            })
-            .finally(() => {
-                if (!cancelled) setIsLoading(false);
-            });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [termId]);
+    const error = deleteError || queryError?.message || "";
 
     useEffect(() => {
         return () => {
@@ -63,10 +44,10 @@ export default function GlossaryDetails() {
 
     const handleDelete = async () => {
         try {
-            await glossaryService.remove(termId);
+            await deleteTerm.mutateAsync(termId);
             navigate('/glossary');
         } catch (err) {
-            setError(err.message || "Failed to delete term.");
+            setDeleteError(err.message || "Failed to delete term.");
             setShowDeleteModal(false);
         }
     };
