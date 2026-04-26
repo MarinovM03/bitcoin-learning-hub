@@ -2,6 +2,8 @@
     color: var(--text-color);
     line-height: 1.75;
     font-size: 1.05rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .markdown-content > *:first-child {
