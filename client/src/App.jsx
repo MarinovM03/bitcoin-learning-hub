@@ -13,6 +13,7 @@ import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import AuthGuard from "./components/guards/AuthGuard";
 import GuestGuard from "./components/guards/GuestGuard";
+import AdminGuard from "./components/guards/AdminGuard";
 import Edit from "./components/edit/Edit";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
@@ -37,6 +38,7 @@ import MyPaths from "./components/my-paths/MyPaths";
 import PathQuiz from "./components/path-quiz/PathQuiz";
 import Certifications from "./components/certifications/Certifications";
 import CertificationDetails from "./components/certification-details/CertificationDetails";
+import Admin from "./components/admin/Admin";
 
 function App() {
     return (
@@ -83,6 +85,10 @@ function App() {
                     <Route element={<GuestGuard />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                    </Route>
+
+                    <Route element={<AdminGuard />}>
+                        <Route path="/admin" element={<Admin />} />
                     </Route>
 
                     <Route path="*" element={<NotFound />} />

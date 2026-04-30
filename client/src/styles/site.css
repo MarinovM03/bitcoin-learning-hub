@@ -57,6 +57,7 @@
 @import "error-boundary.css";
 @import "markdown-content.css";
 @import "markdown-write-preview.css";
+@import "admin.css";
 
 :root {
     --btc-orange: #F7931A;
