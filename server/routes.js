@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from './middlewares/requireAuth.js';
+import { requireAdmin } from './middlewares/requireAdmin.js';
 import { validate } from './middlewares/validate.js';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
@@ -9,6 +10,7 @@ import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
 import * as bookmarkController from './controllers/bookmarkController.js';
 import * as pathCertificationController from './controllers/pathCertificationController.js';
+import * as adminController from './controllers/adminController.js';
 import Article from './models/Article.js';
 import GlossaryTerm from './models/GlossaryTerm.js';
 import { AppError } from './utils/AppError.js';
@@ -88,6 +90,17 @@ router.delete('/glossary/:termId', requireAuth, validate({ params: termIdParam }
 router.get('/comments/:articleId', validate({ params: articleIdParam }), commentController.getAllForArticle);
 router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
 router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
+
+// Admin routes — all require admin role
+router.get('/admin/stats', requireAuth, requireAdmin, adminController.getStats);
+router.get('/admin/users', requireAuth, requireAdmin, adminController.getUsers);
+router.patch('/admin/users/:userId/role', requireAuth, requireAdmin, validate({ params: userIdParam }), adminController.updateUserRole);
+router.delete('/admin/users/:userId', requireAuth, requireAdmin, validate({ params: userIdParam }), adminController.deleteUser);
+router.get('/admin/articles', requireAuth, requireAdmin, adminController.adminListArticles);
+router.delete('/admin/articles/:articleId', requireAuth, requireAdmin, validate({ params: articleIdParam }), adminController.adminDeleteArticle);
+router.patch('/admin/articles/:articleId/featured', requireAuth, requireAdmin, validate({ params: articleIdParam }), adminController.toggleFeaturedArticle);
+router.get('/admin/comments', requireAuth, requireAdmin, adminController.adminListComments);
+router.delete('/admin/comments/:commentId', requireAuth, requireAdmin, validate({ params: commentIdParam }), adminController.adminDeleteComment);
 
 // Search route — unified substring search across articles and glossary
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

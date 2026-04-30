@@ -43,6 +43,11 @@ const articleSchema = new mongoose.Schema({
         enum: ['draft', 'published'],
         default: 'published',
     },
+    featured: {
+        type: Boolean,
+        default: false,
+        index: true,
+    },
     seriesName: {
         type: String,
         trim: true,
