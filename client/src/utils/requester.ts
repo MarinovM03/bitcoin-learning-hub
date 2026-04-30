@@ -1,6 +1,6 @@
 import { parseApiError } from './parseApiError';
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 async function request<T>(method: HttpMethod, url: string, data?: unknown): Promise<T> {
     const options: RequestInit = {};
@@ -50,4 +50,5 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
 export const get = <T>(url: string) => request<T>('GET', url);
 export const post = <T>(url: string, data?: unknown) => request<T>('POST', url, data);
 export const put = <T>(url: string, data?: unknown) => request<T>('PUT', url, data);
+export const patch = <T>(url: string, data?: unknown) => request<T>('PATCH', url, data);
 export const del = <T>(url: string) => request<T>('DELETE', url);

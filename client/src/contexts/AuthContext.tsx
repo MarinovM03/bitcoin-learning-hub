@@ -21,6 +21,7 @@ interface AuthContextValue {
     email: string | undefined;
     userId: string | undefined;
     isAuthenticated: boolean;
+    isAdmin: boolean;
     profilePicture: string | undefined;
     usernameChangedAt: string | null;
 }
@@ -90,6 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email: auth.email,
         userId: auth._id,
         isAuthenticated: !!auth.accessToken,
+        isAdmin: auth.role === 'admin',
         profilePicture: auth.profilePicture,
         usernameChangedAt: auth.usernameChangedAt ?? null,
     }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler, updateAuthState]);

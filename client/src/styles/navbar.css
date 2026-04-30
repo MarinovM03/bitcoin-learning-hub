@@ -293,6 +293,15 @@
     color: var(--danger-color);
 }
 
+.account-menu-item--admin {
+    color: var(--btc-orange);
+}
+
+.account-menu-item--admin:hover {
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+}
+
 /* Mobile overlay */
 .navbar-mobile {
     position: fixed;
