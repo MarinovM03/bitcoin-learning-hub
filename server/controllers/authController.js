@@ -7,6 +7,21 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
 
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+const promoteIfAdminEmail = async (user) => {
+    if (!ADMIN_EMAILS.length) return user;
+    const isAdminEmail = ADMIN_EMAILS.includes(user.email?.toLowerCase());
+    if (isAdminEmail && user.role !== 'admin') {
+        user.role = 'admin';
+        await user.save();
+    }
+    return user;
+};
+
 const isUsernameLocked = (usernameChangedAt) => {
     if (!usernameChangedAt) return false;
     const daysSinceChange = (Date.now() - new Date(usernameChangedAt).getTime()) / (1000 * 60 * 60 * 24);
@@ -27,6 +42,7 @@ const generateToken = (user) => {
             email: user.email,
             profilePicture: user.profilePicture,
             usernameChangedAt: user.usernameChangedAt,
+            role: user.role,
         },
         SECRET,
         { expiresIn: '2d' }
@@ -40,6 +56,7 @@ const buildUserResponse = (user, token) => ({
     email: user.email,
     profilePicture: user.profilePicture,
     usernameChangedAt: user.usernameChangedAt,
+    role: user.role,
 });
 
 export const register = asyncHandler(async (req, res) => {
@@ -56,12 +73,13 @@ export const register = asyncHandler(async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    let user = await User.create({
         username,
         email,
         password: hashPassword,
         profilePicture,
     });
+    user = await promoteIfAdminEmail(user);
 
     const token = generateToken(user);
     res.json(buildUserResponse(user, token));
@@ -71,7 +89,7 @@ export const login = asyncHandler(async (req, res) => {
     const { identifier, password } = req.body;
 
     const isEmail = identifier.includes('@');
-    const user = isEmail
+    let user = isEmail
         ? await User.findOne({ email: identifier })
         : await User.findOne({ username: identifier });
 
@@ -83,6 +101,8 @@ export const login = asyncHandler(async (req, res) => {
     if (!isValid) {
         throw new AppError(403, 'Invalid credentials');
     }
+
+    user = await promoteIfAdminEmail(user);
 
     const token = generateToken(user);
     res.json(buildUserResponse(user, token));
