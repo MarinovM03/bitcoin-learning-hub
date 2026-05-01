@@ -6,7 +6,9 @@ const baseUrl = `${import.meta.env.VITE_API_URL}/search`;
 export type SearchArticleHit = Pick<
     Article,
     '_id' | 'title' | 'summary' | 'category' | 'difficulty' | 'imageUrl' | 'readingTime' | '_ownerId'
->;
+> & {
+    contentSnippet?: string;
+};
 
 export type SearchGlossaryHit = Pick<GlossaryTerm, '_id' | 'term' | 'definition' | 'category'>;
 

@@ -4,6 +4,7 @@ import { Search, BookOpen, BookMarked, SearchX } from "lucide-react";
 import * as searchService from "../../services/searchService";
 import SearchResultSkeleton from "../search-result-skeleton/SearchResultSkeleton";
 import PageMeta from "../page-meta/PageMeta";
+import HighlightText from "../common/HighlightText";
 
 const FULL_LIMIT = 25;
 
@@ -137,8 +138,16 @@ export default function SearchPage() {
                                             className="search-page-result"
                                         >
                                             <div className="search-page-result-body">
-                                                <span className="search-page-result-title">{article.title}</span>
-                                                <span className="search-page-result-summary">{article.summary}</span>
+                                                <HighlightText
+                                                    text={article.title}
+                                                    query={query}
+                                                    className="search-page-result-title"
+                                                />
+                                                <HighlightText
+                                                    text={article.contentSnippet || article.summary}
+                                                    query={query}
+                                                    className="search-page-result-summary"
+                                                />
                                                 <div className="search-page-result-meta">
                                                     <span className="search-page-result-badge">{article.category}</span>
                                                     {article.difficulty && (
@@ -174,8 +183,16 @@ export default function SearchPage() {
                                             className="search-page-result"
                                         >
                                             <div className="search-page-result-body">
-                                                <span className="search-page-result-title">{term.term}</span>
-                                                <span className="search-page-result-summary">{term.definition}</span>
+                                                <HighlightText
+                                                    text={term.term}
+                                                    query={query}
+                                                    className="search-page-result-title"
+                                                />
+                                                <HighlightText
+                                                    text={term.definition}
+                                                    query={query}
+                                                    className="search-page-result-summary"
+                                                />
                                                 <div className="search-page-result-meta">
                                                     <span className="search-page-result-badge">{term.category}</span>
                                                 </div>

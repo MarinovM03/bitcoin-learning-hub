@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Search, X, BookOpen, BookMarked, ArrowRight, Loader2 } from "lucide-react";
 import * as searchService from "../../services/searchService";
+import HighlightText from "../common/HighlightText";
 
 const DEBOUNCE_MS = 300;
 const QUICK_LIMIT = 5;
@@ -142,8 +143,16 @@ export default function SearchOverlay({ onClose }) {
                                                     onClick={onClose}
                                                 >
                                                     <div className="search-overlay-item-body">
-                                                        <span className="search-overlay-item-title">{article.title}</span>
-                                                        <span className="search-overlay-item-summary">{article.summary}</span>
+                                                        <HighlightText
+                                                            text={article.title}
+                                                            query={query}
+                                                            className="search-overlay-item-title"
+                                                        />
+                                                        <HighlightText
+                                                            text={article.contentSnippet || article.summary}
+                                                            query={query}
+                                                            className="search-overlay-item-summary"
+                                                        />
                                                     </div>
                                                     <div className="search-overlay-item-meta">
                                                         <span className="search-overlay-item-badge">{article.category}</span>
@@ -170,8 +179,16 @@ export default function SearchOverlay({ onClose }) {
                                                     onClick={onClose}
                                                 >
                                                     <div className="search-overlay-item-body">
-                                                        <span className="search-overlay-item-title">{term.term}</span>
-                                                        <span className="search-overlay-item-summary">{term.definition}</span>
+                                                        <HighlightText
+                                                            text={term.term}
+                                                            query={query}
+                                                            className="search-overlay-item-title"
+                                                        />
+                                                        <HighlightText
+                                                            text={term.definition}
+                                                            query={query}
+                                                            className="search-overlay-item-summary"
+                                                        />
                                                     </div>
                                                     <div className="search-overlay-item-meta">
                                                         <span className="search-overlay-item-badge">{term.category}</span>
