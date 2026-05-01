@@ -197,6 +197,15 @@
     line-height: 1.3;
 }
 
+/* Shared highlight pill used by SearchPage and SearchOverlay */
+.search-highlight {
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    padding: 0 0.15em;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
 .search-page-result-summary {
     font-size: 0.88rem;
     color: var(--text-secondary);
