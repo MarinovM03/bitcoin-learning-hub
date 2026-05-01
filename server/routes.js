@@ -105,6 +105,35 @@ router.delete('/admin/comments/:commentId', requireAuth, requireAdmin, validate(
 // Search route — unified substring search across articles and glossary
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const extractSnippet = (text, query, maxLen = 180) => {
+    if (!text || !query) return '';
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const matchAt = lowerText.indexOf(lowerQuery);
+    if (matchAt === -1) return '';
+
+    const queryLen = query.length;
+    const contextRoom = Math.max(0, maxLen - queryLen);
+    const half = Math.floor(contextRoom / 2);
+    let start = Math.max(0, matchAt - half);
+    let end = Math.min(text.length, matchAt + queryLen + half);
+
+    // Snap to word boundaries when possible to avoid breaking words
+    if (start > 0) {
+        const space = text.lastIndexOf(' ', start);
+        if (space !== -1 && start - space < 25) start = space + 1;
+    }
+    if (end < text.length) {
+        const space = text.indexOf(' ', end);
+        if (space !== -1 && space - end < 25) end = space;
+    }
+
+    let snippet = text.slice(start, end).trim();
+    if (start > 0) snippet = '… ' + snippet;
+    if (end < text.length) snippet = snippet + ' …';
+    return snippet;
+};
+
 router.get('/search', asyncHandler(async (req, res) => {
     const rawQuery = (req.query.q || '').toString().trim();
     const limit = Math.min(parseInt(req.query.limit || '10', 10) || 10, 25);
@@ -143,7 +172,9 @@ router.get('/search', asyncHandler(async (req, res) => {
             .lean(),
     ]);
 
-    const rank = (hay, weight) => (hay && pattern.test(hay) ? weight : 0);
+    const matches = (hay) => Boolean(hay) && hay.toLowerCase().includes(rawQuery.toLowerCase());
+    const rank = (hay, weight) => (matches(hay) ? weight : 0);
+
     const rankedArticles = articles
         .map((a) => ({
             article: a,
@@ -152,8 +183,14 @@ router.get('/search', asyncHandler(async (req, res) => {
         .sort((a, b) => b.score - a.score)
         .slice(0, limit)
         .map(({ article }) => {
+            const titleHit = matches(article.title);
+            const summaryHit = matches(article.summary);
+            const contentHit = matches(article.content);
+            const contentSnippet = (!titleHit && !summaryHit && contentHit)
+                ? extractSnippet(article.content, rawQuery)
+                : '';
             const { content, ...rest } = article;
-            return rest;
+            return contentSnippet ? { ...rest, contentSnippet } : rest;
         });
 
     const rankedGlossary = glossary
