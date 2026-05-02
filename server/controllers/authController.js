@@ -89,9 +89,8 @@ export const login = asyncHandler(async (req, res) => {
     const { identifier, password } = req.body;
 
     const isEmail = identifier.includes('@');
-    let user = isEmail
-        ? await User.findOne({ email: identifier })
-        : await User.findOne({ username: identifier });
+    const query = isEmail ? { email: identifier } : { username: identifier };
+    let user = await User.findOne(query).select('+password');
 
     if (!user) {
         throw new AppError(403, 'Invalid credentials');
