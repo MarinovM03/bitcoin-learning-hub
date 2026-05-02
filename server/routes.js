@@ -105,6 +105,16 @@ router.delete('/admin/comments/:commentId', requireAuth, requireAdmin, validate(
 // Search route — unified substring search across articles and glossary
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const ALLOWED_CATEGORIES = new Set([
+    'Basics', 'Technology', 'Economics', 'Security', 'History', 'Trading', 'Mining', 'Regulation', 'Culture',
+]);
+const ALLOWED_DIFFICULTIES = new Set(['Beginner', 'Intermediate', 'Advanced']);
+const READ_TIME_BUCKETS = {
+    short: { $lte: 5 },
+    medium: { $gt: 5, $lte: 15 },
+    long: { $gt: 15 },
+};
+
 const extractSnippet = (text, query, maxLen = 180) => {
     if (!text || !query) return '';
     const lowerText = text.toLowerCase();
@@ -138,6 +148,15 @@ router.get('/search', asyncHandler(async (req, res) => {
     const rawQuery = (req.query.q || '').toString().trim();
     const limit = Math.min(parseInt(req.query.limit || '10', 10) || 10, 25);
 
+    const rawCategory = (req.query.category || '').toString();
+    const rawDifficulty = (req.query.difficulty || '').toString();
+    const rawReadTime = (req.query.readTime || '').toString();
+
+    const category = ALLOWED_CATEGORIES.has(rawCategory) ? rawCategory : null;
+    const difficulty = ALLOWED_DIFFICULTIES.has(rawDifficulty) ? rawDifficulty : null;
+    const readTimeFilter = READ_TIME_BUCKETS[rawReadTime] || null;
+    const hasArticleFilter = Boolean(category || difficulty || readTimeFilter);
+
     if (rawQuery.length < 2) {
         return res.json({ query: rawQuery, articles: [], glossary: [] });
     }
@@ -145,21 +164,28 @@ router.get('/search', asyncHandler(async (req, res) => {
     const pattern = new RegExp(escapeRegex(rawQuery), 'i');
     const overfetch = limit * 3;
 
-    const [articles, glossary] = await Promise.all([
-        Article.find(
-            {
-                status: 'published',
-                $or: [
-                    { title: pattern },
-                    { summary: pattern },
-                    { content: pattern },
-                ],
-            },
-            { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 }
-        )
-            .limit(overfetch)
-            .lean(),
-        GlossaryTerm.find(
+    const articleFilter = {
+        status: 'published',
+        $or: [
+            { title: pattern },
+            { summary: pattern },
+            { content: pattern },
+        ],
+    };
+    if (category) articleFilter.category = category;
+    if (difficulty) articleFilter.difficulty = difficulty;
+    if (readTimeFilter) articleFilter.readingTime = readTimeFilter;
+
+    const articlesPromise = Article.find(
+        articleFilter,
+        { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 }
+    )
+        .limit(overfetch)
+        .lean();
+
+    const glossaryPromise = hasArticleFilter
+        ? Promise.resolve([])
+        : GlossaryTerm.find(
             {
                 $or: [
                     { term: pattern },
@@ -169,8 +195,9 @@ router.get('/search', asyncHandler(async (req, res) => {
             { term: 1, definition: 1, category: 1 }
         )
             .limit(overfetch)
-            .lean(),
-    ]);
+            .lean();
+
+    const [articles, glossary] = await Promise.all([articlesPromise, glossaryPromise]);
 
     const matches = (hay) => Boolean(hay) && hay.toLowerCase().includes(rawQuery.toLowerCase());
     const rank = (hay, weight) => (matches(hay) ? weight : 0);
