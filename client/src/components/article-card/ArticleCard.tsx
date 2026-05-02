@@ -1,13 +1,30 @@
 import { useState } from "react";
+import type { SyntheticEvent } from "react";
 import { Link } from "react-router";
 import { Layers } from "lucide-react";
 import { formatViews } from "../../utils/formatters";
 import { handleImgError } from "../../utils/imageHelpers";
 import Skeleton from "../skeleton/Skeleton";
+import type { Article, ArticleOwnerRef } from "../../types";
 
-export default function ArticleCard({ article, readLabel = "Read Article →" }) {
+type ArticleCardArticle =
+    Pick<Article, '_id' | 'title' | 'category' | 'imageUrl' | 'summary'>
+    & Partial<Pick<Article, 'difficulty' | 'seriesName' | 'seriesPart' | 'readingTime' | 'views'>>
+    & { _ownerId?: string | ArticleOwnerRef };
+
+interface ArticleCardProps {
+    article: ArticleCardArticle;
+    readLabel?: string;
+}
+
+const isPopulatedOwner = (owner: ArticleCardArticle['_ownerId']): owner is ArticleOwnerRef =>
+    typeof owner === 'object' && owner !== null && 'username' in owner;
+
+export default function ArticleCard({ article, readLabel = "Read Article →" }: ArticleCardProps) {
     const inSeries = Boolean(article.seriesName) && Number.isFinite(article.seriesPart);
     const [imgLoaded, setImgLoaded] = useState(false);
+
+    const ownerUsername = isPopulatedOwner(article._ownerId) ? article._ownerId.username : null;
 
     return (
         <Link
@@ -21,7 +38,7 @@ export default function ArticleCard({ article, readLabel = "Read Article →" })
                     alt={article.title}
                     className={`catalog-card-img ${imgLoaded ? 'is-loaded' : ''}`}
                     onLoad={() => setImgLoaded(true)}
-                    onError={(e) => {
+                    onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
                         handleImgError(e);
                         setImgLoaded(true);
                     }}
@@ -39,8 +56,8 @@ export default function ArticleCard({ article, readLabel = "Read Article →" })
                         <Layers size={11} strokeWidth={2.5} />
                         <span className="catalog-card-series__name">{article.seriesName}</span>
                         <span>· Part {article.seriesPart}</span>
-                        {article._ownerId?.username && (
-                            <span className="catalog-card-series__author">· @{article._ownerId.username}</span>
+                        {ownerUsername && (
+                            <span className="catalog-card-series__author">· @{ownerUsername}</span>
                         )}
                     </span>
                 )}
