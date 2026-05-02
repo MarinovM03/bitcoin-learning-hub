@@ -1,18 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { Search, BookOpen, BookMarked, SearchX } from "lucide-react";
+import { Search, BookOpen, BookMarked, SearchX, X } from "lucide-react";
 import * as searchService from "../../services/searchService";
 import SearchResultSkeleton from "../search-result-skeleton/SearchResultSkeleton";
 import PageMeta from "../page-meta/PageMeta";
 import HighlightText from "../common/HighlightText";
+import { ARTICLE_CATEGORIES } from "../../utils/categories";
+import { ARTICLE_DIFFICULTIES } from "../../utils/difficulties";
 
 const FULL_LIMIT = 25;
+
+const READ_TIME_OPTIONS = [
+    { value: 'short', label: 'Quick · ≤ 5 min' },
+    { value: 'medium', label: 'Standard · 6–15 min' },
+    { value: 'long', label: 'In-depth · 15+ min' },
+];
+
+const READ_TIME_LABELS = {
+    short: '≤ 5 min',
+    medium: '6–15 min',
+    long: '15+ min',
+};
 
 export default function SearchPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q') || '';
-    const [draft, setDraft] = useState(query);
+    const activeCategory = searchParams.get('category') || 'All';
+    const activeDifficulty = searchParams.get('difficulty') || 'All';
+    const activeReadTime = searchParams.get('readTime') || 'All';
 
+    const [draft, setDraft] = useState(query);
     const [results, setResults] = useState({ articles: [], glossary: [] });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -30,10 +47,15 @@ export default function SearchPage() {
             return;
         }
 
+        const filters = {};
+        if (activeCategory !== 'All') filters.category = activeCategory;
+        if (activeDifficulty !== 'All') filters.difficulty = activeDifficulty;
+        if (activeReadTime !== 'All') filters.readTime = activeReadTime;
+
         const controller = new AbortController();
         setIsLoading(true);
         setError("");
-        searchService.search(trimmed, FULL_LIMIT)
+        searchService.search(trimmed, FULL_LIMIT, filters)
             .then(data => {
                 if (controller.signal.aborted) return;
                 setResults({ articles: data.articles || [], glossary: data.glossary || [] });
@@ -47,15 +69,42 @@ export default function SearchPage() {
             });
 
         return () => controller.abort();
-    }, [query]);
+    }, [query, activeCategory, activeDifficulty, activeReadTime]);
+
+    const setParam = (key, value) => {
+        const next = new URLSearchParams(searchParams);
+        if (!value || value === 'All') {
+            next.delete(key);
+        } else {
+            next.set(key, value);
+        }
+        setSearchParams(next);
+    };
+
+    const clearFilters = () => {
+        const next = new URLSearchParams();
+        if (query) next.set('q', query);
+        setSearchParams(next);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const trimmed = draft.trim();
         if (trimmed.length < 2) return;
-        setSearchParams({ q: trimmed });
+        const next = new URLSearchParams(searchParams);
+        next.set('q', trimmed);
+        setSearchParams(next);
     };
 
+    const activeFilters = useMemo(() => {
+        const chips = [];
+        if (activeCategory !== 'All') chips.push({ key: 'category', label: 'Category', value: activeCategory });
+        if (activeDifficulty !== 'All') chips.push({ key: 'difficulty', label: 'Level', value: activeDifficulty });
+        if (activeReadTime !== 'All') chips.push({ key: 'readTime', label: 'Read time', value: READ_TIME_LABELS[activeReadTime] || activeReadTime });
+        return chips;
+    }, [activeCategory, activeDifficulty, activeReadTime]);
+
+    const hasArticleFilter = activeFilters.length > 0;
     const totalResults = results.articles.length + results.glossary.length;
     const hasQuery = query.trim().length >= 2;
 
@@ -82,6 +131,92 @@ export default function SearchPage() {
                     />
                     <button type="submit" className="search-page-form-submit">Search</button>
                 </form>
+
+                <div className="search-page-filter-group" aria-label="Filter by category">
+                    <span className="search-page-filter-label">Category</span>
+                    <div className="search-page-filter-tabs">
+                        {["All", ...ARTICLE_CATEGORIES].map(cat => (
+                            <button
+                                key={cat}
+                                type="button"
+                                className={`search-page-filter-tab ${activeCategory === cat ? 'search-page-filter-tab--active' : ''}`}
+                                onClick={() => setParam('category', cat)}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="search-page-filter-group" aria-label="Filter by difficulty">
+                    <span className="search-page-filter-label">Level</span>
+                    <div className="search-page-filter-tabs">
+                        {["All", ...ARTICLE_DIFFICULTIES].map(d => (
+                            <button
+                                key={d}
+                                type="button"
+                                className={`search-page-filter-tab search-page-filter-tab--${d.toLowerCase()} ${activeDifficulty === d ? 'search-page-filter-tab--active' : ''}`}
+                                onClick={() => setParam('difficulty', d)}
+                            >
+                                {d}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="search-page-filter-group" aria-label="Filter by reading time">
+                    <span className="search-page-filter-label">Read time</span>
+                    <div className="search-page-filter-tabs">
+                        <button
+                            type="button"
+                            className={`search-page-filter-tab ${activeReadTime === 'All' ? 'search-page-filter-tab--active' : ''}`}
+                            onClick={() => setParam('readTime', 'All')}
+                        >
+                            All
+                        </button>
+                        {READ_TIME_OPTIONS.map(opt => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                className={`search-page-filter-tab ${activeReadTime === opt.value ? 'search-page-filter-tab--active' : ''}`}
+                                onClick={() => setParam('readTime', opt.value)}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {hasArticleFilter && (
+                    <div className="search-page-active-filters" aria-label="Active filters">
+                        {activeFilters.map(chip => (
+                            <button
+                                key={chip.key}
+                                type="button"
+                                className="search-page-active-filter"
+                                onClick={() => setParam(chip.key, 'All')}
+                                aria-label={`Clear ${chip.label} filter`}
+                            >
+                                <span className="search-page-active-filter-label">{chip.label}:</span>
+                                <span className="search-page-active-filter-value">{chip.value}</span>
+                                <X size={12} strokeWidth={2.5} />
+                            </button>
+                        ))}
+                        <button
+                            type="button"
+                            className="search-page-clear-filters-btn"
+                            onClick={clearFilters}
+                        >
+                            Clear all
+                        </button>
+                    </div>
+                )}
+
+                {hasQuery && hasArticleFilter && (
+                    <p className="search-page-filter-note">
+                        Glossary results are hidden while filters are active.
+                    </p>
+                )}
 
                 {hasQuery && !isLoading && !error && (
                     <p className="search-page-summary">
@@ -116,9 +251,9 @@ export default function SearchPage() {
                                 <SearchX size={42} strokeWidth={1.5} />
                                 <h3 className="search-page-empty-title">No matches</h3>
                                 <p className="search-page-empty-text">
-                                    Try a different term, check your spelling, or browse the{' '}
-                                    <Link to="/articles">article catalog</Link> or{' '}
-                                    <Link to="/glossary">glossary</Link> directly.
+                                    {hasArticleFilter
+                                        ? <>Try removing a filter or <button type="button" className="search-page-empty-link" onClick={clearFilters}>clearing all filters</button>.</>
+                                        : <>Try a different term, check your spelling, or browse the <Link to="/articles">article catalog</Link> or <Link to="/glossary">glossary</Link> directly.</>}
                                 </p>
                             </div>
                         )}
