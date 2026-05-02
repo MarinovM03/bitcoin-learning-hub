@@ -11,7 +11,11 @@ export const toggle = asyncHandler(async (req, res) => {
         return res.json({ bookmarked: false });
     }
 
-    await Bookmark.create({ articleId, _ownerId });
+    try {
+        await Bookmark.create({ articleId, _ownerId });
+    } catch (err) {
+        if (err?.code !== 11000) throw err;
+    }
     res.status(201).json({ bookmarked: true });
 });
 
