@@ -18,7 +18,22 @@ export interface SearchResponse {
     glossary: SearchGlossaryHit[];
 }
 
-export const search = (query: string, limit: number = 10): Promise<SearchResponse> => {
+export type ReadTimeBucket = 'short' | 'medium' | 'long';
+
+export interface SearchFilters {
+    category?: string;
+    difficulty?: string;
+    readTime?: ReadTimeBucket;
+}
+
+export const search = (
+    query: string,
+    limit: number = 10,
+    filters: SearchFilters = {}
+): Promise<SearchResponse> => {
     const params = new URLSearchParams({ q: query, limit: String(limit) });
+    if (filters.category) params.set('category', filters.category);
+    if (filters.difficulty) params.set('difficulty', filters.difficulty);
+    if (filters.readTime) params.set('readTime', filters.readTime);
     return request.get<SearchResponse>(`${baseUrl}?${params.toString()}`);
 };
