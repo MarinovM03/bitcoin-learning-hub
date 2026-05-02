@@ -353,17 +353,16 @@
     background-color: rgba(231, 76, 60, 0.08);
 }
 
-.liked-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 8px 18px;
-    border-radius: 20px;
+.btn-like-active {
     background-color: rgba(231, 76, 60, 0.08);
-    border: 1px solid rgba(231, 76, 60, 0.25);
+    border-color: rgba(231, 76, 60, 0.25);
     color: #e74c3c;
-    font-size: 0.85rem;
-    font-weight: 600;
+}
+
+.btn-like-active:hover {
+    background-color: rgba(231, 76, 60, 0.14);
+    border-color: rgba(231, 76, 60, 0.4);
+    color: #e74c3c;
 }
 
 .details-info-panel {

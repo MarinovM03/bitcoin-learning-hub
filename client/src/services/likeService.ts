@@ -3,8 +3,13 @@ import type { Like } from '../types';
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/likes`;
 
-export const like = (articleId: string): Promise<Like> =>
-    request.post<Like>(baseUrl, { articleId });
+export interface LikeToggleResponse {
+    liked: boolean;
+    totalLikes: number;
+}
+
+export const toggle = (articleId: string): Promise<LikeToggleResponse> =>
+    request.post<LikeToggleResponse>(baseUrl, { articleId });
 
 export const getAllForArticle = async (articleId: string): Promise<Like[]> => {
     try {

@@ -133,11 +133,10 @@ export default function Details() {
     };
 
     const onLike = async () => {
-        if (hasLiked) return;
         try {
-            await likeService.like(articleId);
-            setTotalLikes(state => state + 1);
-            setHasLiked(true);
+            const { liked, totalLikes } = await likeService.toggle(articleId);
+            setHasLiked(liked);
+            setTotalLikes(totalLikes);
         } catch (err) {
             console.log("Like failed", err);
         }
@@ -326,17 +325,14 @@ export default function Details() {
 
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
-                                {hasLiked ? (
-                                    <div className="liked-badge">
-                                        <Heart size={16} strokeWidth={2} fill="currentColor" />
-                                        Liked
-                                    </div>
-                                ) : (
-                                    <button className="btn-like" onClick={onLike}>
-                                        <Heart size={16} strokeWidth={2} />
-                                        Like this article
-                                    </button>
-                                )}
+                                <button
+                                    className={hasLiked ? "btn-like btn-like-active" : "btn-like"}
+                                    onClick={onLike}
+                                    aria-pressed={hasLiked}
+                                >
+                                    <Heart size={16} strokeWidth={2} fill={hasLiked ? "currentColor" : "none"} />
+                                    {hasLiked ? 'Liked' : 'Like this article'}
+                                </button>
                             </div>
                         )}
 
