@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import * as authService from '../services/authService';
 import type { RegisterData } from '../services/authService';
 import type { AuthUser } from '../types';
+import { isTokenValid } from '../utils/tokenExpiry';
 
 interface LoginFormValues {
     identifier: string;
@@ -37,10 +38,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const [auth, setAuth] = useState<AuthState>(() => {
         const serializedAuth = localStorage.getItem('auth');
-        if (serializedAuth) {
-            return JSON.parse(serializedAuth) as AuthState;
+        if (!serializedAuth) return {};
+        try {
+            const parsed = JSON.parse(serializedAuth) as AuthState;
+            if (!isTokenValid(parsed.accessToken)) {
+                localStorage.removeItem('auth');
+                return {};
+            }
+            return parsed;
+        } catch {
+            localStorage.removeItem('auth');
+            return {};
         }
-        return {};
     });
 
     const loginSubmitHandler = useCallback(async (values: LoginFormValues) => {

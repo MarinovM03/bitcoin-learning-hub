@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Search, X, BookOpen, BookMarked, ArrowRight, Loader2 } from "lucide-react";
 import * as searchService from "../../services/searchService";
@@ -12,7 +12,9 @@ export default function SearchOverlay({ onClose }) {
     const [results, setResults] = useState({ articles: [], glossary: [] });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [activeIndex, setActiveIndex] = useState(-1);
     const inputRef = useRef(null);
+    const activeItemRef = useRef(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,20 +67,57 @@ export default function SearchOverlay({ onClose }) {
         };
     }, [query]);
 
+    const flatItems = useMemo(() => [
+        ...results.articles.map(a => ({ kind: 'article', _id: a._id, to: `/articles/${a._id}/details` })),
+        ...results.glossary.map(g => ({ kind: 'glossary', _id: g._id, to: `/glossary/${g._id}` })),
+    ], [results]);
+
+    useEffect(() => {
+        setActiveIndex(-1);
+    }, [query]);
+
+    useEffect(() => {
+        if (activeIndex < 0) return;
+        activeItemRef.current?.scrollIntoView({ block: 'nearest' });
+    }, [activeIndex]);
+
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) onClose();
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const goToSearchPage = () => {
         const trimmed = query.trim();
         if (trimmed.length < 2) return;
         onClose();
         navigate(`/search?q=${encodeURIComponent(trimmed)}`);
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (activeIndex >= 0 && flatItems[activeIndex]) {
+            onClose();
+            navigate(flatItems[activeIndex].to);
+            return;
+        }
+        goToSearchPage();
+    };
+
+    const handleInputKeyDown = (e) => {
+        if (flatItems.length === 0) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setActiveIndex(i => (i + 1) % flatItems.length);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setActiveIndex(i => (i <= 0 ? flatItems.length - 1 : i - 1));
+        }
+    };
+
     const hasQuery = query.trim().length >= 2;
     const hasResults = results.articles.length > 0 || results.glossary.length > 0;
+
+    const itemClassName = (index) =>
+        `search-overlay-item ${activeIndex === index ? 'search-overlay-item--active' : ''}`;
 
     return (
         <div className="search-overlay-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-label="Search">
@@ -92,7 +131,9 @@ export default function SearchOverlay({ onClose }) {
                         placeholder="Search articles and glossary..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={handleInputKeyDown}
                         aria-label="Search query"
+                        aria-activedescendant={activeIndex >= 0 && flatItems[activeIndex] ? `search-overlay-item-${flatItems[activeIndex]._id}` : undefined}
                     />
                     {isLoading && <Loader2 size={16} className="search-overlay-spinner" aria-hidden="true" />}
                     <button
@@ -135,31 +176,38 @@ export default function SearchOverlay({ onClose }) {
                                         Articles
                                     </span>
                                     <ul className="search-overlay-list">
-                                        {results.articles.map(article => (
-                                            <li key={article._id}>
-                                                <Link
-                                                    to={`/articles/${article._id}/details`}
-                                                    className="search-overlay-item"
-                                                    onClick={onClose}
-                                                >
-                                                    <div className="search-overlay-item-body">
-                                                        <HighlightText
-                                                            text={article.title}
-                                                            query={query}
-                                                            className="search-overlay-item-title"
-                                                        />
-                                                        <HighlightText
-                                                            text={article.contentSnippet || article.summary}
-                                                            query={query}
-                                                            className="search-overlay-item-summary"
-                                                        />
-                                                    </div>
-                                                    <div className="search-overlay-item-meta">
-                                                        <span className="search-overlay-item-badge">{article.category}</span>
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                        ))}
+                                        {results.articles.map((article, i) => {
+                                            const flatIndex = i;
+                                            const isActive = activeIndex === flatIndex;
+                                            return (
+                                                <li key={article._id}>
+                                                    <Link
+                                                        id={`search-overlay-item-${article._id}`}
+                                                        to={`/articles/${article._id}/details`}
+                                                        className={itemClassName(flatIndex)}
+                                                        onClick={onClose}
+                                                        ref={isActive ? activeItemRef : undefined}
+                                                        onMouseEnter={() => setActiveIndex(flatIndex)}
+                                                    >
+                                                        <div className="search-overlay-item-body">
+                                                            <HighlightText
+                                                                text={article.title}
+                                                                query={query}
+                                                                className="search-overlay-item-title"
+                                                            />
+                                                            <HighlightText
+                                                                text={article.contentSnippet || article.summary}
+                                                                query={query}
+                                                                className="search-overlay-item-summary"
+                                                            />
+                                                        </div>
+                                                        <div className="search-overlay-item-meta">
+                                                            <span className="search-overlay-item-badge">{article.category}</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 </div>
                             )}
@@ -171,31 +219,38 @@ export default function SearchOverlay({ onClose }) {
                                         Glossary
                                     </span>
                                     <ul className="search-overlay-list">
-                                        {results.glossary.map(term => (
-                                            <li key={term._id}>
-                                                <Link
-                                                    to={`/glossary/${term._id}`}
-                                                    className="search-overlay-item"
-                                                    onClick={onClose}
-                                                >
-                                                    <div className="search-overlay-item-body">
-                                                        <HighlightText
-                                                            text={term.term}
-                                                            query={query}
-                                                            className="search-overlay-item-title"
-                                                        />
-                                                        <HighlightText
-                                                            text={term.definition}
-                                                            query={query}
-                                                            className="search-overlay-item-summary"
-                                                        />
-                                                    </div>
-                                                    <div className="search-overlay-item-meta">
-                                                        <span className="search-overlay-item-badge">{term.category}</span>
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                        ))}
+                                        {results.glossary.map((term, i) => {
+                                            const flatIndex = results.articles.length + i;
+                                            const isActive = activeIndex === flatIndex;
+                                            return (
+                                                <li key={term._id}>
+                                                    <Link
+                                                        id={`search-overlay-item-${term._id}`}
+                                                        to={`/glossary/${term._id}`}
+                                                        className={itemClassName(flatIndex)}
+                                                        onClick={onClose}
+                                                        ref={isActive ? activeItemRef : undefined}
+                                                        onMouseEnter={() => setActiveIndex(flatIndex)}
+                                                    >
+                                                        <div className="search-overlay-item-body">
+                                                            <HighlightText
+                                                                text={term.term}
+                                                                query={query}
+                                                                className="search-overlay-item-title"
+                                                            />
+                                                            <HighlightText
+                                                                text={term.definition}
+                                                                query={query}
+                                                                className="search-overlay-item-summary"
+                                                            />
+                                                        </div>
+                                                        <div className="search-overlay-item-meta">
+                                                            <span className="search-overlay-item-badge">{term.category}</span>
+                                                        </div>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 </div>
                             )}
@@ -213,8 +268,9 @@ export default function SearchOverlay({ onClose }) {
                 </div>
 
                 <div className="search-overlay-footer">
+                    <span><kbd>↑</kbd><kbd>↓</kbd> to navigate</span>
+                    <span><kbd>Enter</kbd> {activeIndex >= 0 ? 'to open' : 'to see all'}</span>
                     <span><kbd>Esc</kbd> to close</span>
-                    <span><kbd>Enter</kbd> to see all</span>
                 </div>
             </div>
         </div>

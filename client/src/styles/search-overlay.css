@@ -159,8 +159,13 @@
     color: inherit;
 }
 
-.search-overlay-item:hover {
+.search-overlay-item:hover,
+.search-overlay-item--active {
     background-color: var(--btc-orange-dim);
+}
+
+.search-overlay-item--active {
+    box-shadow: inset 3px 0 0 var(--btc-orange);
 }
 
 .search-overlay-item-body {
