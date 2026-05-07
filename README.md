@@ -23,7 +23,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Author Profiles** — Public profile pages showing an author's published articles and total likes received.
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
 - **Learning Paths** — Curated multi-article learning tracks organized by skill level, with progress tracking and a certifying quiz at the end of each path.
-- **Global Search** — `Ctrl+K` search overlay and a dedicated search page that covers articles and glossary terms.
+- **Global Search** — `Ctrl+K` / `⌘ K` search overlay with arrow-key navigation, plus a dedicated search page covering articles and glossary terms with shareable URL filters by category, difficulty, and reading time.
 - **Authentication** — Login by email or username, and Register with full validation.
 
 ### Private Area (Logged-in User)
@@ -34,7 +34,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **My Paths Page** — Manage your published paths and drafts with edit and delete actions.
 - **Path Quiz Mode** — Take the end-of-path quiz to earn a certification, with scored feedback per question.
 - **Certifications** — Personal dashboard of every path certification you have earned, viewable on a dedicated details page.
-- **Like Articles** — Like any article you did not author. One like per user per article.
+- **Like Articles** — Toggle a like on any article you did not author. One like per user per article.
 - **Bookmark Articles** — Save articles to a personal bookmarks list for later reading.
 - **Post Comments** — Join the discussion on any article with a 500-character limit and live character counter.
 - **Contribute Glossary Terms** — Add new terms with a definition and category.
@@ -152,6 +152,7 @@ Create a `.env` file in the `server/` directory:
 ```
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
+CLIENT_URL=http://localhost:5173
 PORT=5000
 ```
 Install dependencies and start:
