@@ -37,6 +37,8 @@ export default function ArticleCard({ article, readLabel = "Read Article →" }:
                     src={article.imageUrl}
                     alt={article.title}
                     className={`catalog-card-img ${imgLoaded ? 'is-loaded' : ''}`}
+                    loading="lazy"
+                    decoding="async"
                     onLoad={() => setImgLoaded(true)}
                     onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
                         handleImgError(e);

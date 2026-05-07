@@ -58,6 +58,8 @@ export default function Bookmarks() {
                                     src={article.imageUrl}
                                     alt={article.title}
                                     className="my-article-card-img"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
                                 <div className="my-article-card-body">
                                     <span className="my-article-category">{article.category}</span>

@@ -160,6 +160,8 @@ export default function MyArticles() {
                                                 src={article.imageUrl}
                                                 alt={article.title}
                                                 className="my-articles-page-card-img"
+                                                loading="lazy"
+                                                decoding="async"
                                                 onError={handleImgError}
                                             />
                                             <span className="my-articles-page-card-category">{article.category}</span>

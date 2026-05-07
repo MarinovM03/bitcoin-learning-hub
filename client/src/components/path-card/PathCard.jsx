@@ -16,6 +16,8 @@ export default function PathCard({ path, certification }) {
                     src={cover}
                     alt={path.title}
                     className="path-card-img"
+                    loading="lazy"
+                    decoding="async"
                     onError={handleImgError}
                 />
                 <span className="path-card-overlay">

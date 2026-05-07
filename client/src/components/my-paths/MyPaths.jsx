@@ -126,6 +126,8 @@ export default function MyPaths() {
                                                 src={cover}
                                                 alt={path.title}
                                                 className="my-paths-card-img"
+                                                loading="lazy"
+                                                decoding="async"
                                                 onError={handleImgError}
                                             />
                                             {path.difficulty && (

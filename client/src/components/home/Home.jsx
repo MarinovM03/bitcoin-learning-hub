@@ -196,6 +196,8 @@ export default function Home() {
                                             src={article.imageUrl}
                                             alt={article.title}
                                             className="magazine-small-img"
+                                            loading="lazy"
+                                            decoding="async"
                                             onError={handleImgError}
                                         />
                                         <div className="magazine-small-body">
@@ -233,6 +235,8 @@ export default function Home() {
                                     src={article.imageUrl}
                                     alt={article.title}
                                     className="trending-img"
+                                    loading="lazy"
+                                    decoding="async"
                                     onError={handleImgError}
                                 />
                                 <div className="trending-body">

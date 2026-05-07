@@ -530,6 +530,8 @@ export default function Details() {
                                                 src={rel.imageUrl}
                                                 alt={rel.title}
                                                 className="details-related-img"
+                                                loading="lazy"
+                                                decoding="async"
                                                 onError={handleImgError}
                                             />
                                             <div className="details-related-body">
