@@ -15,6 +15,10 @@ const NAV_LINKS = [
     { to: "/glossary", label: "Glossary" },
 ];
 
+const IS_MAC = typeof navigator !== 'undefined'
+    && /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '');
+const SHORTCUT_HINT = IS_MAC ? '⌘ K' : 'Ctrl K';
+
 export default function Navbar() {
     const { isAuthenticated } = useAuth();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -91,7 +95,7 @@ export default function Navbar() {
                     >
                         <Search size={16} strokeWidth={2.25} />
                         <span className="navbar-search-btn-label">Search</span>
-                        <kbd className="navbar-search-btn-kbd">Ctrl K</kbd>
+                        <kbd className="navbar-search-btn-kbd">{SHORTCUT_HINT}</kbd>
                     </button>
                     {isAuthenticated ? (
                         <>
