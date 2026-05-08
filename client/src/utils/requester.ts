@@ -1,4 +1,5 @@
 import { parseApiError } from './parseApiError';
+import { toast } from '../lib/toast';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -39,6 +40,7 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
 
     if (!response.ok) {
         if (response.status === 401 && serializedAuth) {
+            toast.info('Your session has expired. Please sign in again.');
             window.dispatchEvent(new Event('auth:unauthorized'));
         }
         throw new Error(parseApiError(result));

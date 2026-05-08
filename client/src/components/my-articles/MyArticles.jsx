@@ -8,6 +8,7 @@ import MyArticlesRail from "../my-articles-rail/MyArticlesRail";
 import PageMeta from "../page-meta/PageMeta";
 import { useMyArticles } from "../../hooks/queries/useArticles";
 import { useDeleteArticle } from "../../hooks/mutations/useArticleMutations";
+import { toast } from "../../lib/toast";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -44,8 +45,9 @@ export default function MyArticles() {
     const confirmDelete = async () => {
         try {
             await deleteArticle.mutateAsync(deleteTarget.id);
+            toast.success('Article deleted.');
         } catch (err) {
-            console.log("Delete failed:", err.message);
+            toast.error(err.message || "Couldn't delete the article. Try again.");
         } finally {
             setDeleteTarget(null);
         }

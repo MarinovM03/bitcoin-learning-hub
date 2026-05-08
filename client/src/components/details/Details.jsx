@@ -16,6 +16,7 @@ import { formatViews } from '../../utils/formatters';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
+import { toast } from "../../lib/toast";
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -125,9 +126,10 @@ export default function Details() {
     const confirmDelete = async () => {
         try {
             await articleService.remove(articleId);
+            toast.success('Article deleted.');
             navigate('/articles');
         } catch (err) {
-            console.log("Delete failed:", err.message);
+            toast.error(err.message || "Couldn't delete the article. Try again.");
             setShowDeleteModal(false);
         }
     };
@@ -138,7 +140,7 @@ export default function Details() {
             setHasLiked(liked);
             setTotalLikes(totalLikes);
         } catch (err) {
-            console.log("Like failed", err);
+            toast.error(err.message || "Couldn't update your like. Try again.");
         }
     };
 
@@ -147,7 +149,7 @@ export default function Details() {
             const result = await toggleBookmarkMutation.mutateAsync(articleId);
             setIsBookmarked(result.bookmarked);
         } catch (err) {
-            console.log("Bookmark failed", err);
+            toast.error(err.message || "Couldn't update your bookmark. Try again.");
         }
     };
 
@@ -163,7 +165,7 @@ export default function Details() {
                 setHasRead(true);
             }
         } catch (err) {
-            console.log("Toggle read failed", err);
+            toast.error(err.message || "Couldn't update your reading progress.");
         } finally {
             setIsTogglingRead(false);
         }

@@ -4,6 +4,7 @@ import MyArticleCardSkeleton from "../my-article-card-skeleton/MyArticleCardSkel
 import PageMeta from "../page-meta/PageMeta";
 import { useMyBookmarks } from "../../hooks/queries/useBookmarks";
 import { useToggleBookmark } from "../../hooks/mutations/useBookmarkMutations";
+import { toast } from "../../lib/toast";
 
 export default function Bookmarks() {
     const { data: articles = [], isPending: isLoading } = useMyBookmarks();
@@ -13,7 +14,7 @@ export default function Bookmarks() {
         try {
             await toggleBookmark.mutateAsync(articleId);
         } catch (err) {
-            console.log("Failed to remove bookmark:", err.message);
+            toast.error(err.message || "Couldn't remove the bookmark. Try again.");
         }
     };
 

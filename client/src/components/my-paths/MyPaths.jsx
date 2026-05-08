@@ -7,6 +7,7 @@ import MyPathsCardSkeleton from "../my-paths-card-skeleton/MyPathsCardSkeleton";
 import PageMeta from "../page-meta/PageMeta";
 import { useMyPaths } from "../../hooks/queries/usePaths";
 import { useDeletePath } from "../../hooks/mutations/usePathMutations";
+import { toast } from "../../lib/toast";
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
@@ -56,8 +57,9 @@ export default function MyPaths() {
     const confirmDelete = async () => {
         try {
             await deletePath.mutateAsync(deleteTarget.id);
+            toast.success('Learning path deleted.');
         } catch (err) {
-            console.log("Delete failed:", err.message);
+            toast.error(err.message || "Couldn't delete the learning path. Try again.");
         } finally {
             setDeleteTarget(null);
         }

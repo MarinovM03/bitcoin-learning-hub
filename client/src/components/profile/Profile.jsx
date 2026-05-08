@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { CheckCircle2, FileText, ArrowRight, RotateCcw } from "lucide-react";
+import { FileText, ArrowRight, RotateCcw } from "lucide-react";
 import * as articleService from "../../services/articleService";
 import * as likeService from "../../services/likeService";
 import ProfileForm from "../profile-form/ProfileForm";
 import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
 import PageMeta from "../page-meta/PageMeta";
+import { toast } from "../../lib/toast";
 
 export default function Profile() {
     const { userId } = useAuth();
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState('Profile updated successfully!');
     const [isLoading, setIsLoading] = useState(true);
     const [publishedCount, setPublishedCount] = useState(0);
     const [draftCount, setDraftCount] = useState(0);
@@ -34,14 +33,12 @@ export default function Profile() {
                 );
                 setTotalLikes(likeCounts.reduce((sum, n) => sum + n, 0));
             })
-            .catch(err => console.log("Failed to load articles:", err.message))
+            .catch(() => { /* stats fail silently — profile form is the primary content */ })
             .finally(() => setIsLoading(false));
     }, [userId]);
 
     const handleSaveSuccess = () => {
-        setToastMessage('Profile updated successfully!');
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
+        toast.success('Profile updated successfully.');
     };
 
     const handleResetReadHistory = async () => {
@@ -49,15 +46,13 @@ export default function Profile() {
         setIsResetting(true);
         try {
             const result = await articleService.resetReadHistory();
-            setToastMessage(
+            toast.success(
                 result.cleared === 0
                     ? 'Your reading history was already empty.'
                     : `Cleared reading progress for ${result.cleared} article${result.cleared === 1 ? '' : 's'}.`
             );
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 3500);
         } catch (err) {
-            console.log('Reset failed:', err.message);
+            toast.error(err.message || "Couldn't reset your reading history. Try again.");
         } finally {
             setIsResetting(false);
             setShowResetModal(false);
@@ -67,12 +62,6 @@ export default function Profile() {
     return (
         <section id="profile-page" className="page-content">
             <PageMeta title="Profile" description="Manage your account, profile picture, and reading history." />
-            {showToast && (
-                <div className="profile-toast">
-                    <CheckCircle2 size={18} strokeWidth={2.25} />
-                    {toastMessage}
-                </div>
-            )}
 
             {showResetModal && (
                 <ConfirmModal

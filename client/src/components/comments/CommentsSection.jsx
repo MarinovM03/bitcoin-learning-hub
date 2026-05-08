@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
+import { toast } from "../../lib/toast";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
@@ -58,8 +59,9 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
         try {
             await commentService.remove(deleteTarget);
             setComments(state => state.filter(c => c._id !== deleteTarget));
+            toast.success('Comment deleted.');
         } catch (err) {
-            console.log("Delete failed:", err.message);
+            toast.error(err.message || "Couldn't delete the comment. Try again.");
         } finally {
             setDeleteTarget(null);
         }
