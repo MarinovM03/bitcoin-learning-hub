@@ -35,19 +35,23 @@ const findDuplicateSeriesPart = async (ownerId, series, excludeArticleId = null)
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const { limit, sort, page, search, category, difficulty } = req.query;
-
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 12;
+    const pageNum = parseInt(req.query.page) || 1;
+    const limitNum = parseInt(req.query.limit) || 12;
     const skip = (pageNum - 1) * limitNum;
+
+    const sort = typeof req.query.sort === 'string' ? req.query.sort : '';
+    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    const category = typeof req.query.category === 'string' ? req.query.category : '';
+    const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty : '';
 
     let sortOption = { createdAt: -1 };
     if (sort === 'views') sortOption = { views: -1 };
 
     const filter = { status: 'published' };
 
-    if (search && search.trim() !== '') {
-        filter.title = { $regex: search.trim(), $options: 'i' };
+    if (search) {
+        const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        filter.title = { $regex: safe, $options: 'i' };
     }
     if (category && category !== 'All') {
         filter.category = category;

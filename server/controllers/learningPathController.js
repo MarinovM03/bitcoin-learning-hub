@@ -32,10 +32,11 @@ const computeProgress = async (userId, articleIds) => {
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const { limit, page, difficulty } = req.query;
-    const pageNum = parseInt(page) || 1;
-    const limitNum = parseInt(limit) || 12;
+    const pageNum = parseInt(req.query.page) || 1;
+    const limitNum = parseInt(req.query.limit) || 12;
     const skip = (pageNum - 1) * limitNum;
+
+    const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty : '';
 
     const filter = {};
     if (difficulty && difficulty !== 'All') {

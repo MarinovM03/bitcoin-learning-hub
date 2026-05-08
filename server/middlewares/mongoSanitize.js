@@ -20,5 +20,15 @@ const sanitize = (value) => {
 export const mongoSanitize = (req, _res, next) => {
     sanitize(req.body);
     sanitize(req.params);
+
+    const cleanQuery = req.query;
+    sanitize(cleanQuery);
+    Object.defineProperty(req, 'query', {
+        value: cleanQuery,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+    });
+
     next();
 };
