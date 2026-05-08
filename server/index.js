@@ -10,14 +10,35 @@ import { authMiddleware } from './middlewares/authMiddleware.js';
 import { mongoSanitize } from './middlewares/mongoSanitize.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
+const requireEnv = (name, { minLength = 0 } = {}) => {
+    const value = process.env[name];
+    if (!value) {
+        console.error(`[config] Missing required environment variable: ${name}`);
+        process.exit(1);
+    }
+    if (minLength && value.length < minLength) {
+        console.error(`[config] ${name} must be at least ${minLength} characters long`);
+        process.exit(1);
+    }
+    return value;
+};
+
+requireEnv('JWT_SECRET', { minLength: 32 });
+const CLIENT_URL = requireEnv('CLIENT_URL');
+const MONGO_URI = requireEnv('MONGO_URI');
+
 const app = express();
+
+// Behind a reverse proxy (Render, Heroku, Fly, nginx) so req.ip and
+// express-rate-limit see the real client address, not the proxy hop.
+app.set('trust proxy', 1);
 
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: CLIENT_URL,
     credentials: true,
 }));
 app.use(mongoSanitize);
@@ -47,10 +68,8 @@ app.use((req, res, next) => {
     return writeLimiter(req, res, next);
 });
 
-const connectionString = process.env.MONGO_URI;
-
 try {
-    await mongoose.connect(connectionString);
+    await mongoose.connect(MONGO_URI);
     console.log("Database Connected!");
 } catch (err) {
     console.error("Database Error:", err);
