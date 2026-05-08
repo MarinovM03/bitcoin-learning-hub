@@ -352,7 +352,7 @@ const recentViews = new Map();
 const VIEW_TTL_MS = 24 * 60 * 60 * 1000;
 
 const getViewerKey = (req, articleId) => {
-    const viewer = req.user ? req.user._id : (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
+    const viewer = req.user ? req.user._id : (req.ip || 'unknown');
     return `${viewer}:${articleId}`;
 };
 
