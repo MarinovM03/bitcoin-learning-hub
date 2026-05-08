@@ -39,6 +39,7 @@ import PathQuiz from "./components/path-quiz/PathQuiz";
 import Certifications from "./components/certifications/Certifications";
 import CertificationDetails from "./components/certification-details/CertificationDetails";
 import Admin from "./components/admin/Admin";
+import Toaster from "./components/toaster/Toaster";
 
 function App() {
     return (
@@ -47,6 +48,8 @@ function App() {
                 <TopBar />
                 <Navbar />
             </header>
+
+            <Toaster />
 
             <div className="main-area">
                 <ScrollReset />

@@ -1,0 +1,105 @@
+.toaster {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: min(360px, calc(100vw - 2.5rem));
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.85rem 0.95rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-left-width: 3px;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    color: var(--text-color);
+    font-size: 0.92rem;
+    line-height: 1.4;
+    pointer-events: auto;
+    animation: toastSlideIn 0.22s ease-out;
+}
+
+@keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast__icon {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.toast__message {
+    flex: 1;
+    word-break: break-word;
+}
+
+.toast__close {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.15rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.toast__close:hover {
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.toast--success {
+    border-left-color: var(--success-color);
+}
+
+.toast--success .toast__icon {
+    color: var(--success-color);
+}
+
+.toast--error {
+    border-left-color: var(--danger-color);
+}
+
+.toast--error .toast__icon {
+    color: var(--danger-color);
+}
+
+.toast--info {
+    border-left-color: var(--btc-orange);
+}
+
+.toast--info .toast__icon {
+    color: var(--btc-orange);
+}
+
+@media (max-width: 480px) {
+    .toaster {
+        top: auto;
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+
+    .toast {
+        animation-name: toastSlideUp;
+    }
+}
+
+@keyframes toastSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
