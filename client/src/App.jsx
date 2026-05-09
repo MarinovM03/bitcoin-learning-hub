@@ -40,6 +40,7 @@ import Certifications from "./components/certifications/Certifications";
 import CertificationDetails from "./components/certification-details/CertificationDetails";
 import Admin from "./components/admin/Admin";
 import Toaster from "./components/toaster/Toaster";
+import ForgotPassword from "./components/forgot-password/ForgotPassword";
 
 function App() {
     return (
@@ -88,6 +89,7 @@ function App() {
                     <Route element={<GuestGuard />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
                     </Route>
 
                     <Route element={<AdminGuard />}>

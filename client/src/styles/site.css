@@ -10,6 +10,7 @@
 @import "create.css";
 @import "login.css";
 @import "register.css";
+@import "forgot-password.css";
 @import 'not-found.css';
 @import "profile.css";
 @import "scroll-to-top.css";
