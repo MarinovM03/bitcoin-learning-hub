@@ -5,6 +5,7 @@ import { Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 import { updateProfileSchema } from "../../validators/authSchemas";
+import PasswordField from "../common/PasswordField";
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
@@ -152,25 +153,21 @@ export default function ProfileForm({ onSaveSuccess }) {
 
                 <p className="profile-password-heading">Change Password</p>
 
-                <div className="form-group">
-                    <label>New Password</label>
-                    <input
-                        type="password"
-                        placeholder="Leave blank to keep current"
-                        {...register('password')}
-                    />
-                    {errors.password && <p className="field-error">{errors.password.message}</p>}
-                </div>
+                <PasswordField
+                    id="profile-new-password"
+                    label="New Password"
+                    placeholder="Leave blank to keep current"
+                    error={errors.password?.message}
+                    {...register('password')}
+                />
 
-                <div className="form-group">
-                    <label>Confirm New Password</label>
-                    <input
-                        type="password"
-                        placeholder="Repeat new password"
-                        {...register('confirmPassword')}
-                    />
-                    {errors.confirmPassword && <p className="field-error">{errors.confirmPassword.message}</p>}
-                </div>
+                <PasswordField
+                    id="profile-confirm-password"
+                    label="Confirm New Password"
+                    placeholder="Repeat new password"
+                    error={errors.confirmPassword?.message}
+                    {...register('confirmPassword')}
+                />
 
                 <input
                     type="submit"

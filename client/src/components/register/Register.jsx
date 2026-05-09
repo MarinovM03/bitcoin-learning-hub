@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
+import PasswordField from "../common/PasswordField";
 import { registerSchema } from "../../validators/authSchemas";
 
 export default function Register() {
@@ -64,27 +65,21 @@ export default function Register() {
                         {errors.email && <p className="field-error">{errors.email.message}</p>}
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Min. 8 characters"
-                            {...register('password')}
-                        />
-                        {errors.password && <p className="field-error">{errors.password.message}</p>}
-                    </div>
+                    <PasswordField
+                        id="password"
+                        label="Password"
+                        placeholder="Min. 8 characters"
+                        error={errors.password?.message}
+                        {...register('password')}
+                    />
 
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            placeholder="Repeat your password"
-                            {...register('confirmPassword')}
-                        />
-                        {errors.confirmPassword && <p className="field-error">{errors.confirmPassword.message}</p>}
-                    </div>
+                    <PasswordField
+                        id="confirmPassword"
+                        label="Confirm Password"
+                        placeholder="Repeat your password"
+                        error={errors.confirmPassword?.message}
+                        {...register('confirmPassword')}
+                    />
 
                     {serverError && <p className="field-error">{serverError}</p>}
 

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
+import PasswordField from "../common/PasswordField";
 import { loginSchema } from "../../validators/authSchemas";
 
 export default function Login() {
@@ -47,16 +48,14 @@ export default function Login() {
                         {errors.identifier && <p className="field-error">{errors.identifier.message}</p>}
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Enter your password..."
-                            {...register('password')}
-                        />
-                        {errors.password && <p className="field-error">{errors.password.message}</p>}
-                    </div>
+                    <PasswordField
+                        id="password"
+                        label="Password"
+                        placeholder="Enter your password..."
+                        labelAction={<Link to="/forgot-password" className="label-action">Forgot password?</Link>}
+                        error={errors.password?.message}
+                        {...register('password')}
+                    />
 
                     {serverError && <p className="field-error">{serverError}</p>}
 
