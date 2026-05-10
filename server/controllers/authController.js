@@ -6,6 +6,10 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCK_DURATION_MS = 15 * 60 * 1000;
+
+const minutesUntil = (date) => Math.max(1, Math.ceil((date.getTime() - Date.now()) / 60000));
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -90,15 +94,33 @@ export const login = asyncHandler(async (req, res) => {
 
     const isEmail = identifier.includes('@');
     const query = isEmail ? { email: identifier } : { username: identifier };
-    let user = await User.findOne(query).select('+password');
+    let user = await User.findOne(query).select('+password +failedLoginAttempts +lockedUntil');
 
     if (!user) {
         throw new AppError(403, 'Invalid credentials');
     }
 
+    if (user.lockedUntil && user.lockedUntil.getTime() > Date.now()) {
+        const minutes = minutesUntil(user.lockedUntil);
+        throw new AppError(429, `Too many failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`);
+    }
+
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
+        const attempts = (user.failedLoginAttempts || 0) + 1;
+        const update = { failedLoginAttempts: attempts };
+        if (attempts >= MAX_FAILED_ATTEMPTS) {
+            update.lockedUntil = new Date(Date.now() + LOCK_DURATION_MS);
+            update.failedLoginAttempts = 0;
+            await User.updateOne({ _id: user._id }, update);
+            throw new AppError(429, `Too many failed attempts. Try again in ${Math.ceil(LOCK_DURATION_MS / 60000)} minutes.`);
+        }
+        await User.updateOne({ _id: user._id }, update);
         throw new AppError(403, 'Invalid credentials');
+    }
+
+    if (user.failedLoginAttempts || user.lockedUntil) {
+        await User.updateOne({ _id: user._id }, { failedLoginAttempts: 0, lockedUntil: null });
     }
 
     user = await promoteIfAdminEmail(user);

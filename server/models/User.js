@@ -34,6 +34,16 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user',
     },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0,
+        select: false,
+    },
+    lockedUntil: {
+        type: Date,
+        default: null,
+        select: false,
+    },
 });
 
 const User = mongoose.model('User', userSchema);
