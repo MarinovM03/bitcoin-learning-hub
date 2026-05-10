@@ -163,23 +163,28 @@ router.get('/search', asyncHandler(async (req, res) => {
 
     const pattern = new RegExp(escapeRegex(rawQuery), 'i');
     const overfetch = limit * 3;
+    const articleProjection = { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 };
 
-    const articleFilter = {
-        status: 'published',
-        $or: [
-            { title: pattern },
-            { summary: pattern },
-            { content: pattern },
-        ],
-    };
-    if (category) articleFilter.category = category;
-    if (difficulty) articleFilter.difficulty = difficulty;
-    if (readTimeFilter) articleFilter.readingTime = readTimeFilter;
+    const sharedArticleFilter = { status: 'published' };
+    if (category) sharedArticleFilter.category = category;
+    if (difficulty) sharedArticleFilter.difficulty = difficulty;
+    if (readTimeFilter) sharedArticleFilter.readingTime = readTimeFilter;
 
-    const articlesPromise = Article.find(
-        articleFilter,
-        { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 }
+    const titleSummaryPromise = Article.find(
+        {
+            ...sharedArticleFilter,
+            $or: [{ title: pattern }, { summary: pattern }],
+        },
+        articleProjection,
     )
+        .limit(overfetch)
+        .lean();
+
+    const textPromise = Article.find(
+        { ...sharedArticleFilter, $text: { $search: rawQuery } },
+        { ...articleProjection, _textScore: { $meta: 'textScore' } },
+    )
+        .sort({ _textScore: { $meta: 'textScore' } })
         .limit(overfetch)
         .lean();
 
@@ -197,16 +202,28 @@ router.get('/search', asyncHandler(async (req, res) => {
             .limit(overfetch)
             .lean();
 
-    const [articles, glossary] = await Promise.all([articlesPromise, glossaryPromise]);
+    const [titleSummaryMatches, textMatches, glossary] = await Promise.all([
+        titleSummaryPromise,
+        textPromise,
+        glossaryPromise,
+    ]);
+
+    const articleMap = new Map();
+    for (const a of titleSummaryMatches) articleMap.set(String(a._id), a);
+    for (const a of textMatches) {
+        if (!articleMap.has(String(a._id))) articleMap.set(String(a._id), a);
+    }
+    const articles = Array.from(articleMap.values());
 
     const matches = (hay) => Boolean(hay) && hay.toLowerCase().includes(rawQuery.toLowerCase());
     const rank = (hay, weight) => (matches(hay) ? weight : 0);
 
     const rankedArticles = articles
-        .map((a) => ({
-            article: a,
-            score: rank(a.title, 10) + rank(a.summary, 5) + rank(a.content, 1),
-        }))
+        .map((a) => {
+            const baseScore = rank(a.title, 10) + rank(a.summary, 5) + rank(a.content, 1);
+            const score = baseScore === 0 ? 1 : baseScore;
+            return { article: a, score };
+        })
         .sort((a, b) => b.score - a.score)
         .slice(0, limit)
         .map(({ article }) => {
@@ -216,7 +233,7 @@ router.get('/search', asyncHandler(async (req, res) => {
             const contentSnippet = (!titleHit && !summaryHit && contentHit)
                 ? extractSnippet(article.content, rawQuery)
                 : '';
-            const { content, ...rest } = article;
+            const { content, _textScore, ...rest } = article;
             return contentSnippet ? { ...rest, contentSnippet } : rest;
         });
 
