@@ -5,18 +5,20 @@ export const toggle = asyncHandler(async (req, res) => {
     const { articleId } = req.body;
     const _ownerId = req.user._id;
 
-    const existing = await Bookmark.findOneAndDelete({ articleId, _ownerId });
-
-    if (existing) {
+    const deleted = await Bookmark.findOneAndDelete({ articleId, _ownerId });
+    if (deleted) {
         return res.json({ bookmarked: false });
     }
 
     try {
         await Bookmark.create({ articleId, _ownerId });
+        return res.status(201).json({ bookmarked: true });
     } catch (err) {
-        if (err?.code !== 11000) throw err;
+        if (err?.code === 11000) {
+            return res.json({ bookmarked: true });
+        }
+        throw err;
     }
-    res.status(201).json({ bookmarked: true });
 });
 
 export const getMyBookmarks = asyncHandler(async (req, res) => {
