@@ -1,4 +1,3 @@
-// client/src/components/details/Details.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle } from "lucide-react";
@@ -48,7 +47,10 @@ export default function Details() {
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        const onScroll = () => {
+        let rafId = 0;
+
+        const compute = () => {
+            rafId = 0;
             const el = document.getElementById('article-body');
             if (!el) {
                 setReadProgress(0);
@@ -65,10 +67,16 @@ export default function Details() {
             setReadProgress(Math.max(0, Math.min(100, progress)));
         };
 
-        onScroll();
-        window.addEventListener('scroll', onScroll);
+        const onScroll = () => {
+            if (rafId) return;
+            rafId = window.requestAnimationFrame(compute);
+        };
+
+        compute();
+        window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('resize', onScroll);
         return () => {
+            if (rafId) window.cancelAnimationFrame(rafId);
             window.removeEventListener('scroll', onScroll);
             window.removeEventListener('resize', onScroll);
         };
@@ -171,22 +179,14 @@ export default function Details() {
         }
     };
 
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText(window.location.href)
-            .then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2500);
-            })
-            .catch(() => {
-                const input = document.createElement('input');
-                input.value = window.location.href;
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2500);
-            });
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+        } catch {
+            toast.error("Couldn't copy the link. You can select it from the address bar instead.");
+        }
     };
 
     if (isLoading) return <ArticleDetailsSkeleton />;
