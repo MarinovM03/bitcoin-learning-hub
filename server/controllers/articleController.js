@@ -107,27 +107,23 @@ export const getOne = asyncHandler(async (req, res) => {
         throw new AppError(404, 'Article not found');
     }
 
-    const existing = await Article.findById(articleId);
-    if (!existing) {
+    const article = await Article.findById(articleId).populate('_ownerId', 'username profilePicture');
+    if (!article) {
         throw new AppError(404, 'Article not found');
     }
 
-    const isOwner = req.user && String(req.user._id) === String(existing._ownerId);
+    const ownerId = article._ownerId?._id ?? article._ownerId;
+    const isOwner = req.user && String(req.user._id) === String(ownerId);
 
-    if (existing.status === 'draft' && !isOwner) {
+    if (article.status === 'draft' && !isOwner) {
         throw new AppError(404, 'Article not found');
     }
 
-    const shouldIncrementView = !isOwner && !hasViewedRecently(req, articleId);
-
-    const article = await Article.findByIdAndUpdate(
-        articleId,
-        shouldIncrementView ? { $inc: { views: 1 } } : {},
-        { new: true }
-    ).populate('_ownerId', 'username profilePicture');
-
-    if (shouldIncrementView) {
+    if (!isOwner && !hasViewedRecently(req, articleId)) {
+        article.views = (article.views || 0) + 1;
         recordView(req, articleId);
+        
+        Article.updateOne({ _id: articleId }, { $inc: { views: 1 } }).catch(() => {});
     }
 
     let hasRead = false;
