@@ -11,6 +11,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Guests** can browse articles, read article details, explore the glossary, use every tool, and view comments.
 - **Logged-in users** can create articles, contribute glossary terms, post comments, save drafts, like and bookmark articles.
 - **Authors** have full control (Edit/Delete) over their own articles, glossary terms, and comments.
+- **Admins** moderate the platform from a dedicated dashboard — promote or demote users, delete any content, and feature standout articles on the home page.
 
 ---
 
@@ -24,7 +25,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
 - **Learning Paths** — Curated multi-article learning tracks organized by skill level, with progress tracking and a certifying quiz at the end of each path.
 - **Global Search** — `Ctrl+K` / `⌘ K` search overlay with arrow-key navigation, plus a dedicated search page covering articles and glossary terms with shareable URL filters by category, difficulty, and reading time.
-- **Authentication** — Login by email or username, and Register with full validation.
+- **Authentication** — Login by email or username, and Register with full validation. Show/hide password toggles on every password field, a `Forgot password?` flow with an account-existence-safe confirmation screen, and clear feedback when a session expires mid-request.
 
 ### Private Area (Logged-in User)
 - **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
@@ -57,7 +58,14 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Edit Profile** — Update username, email, and profile picture URL.
 - **Username Change Lock** — Username changes are locked for 30 days after each change.
 - **Change Password** — Securely update your password with confirmation validation.
+- **Reset Reading History** — Clear every "marked as read" flag in one click, with a confirmation modal to prevent accidents.
 - **Stats Overview** — At-a-glance count of published articles, saved drafts, and total likes received.
+
+### Admin Area
+- **Stats Dashboard** — Totals and last-7-days deltas for users, articles, comments, glossary terms, paths, bookmarks, and likes.
+- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, and paths).
+- **Article Moderation** — Paginated list with search, hard-delete for any article, and a one-click toggle to feature an article on the home page.
+- **Comment Moderation** — Paginated feed of every comment with article context and one-click removal.
 
 ### UI/UX
 - **Reading Progress Bar** — Thin orange bar at the top of the viewport that fills as you scroll through an article.
@@ -73,8 +81,9 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Responsive Navbar** — Desktop, tablet, and mobile breakpoints with a portal-rendered full-screen mobile menu.
 - **Tools Dropdown** — Consolidated hover/click dropdown in the navbar grouping every Bitcoin tool (Converter, DCA, Address, Mempool, Multisig) behind one entry point.
 - **Loading Spinners** — Bitcoin-themed spinner shown during all async data fetches.
-- **Toast Notifications** — Fixed-position success notifications visible regardless of scroll position.
+- **Toast Notifications** — Unified success/error/info notifications driven by a small singleton store, so mutations, background failures, and the session-expired flow all report through one consistent surface.
 - **Form Loading States** — All submit buttons disable and show feedback text while requests are in flight.
+- **Smooth Scroll Effects** — The article read-progress bar batches updates through `requestAnimationFrame` so it stays at one update per frame even on long scrolls.
 
 ---
 
@@ -97,6 +106,23 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 
 ---
 
+## 🔒 Security & Hardening
+
+- **Helmet** baseline headers and a strict CORS allow-list driven by `CLIENT_URL`.
+- **Required-env startup check** — the server refuses to boot when critical config is missing or weak, so a degraded process can never silently ship.
+- **Reverse-proxy aware** — configured to resolve real client addresses behind Render/Heroku/Fly/nginx so rate limiting and view de-duplication operate on the right key.
+- **Tiered rate limiting** — separate per-client limiters for authentication endpoints and for state-changing requests.
+- **Per-account login lockout** — repeated failed sign-in attempts temporarily lock the account regardless of source IP. The counter resets on the next successful sign-in.
+- **Defensive input handling** — request payloads, URL parameters, and query strings are sanitized and type-coerced before they reach the database layer.
+- **Indexed text search** — article search runs against a weighted text index instead of scanning the collection.
+- **Sanitized markdown rendering** — every article body and glossary definition passes through `rehype-sanitize` before reaching the DOM.
+- **bcrypt password hashing** with a tuned work factor.
+- **JWT auth** — signed tokens with an enforced expiry, validated on every request and revalidated client-side before each call.
+- **Tight ownership checks** — every edit/delete handler scopes the query by owner so users can only touch their own content.
+- **Health probe** — `GET /health` reports DB connectivity and process uptime for hosting platforms and uptime monitors.
+
+---
+
 ## 🛣️ Application Routes
 
 | Path | Description | Access |
@@ -104,6 +130,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/` | Home Page | Public |
 | `/login` | User Login | Guest only |
 | `/register` | User Registration | Guest only |
+| `/forgot-password` | Password Reset Request | Guest only |
 | `/articles` | Articles Catalog | Public |
 | `/articles/:id/details` | Article Details + Comments | Public |
 | `/articles/create` | Create Article | Authenticated |
@@ -128,6 +155,8 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/certifications` | Earned Certifications | Authenticated |
 | `/certifications/:id` | Certification Details | Authenticated |
 | `/bookmarks` | Saved Bookmarks | Authenticated |
+| `/admin` | Admin Dashboard (Stats, Users, Articles, Comments) | Admin only |
+| `/health` | Health Probe (server only) | Public |
 | `*` | 404 Not Found | Public |
 
 ---
@@ -150,11 +179,15 @@ cd server
 ```
 Create a `.env` file in the `server/` directory:
 ```
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URI=<your_mongodb_connection_string>
+JWT_SECRET=<generate_with_openssl_rand_base64_48>
 CLIENT_URL=http://localhost:5173
 PORT=5000
+
+# Optional: comma-separated list of emails auto-promoted to admin on login/register
+ADMIN_EMAILS=
 ```
+> The server fails fast at startup if `MONGO_URI`, `CLIENT_URL`, or `JWT_SECRET` are missing. `JWT_SECRET` has a minimum length requirement — generate one with `openssl rand -base64 48`.
 Install dependencies and start:
 ```bash
 npm install
