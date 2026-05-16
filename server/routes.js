@@ -104,16 +104,17 @@ router.get('/comments/:articleId', validate({ params: articleIdParam }), comment
 router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
 router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
 
-// Admin routes — all require admin role
-router.get('/admin/stats', requireAuth, requireAdmin, adminController.getStats);
-router.get('/admin/users', requireAuth, requireAdmin, adminController.getUsers);
-router.patch('/admin/users/:userId/role', requireAuth, requireAdmin, validate({ params: userIdParam }), adminController.updateUserRole);
-router.delete('/admin/users/:userId', requireAuth, requireAdmin, validate({ params: userIdParam }), adminController.deleteUser);
-router.get('/admin/articles', requireAuth, requireAdmin, adminController.adminListArticles);
-router.delete('/admin/articles/:articleId', requireAuth, requireAdmin, validate({ params: articleIdParam }), adminController.adminDeleteArticle);
-router.patch('/admin/articles/:articleId/featured', requireAuth, requireAdmin, validate({ params: articleIdParam }), adminController.toggleFeaturedArticle);
-router.get('/admin/comments', requireAuth, requireAdmin, adminController.adminListComments);
-router.delete('/admin/comments/:commentId', requireAuth, requireAdmin, validate({ params: commentIdParam }), adminController.adminDeleteComment);
+// Admin routes — guards mount once on the prefix so every handler below
+router.use('/admin', requireAuth, requireAdmin);
+router.get('/admin/stats', adminController.getStats);
+router.get('/admin/users', adminController.getUsers);
+router.patch('/admin/users/:userId/role', validate({ params: userIdParam }), adminController.updateUserRole);
+router.delete('/admin/users/:userId', validate({ params: userIdParam }), adminController.deleteUser);
+router.get('/admin/articles', adminController.adminListArticles);
+router.delete('/admin/articles/:articleId', validate({ params: articleIdParam }), adminController.adminDeleteArticle);
+router.patch('/admin/articles/:articleId/featured', validate({ params: articleIdParam }), adminController.toggleFeaturedArticle);
+router.get('/admin/comments', adminController.adminListComments);
+router.delete('/admin/comments/:commentId', validate({ params: commentIdParam }), adminController.adminDeleteComment);
 
 // Search route — unified substring search across articles and glossary
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
