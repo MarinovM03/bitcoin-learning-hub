@@ -11,6 +11,7 @@ import * as commentController from './controllers/commentController.js';
 import * as bookmarkController from './controllers/bookmarkController.js';
 import * as pathCertificationController from './controllers/pathCertificationController.js';
 import * as adminController from './controllers/adminController.js';
+import mongoose from 'mongoose';
 import Article from './models/Article.js';
 import GlossaryTerm from './models/GlossaryTerm.js';
 import { AppError } from './utils/AppError.js';
@@ -32,6 +33,18 @@ import {
 } from './validators/shared.js';
 
 const router = Router();
+
+// Liveness/readiness probe for hosting platforms and uptime monitors.
+// Reports database connectivity so a degraded process can be cycled.
+router.get('/health', (_req, res) => {
+    const dbState = mongoose.connection.readyState;
+    const isDbReady = dbState === 1;
+    res.status(isDbReady ? 200 : 503).json({
+        status: isDbReady ? 'ok' : 'degraded',
+        uptime: Math.floor(process.uptime()),
+        db: isDbReady ? 'connected' : 'disconnected',
+    });
+});
 
 // Article routes
 router.get('/articles/my', requireAuth, articleController.getMyArticles);
