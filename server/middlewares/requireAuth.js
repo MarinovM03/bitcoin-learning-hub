@@ -1,6 +1,20 @@
-export const requireAuth = (req, res, next) => {
+import { AppError } from '../utils/AppError.js';
+import User from '../models/User.js';
+
+export const requireAuth = async (req, _res, next) => {
     if (!req.user) {
-        return res.status(401).json({ message: 'Authentication required.' });
+        return next(new AppError(401, 'Authentication required.'));
     }
-    next();
+
+    try {
+        const user = await User.findById(req.user._id).select('+tokenVersion').lean();
+        const currentVersion = user?.tokenVersion ?? 0;
+        const tokenVersion = req.user.tokenVersion ?? 0;
+        if (!user || currentVersion !== tokenVersion) {
+            return next(new AppError(401, 'Authentication required.'));
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
 };
