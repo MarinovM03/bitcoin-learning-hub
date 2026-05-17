@@ -8,8 +8,17 @@ const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_DURATION_MS = 15 * 60 * 1000;
+const BCRYPT_COST = 12;
 
-const minutesUntil = (date) => Math.max(1, Math.ceil((date.getTime() - Date.now()) / 60000));
+const INVALID_CREDENTIALS_MESSAGE = 'Invalid credentials';
+
+let cachedDummyHash = null;
+const getDummyHash = async () => {
+    if (!cachedDummyHash) {
+        cachedDummyHash = await bcrypt.hash('placeholder-not-a-password', BCRYPT_COST);
+    }
+    return cachedDummyHash;
+};
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -76,7 +85,7 @@ export const register = asyncHandler(async (req, res) => {
         throw new AppError(400, 'Username is already taken!');
     }
 
-    const hashPassword = await bcrypt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, BCRYPT_COST);
     let user = await User.create({
         username,
         email,
@@ -97,12 +106,13 @@ export const login = asyncHandler(async (req, res) => {
     let user = await User.findOne(query).select('+password +failedLoginAttempts +lockedUntil');
 
     if (!user) {
-        throw new AppError(403, 'Invalid credentials');
+        await bcrypt.compare(password, await getDummyHash());
+        throw new AppError(401, INVALID_CREDENTIALS_MESSAGE);
     }
 
-    if (user.lockedUntil && user.lockedUntil.getTime() > Date.now()) {
-        const minutes = minutesUntil(user.lockedUntil);
-        throw new AppError(429, `Too many failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`);
+    const isLocked = user.lockedUntil && user.lockedUntil.getTime() > Date.now();
+    if (isLocked) {
+        throw new AppError(401, INVALID_CREDENTIALS_MESSAGE);
     }
 
     const isValid = await bcrypt.compare(password, user.password);
@@ -112,11 +122,9 @@ export const login = asyncHandler(async (req, res) => {
         if (attempts >= MAX_FAILED_ATTEMPTS) {
             update.lockedUntil = new Date(Date.now() + LOCK_DURATION_MS);
             update.failedLoginAttempts = 0;
-            await User.updateOne({ _id: user._id }, update);
-            throw new AppError(429, `Too many failed attempts. Try again in ${Math.ceil(LOCK_DURATION_MS / 60000)} minutes.`);
         }
         await User.updateOne({ _id: user._id }, update);
-        throw new AppError(403, 'Invalid credentials');
+        throw new AppError(401, INVALID_CREDENTIALS_MESSAGE);
     }
 
     if (user.failedLoginAttempts || user.lockedUntil) {
@@ -174,7 +182,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
 
     if (password) {
-        user.password = await bcrypt.hash(password, 10);
+        user.password = await bcrypt.hash(password, BCRYPT_COST);
     }
 
     await user.save();
