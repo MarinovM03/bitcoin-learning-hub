@@ -29,8 +29,6 @@ const MONGO_URI = requireEnv('MONGO_URI');
 
 const app = express();
 
-// Behind a reverse proxy (Render, Heroku, Fly, nginx) so req.ip and
-// express-rate-limit see the real client address, not the proxy hop.
 app.set('trust proxy', 1);
 
 app.use(helmet());

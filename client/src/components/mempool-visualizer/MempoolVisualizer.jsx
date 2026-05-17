@@ -170,18 +170,14 @@ export default function MempoolVisualizer() {
                 ]);
                 setStats(statsData);
                 setFees(feesData);
-            } catch {
-                // Background refresh failure
-            }
+            } catch { /* */ }
         }, REFRESH_STATS);
 
         const txTimer = setInterval(async () => {
             try {
                 const txs = await fetchRecentTxs(signal);
                 addBubbles(txs);
-            } catch {
-                // Background refresh failure
-            }
+            } catch { /* */ }
         }, REFRESH_TXS);
 
         return () => {
