@@ -19,8 +19,7 @@ export const errorHandler = (err, req, res, _next) => {
     }
 
     if (err?.code === 11000) {
-        const field = Object.keys(err.keyValue || {})[0] || 'field';
-        return res.status(409).json({ message: `${field} already exists` });
+        return res.status(409).json({ message: 'That value is already in use.' });
     }
 
     if (err?.name === 'ZodError') {
