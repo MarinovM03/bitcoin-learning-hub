@@ -1,5 +1,10 @@
 {
   "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -10,5 +15,10 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.4.3",
+    "supertest": "^7.2.2",
+    "vitest": "^2.1.9"
   }
 }
