@@ -34,15 +34,10 @@ import {
 
 const router = Router();
 
-// Liveness/readiness probe for hosting platforms and uptime monitors.
-// Reports database connectivity so a degraded process can be cycled.
 router.get('/health', (_req, res) => {
-    const dbState = mongoose.connection.readyState;
-    const isDbReady = dbState === 1;
+    const isDbReady = mongoose.connection.readyState === 1;
     res.status(isDbReady ? 200 : 503).json({
         status: isDbReady ? 'ok' : 'degraded',
-        uptime: Math.floor(process.uptime()),
-        db: isDbReady ? 'connected' : 'disconnected',
     });
 });
 
@@ -116,7 +111,7 @@ router.patch('/admin/articles/:articleId/featured', validate({ params: articleId
 router.get('/admin/comments', adminController.adminListComments);
 router.delete('/admin/comments/:commentId', validate({ params: commentIdParam }), adminController.adminDeleteComment);
 
-// Search route — unified substring search across articles and glossary
+// Search route
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const ALLOWED_CATEGORIES = new Set([
@@ -142,7 +137,6 @@ const extractSnippet = (text, query, maxLen = 180) => {
     let start = Math.max(0, matchAt - half);
     let end = Math.min(text.length, matchAt + queryLen + half);
 
-    // Snap to word boundaries when possible to avoid breaking words
     if (start > 0) {
         const space = text.lastIndexOf(' ', start);
         if (space !== -1 && start - space < 25) start = space + 1;
@@ -263,7 +257,6 @@ router.get('/search', asyncHandler(async (req, res) => {
     res.json({ query: rawQuery, articles: rankedArticles, glossary: rankedGlossary });
 }));
 
-// Proxy routes — server-side fetches to avoid browser CORS/rate-limit issues
 let btcGlobalCache = { data: null, timestamp: 0 };
 const BTC_GLOBAL_TTL_MS = 60_000;
 
