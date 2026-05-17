@@ -20,6 +20,10 @@ const getDummyHash = async () => {
     return cachedDummyHash;
 };
 
+const runDummyCompare = async (password) => {
+    await bcrypt.compare(password, await getDummyHash());
+};
+
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
     .split(',')
     .map((e) => e.trim().toLowerCase())
@@ -106,12 +110,13 @@ export const login = asyncHandler(async (req, res) => {
     let user = await User.findOne(query).select('+password +failedLoginAttempts +lockedUntil');
 
     if (!user) {
-        await bcrypt.compare(password, await getDummyHash());
+        await runDummyCompare(password);
         throw new AppError(401, INVALID_CREDENTIALS_MESSAGE);
     }
 
     const isLocked = user.lockedUntil && user.lockedUntil.getTime() > Date.now();
     if (isLocked) {
+        await runDummyCompare(password);
         throw new AppError(401, INVALID_CREDENTIALS_MESSAGE);
     }
 
