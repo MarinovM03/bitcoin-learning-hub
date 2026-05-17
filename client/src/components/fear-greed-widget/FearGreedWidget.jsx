@@ -62,7 +62,7 @@ export default function FearGreedWidget() {
                     label: entry.value_classification,
                 });
             })
-            .catch(err => console.error("Fear & Greed fetch failed:", err))
+            .catch(() => {})
             .finally(() => setIsLoading(false));
     }, []);
 

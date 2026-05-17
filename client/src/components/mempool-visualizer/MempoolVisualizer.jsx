@@ -170,10 +170,8 @@ export default function MempoolVisualizer() {
                 ]);
                 setStats(statsData);
                 setFees(feesData);
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.warn('Failed to refresh mempool stats — displaying last known data.');
-                }
+            } catch {
+                // Background refresh failure
             }
         }, REFRESH_STATS);
 
@@ -181,10 +179,8 @@ export default function MempoolVisualizer() {
             try {
                 const txs = await fetchRecentTxs(signal);
                 addBubbles(txs);
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.warn('Failed to refresh transactions — visualization may be stale.');
-                }
+            } catch {
+                // Background refresh failure
             }
         }, REFRESH_TXS);
 

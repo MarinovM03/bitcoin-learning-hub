@@ -51,9 +51,7 @@ export default function SatsConverter() {
                     const p = data && parseFloat(data.price);
                     if (p && !Number.isNaN(p)) setBtcPrice(p);
                 })
-                .catch(err => {
-                    if (err.name !== 'AbortError') console.log('SatsConverter price fetch failed:', err.message);
-                });
+                .catch(() => {});
         };
 
         fetchPrice();

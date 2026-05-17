@@ -27,9 +27,7 @@ export default function StatsBar() {
                     setStats(prev => ({ ...prev, price, change24h, volume }));
                     setIsLoading(false);
                 })
-                .catch(err => {
-                    if (err.name !== 'AbortError') console.log("Binance stats fetch failed:", err.message);
-                });
+                .catch(() => {});
         };
 
         fetchBinanceStats();
@@ -56,9 +54,7 @@ export default function StatsBar() {
                         marketCap: (totalCap * pct) / 100,
                     }));
                 })
-                .catch(err => {
-                    if (err.name !== 'AbortError') console.log("Dominance fetch failed:", err.message);
-                });
+                .catch(() => {});
         };
 
         fetchDominance();

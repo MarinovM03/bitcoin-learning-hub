@@ -25,7 +25,7 @@ export default function Certifications() {
     useEffect(() => {
         pathCertificationService.getMyCertifications()
             .then(result => setCerts(result))
-            .catch(err => console.log('Failed to load certifications:', err.message))
+            .catch(() => setCerts([]))
             .finally(() => setIsLoading(false));
     }, []);
 

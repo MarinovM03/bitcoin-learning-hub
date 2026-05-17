@@ -26,9 +26,7 @@ export default function TopBar() {
                     if (Number.isNaN(price) || Number.isNaN(change24h)) return;
                     setMarket({ price, change24h });
                 })
-                .catch(err => {
-                    if (err.name !== "AbortError") console.log("TopBar market fetch failed:", err.message);
-                });
+                .catch(() => {});
         };
 
         fetchMarket();
@@ -50,9 +48,7 @@ export default function TopBar() {
                     if (pct == null) return;
                     setDominance(pct);
                 })
-                .catch(err => {
-                    if (err.name !== "AbortError") console.log("TopBar dominance fetch failed:", err.message);
-                });
+                .catch(() => {});
         };
 
         fetchDominance();
@@ -76,9 +72,7 @@ export default function TopBar() {
                     label: entry.value_classification,
                 });
             })
-            .catch(err => {
-                if (err.name !== "AbortError") console.log("TopBar F&G fetch failed:", err.message);
-            });
+            .catch(() => {});
 
         return () => controller.abort();
     }, []);

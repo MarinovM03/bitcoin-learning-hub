@@ -67,11 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }, [navigate]);
 
     const logoutHandler = useCallback(async () => {
-        try {
-            await authService.logout();
-        } catch {
-            console.log('Logout failed');
-        }
+        await authService.logout().catch(() => {});
         setAuth({});
         localStorage.removeItem('auth');
         navigate('/');
