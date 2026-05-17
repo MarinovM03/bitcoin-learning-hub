@@ -33,9 +33,7 @@ const app = express();
 // express-rate-limit see the real client address, not the proxy hop.
 app.set('trust proxy', 1);
 
-app.use(helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-}));
+app.use(helmet());
 app.use(express.json({ limit: '1mb' }));
 app.use(cors({
     origin: CLIENT_URL,
