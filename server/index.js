@@ -59,8 +59,17 @@ const writeLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+const readLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 600,
+    message: { message: "Too many requests. Please try again in 15 minutes." },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 app.use((req, res, next) => {
-    if (req.method === 'GET') return next();
+    if (req.path === '/health') return next();
+    if (req.method === 'GET') return readLimiter(req, res, next);
     return writeLimiter(req, res, next);
 });
 
