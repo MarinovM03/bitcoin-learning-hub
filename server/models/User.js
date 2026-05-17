@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
         default: null,
         select: false,
     },
+    tokenVersion: {
+        type: Number,
+        default: 0,
+        select: false,
+    },
 });
 
 const User = mongoose.model('User', userSchema);
