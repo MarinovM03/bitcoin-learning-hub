@@ -35,6 +35,7 @@ const promoteIfAdminEmail = async (user) => {
     if (isAdminEmail && user.role !== 'admin') {
         user.role = 'admin';
         await user.save();
+        console.warn(`[admin] promoted ${user.email} via ADMIN_EMAILS`);
     }
     return user;
 };
@@ -60,6 +61,7 @@ const generateToken = (user) => {
             profilePicture: user.profilePicture,
             usernameChangedAt: user.usernameChangedAt,
             role: user.role,
+            tokenVersion: user.tokenVersion ?? 0,
         },
         SECRET,
         { expiresIn: '2d' }
@@ -107,7 +109,7 @@ export const login = asyncHandler(async (req, res) => {
 
     const isEmail = identifier.includes('@');
     const query = isEmail ? { email: identifier } : { username: identifier };
-    let user = await User.findOne(query).select('+password +failedLoginAttempts +lockedUntil');
+    let user = await User.findOne(query).select('+password +failedLoginAttempts +lockedUntil +tokenVersion');
 
     if (!user) {
         await runDummyCompare(password);
@@ -136,15 +138,16 @@ export const login = asyncHandler(async (req, res) => {
         await User.updateOne({ _id: user._id }, { failedLoginAttempts: 0, lockedUntil: null });
     }
 
-    user = await promoteIfAdminEmail(user);
-
     const token = generateToken(user);
     res.json(buildUserResponse(user, token));
 });
 
-export const logout = (req, res) => {
+export const logout = asyncHandler(async (req, res) => {
+    if (req.user?._id) {
+        await User.updateOne({ _id: req.user._id }, { $inc: { tokenVersion: 1 } });
+    }
     res.json({ message: 'Logged out successfully' });
-};
+});
 
 export const getProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
@@ -156,7 +159,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { username, email, profilePicture, password } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+tokenVersion');
     if (!user) {
         throw new AppError(404, 'User not found');
     }
@@ -188,6 +191,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
     if (password) {
         user.password = await bcrypt.hash(password, BCRYPT_COST);
+        user.tokenVersion = (user.tokenVersion ?? 0) + 1;
     }
 
     await user.save();
