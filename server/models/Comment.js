@@ -11,24 +11,13 @@ const commentSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    ownerUsername: {
-        type: String,
-        required: true,
-    },
-    ownerProfilePicture: {
-        type: String,
-    },
     text: {
         type: String,
         required: true,
         minlength: [2, 'Comment must be at least 2 characters long'],
         maxlength: [500, 'Comment cannot exceed 500 characters'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+}, { timestamps: true });
 
 const Comment = mongoose.model('Comment', commentSchema);
 

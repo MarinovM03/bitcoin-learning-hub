@@ -17,8 +17,6 @@ export const create = asyncHandler(async (req, res) => {
         articleId,
         text,
         _ownerId: req.user._id,
-        ownerUsername: req.user.username,
-        ownerProfilePicture: req.user.profilePicture || '',
     });
 
     const populated = await comment.populate('_ownerId', 'username profilePicture');
