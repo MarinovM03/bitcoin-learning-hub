@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { BookOpen, Library, LineChart, Network, ScanLine, TrendingUp, Heart } from "lucide-react";
+import { BookOpen, Library, GraduationCap, TrendingUp, Heart } from "lucide-react";
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
@@ -7,6 +7,7 @@ import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 import OnThisDay from "../on-this-day/OnThisDay";
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
+import { TOOLS } from "../../utils/navTools";
 
 const handleImgError = (e) => {
     e.target.onerror = null;
@@ -81,6 +82,7 @@ export default function Home() {
                     <div className="hero-visual">
                         <div className="hero-visual-inner">
                             <p className="hero-visual-label">Explore the Platform</p>
+                            <p className="hero-group-label">Learn</p>
                             <div className="hero-feature-list">
                                 <Link to="/articles" className="hero-feature-item">
                                     <span className="hero-feature-icon">
@@ -89,6 +91,16 @@ export default function Home() {
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Articles</span>
                                         <span className="hero-feature-desc">Deep-dive Bitcoin education</span>
+                                    </div>
+                                    <span className="hero-feature-arrow">→</span>
+                                </Link>
+                                <Link to="/paths" className="hero-feature-item">
+                                    <span className="hero-feature-icon">
+                                        <GraduationCap size={22} strokeWidth={1.8} />
+                                    </span>
+                                    <div className="hero-feature-text">
+                                        <span className="hero-feature-name">Learning Paths</span>
+                                        <span className="hero-feature-desc">Guided, structured tracks</span>
                                     </div>
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>
@@ -102,36 +114,18 @@ export default function Home() {
                                     </div>
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>
-                                <Link to="/dca" className="hero-feature-item">
-                                    <span className="hero-feature-icon">
-                                        <LineChart size={22} strokeWidth={1.8} />
-                                    </span>
-                                    <div className="hero-feature-text">
-                                        <span className="hero-feature-name">DCA Calculator</span>
-                                        <span className="hero-feature-desc">Simulate your stacking strategy</span>
-                                    </div>
-                                    <span className="hero-feature-arrow">→</span>
-                                </Link>
-                                <Link to="/mempool" className="hero-feature-item">
-                                    <span className="hero-feature-icon">
-                                        <Network size={22} strokeWidth={1.8} />
-                                    </span>
-                                    <div className="hero-feature-text">
-                                        <span className="hero-feature-name">Mempool Visualizer</span>
-                                        <span className="hero-feature-desc">Live transaction data</span>
-                                    </div>
-                                    <span className="hero-feature-arrow">→</span>
-                                </Link>
-                                <Link to="/address" className="hero-feature-item">
-                                    <span className="hero-feature-icon">
-                                        <ScanLine size={22} strokeWidth={1.8} />
-                                    </span>
-                                    <div className="hero-feature-text">
-                                        <span className="hero-feature-name">Address Lookup</span>
-                                        <span className="hero-feature-desc">Identify any Bitcoin address</span>
-                                    </div>
-                                    <span className="hero-feature-arrow">→</span>
-                                </Link>
+                            </div>
+
+                            <div className="hero-tools-group">
+                                <p className="hero-group-label">Tools</p>
+                                <div className="hero-tools-grid">
+                                    {TOOLS.map(({ to, short, label, Icon }) => (
+                                        <Link key={to} to={to} className="hero-tool-chip" title={label}>
+                                            <Icon size={15} strokeWidth={1.9} />
+                                            <span>{short}</span>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

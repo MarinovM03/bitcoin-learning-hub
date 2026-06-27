@@ -293,6 +293,57 @@
     transform: translateX(2px);
 }
 
+.hero-group-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem;
+}
+
+.hero-tools-group {
+    margin-top: 1rem;
+}
+
+.hero-tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+}
+
+.hero-tool-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.6rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.hero-tool-chip:hover {
+    border-color: var(--btc-orange-glow);
+    background: rgba(247, 147, 26, 0.05);
+    transform: translateY(-1px);
+}
+
+.hero-tool-chip svg {
+    color: var(--btc-orange);
+    flex-shrink: 0;
+}
+
+.hero-tool-chip span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .dashboard-row {
     display: grid;
     grid-template-columns: 1fr 280px 280px;
