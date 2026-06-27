@@ -258,7 +258,8 @@ export default function SearchOverlay({ onClose }) {
                             <button
                                 type="button"
                                 className="search-overlay-see-all"
-                                onClick={handleSubmit}
+                                onClick={goToSearchPage}
+                                onMouseEnter={() => setActiveIndex(-1)}
                             >
                                 <span>See all results</span>
                                 <ArrowRight size={14} strokeWidth={2.25} />
