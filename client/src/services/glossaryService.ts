@@ -1,7 +1,8 @@
 import * as request from '../utils/requester';
 import type { GlossaryTerm, GlossaryCategory } from '../types';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/glossary`;
+const baseUrl = `${API_BASE_URL}/glossary`;
 
 export interface GlossaryWriteData {
     term: string;

@@ -1,7 +1,8 @@
 import * as request from '../utils/requester';
 import type { Article, ArticleDifficulty, LearningPath } from '../types';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/paths`;
+const baseUrl = `${API_BASE_URL}/paths`;
 
 export interface PathListOptions {
     page?: number;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 function formatLargeNumber(value) {
     if (value == null) return '—';
@@ -42,7 +43,7 @@ export default function StatsBar() {
         const controller = new AbortController();
 
         const fetchDominance = () => {
-            fetch(`${import.meta.env.VITE_API_URL}/proxy/btc-global`, { signal: controller.signal })
+            fetch(`${API_BASE_URL}/proxy/btc-global`, { signal: controller.signal })
                 .then(res => res.ok ? res.json() : null)
                 .then(data => {
                     const pct = data?.data?.market_cap_percentage?.btc;

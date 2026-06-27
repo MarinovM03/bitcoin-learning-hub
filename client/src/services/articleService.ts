@@ -1,8 +1,9 @@
 import * as request from '../utils/requester';
 import type { Article, ArticleCategory, ArticleDifficulty, ArticleStatus, QuizQuestion } from '../types';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/articles`;
-const usersUrl = `${import.meta.env.VITE_API_URL}/users`;
+const baseUrl = `${API_BASE_URL}/articles`;
+const usersUrl = `${API_BASE_URL}/users`;
 
 export type ArticleSort = 'latest' | 'views';
 

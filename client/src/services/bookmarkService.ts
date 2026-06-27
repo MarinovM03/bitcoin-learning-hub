@@ -1,7 +1,8 @@
 import * as request from '../utils/requester';
 import type { Article } from '../types';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/bookmarks`;
+const baseUrl = `${API_BASE_URL}/bookmarks`;
 
 export interface BookmarkToggleResponse {
     bookmarked: boolean;

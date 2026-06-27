@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Mail, ArrowLeft } from "lucide-react";
 import PageMeta from "../page-meta/PageMeta";
 import * as request from "../../utils/requester";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 const schema = z.object({
     email: z
@@ -28,7 +29,7 @@ export default function ForgotPassword() {
 
     const onSubmit = async ({ email }) => {
         try {
-            await request.post(`${import.meta.env.VITE_API_URL}/users/forgot-password`, { email });
+            await request.post(`${API_BASE_URL}/users/forgot-password`, { email });
         } catch {
             // Swallow errors so the response is uniform; once the endpoint
             // exists this catch becomes effectively a no-op.

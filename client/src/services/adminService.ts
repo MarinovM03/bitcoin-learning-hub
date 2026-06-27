@@ -1,6 +1,7 @@
 import * as request from '../utils/requester';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/admin`;
+const baseUrl = `${API_BASE_URL}/admin`;
 
 export interface AdminStats {
     users: { total: number; admins: number; lastWeek: number };

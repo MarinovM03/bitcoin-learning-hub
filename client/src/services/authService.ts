@@ -1,7 +1,8 @@
 import * as request from '../utils/requester';
 import type { AuthUser } from '../types';
+import { API_BASE_URL } from '../lib/apiConfig';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/users`;
+const baseUrl = `${API_BASE_URL}/users`;
 
 export interface RegisterData {
     username: string;
