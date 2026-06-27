@@ -14,8 +14,19 @@ export const createApp = ({ disableRateLimit = false } = {}) => {
 
     app.use(helmet());
     app.use(express.json({ limit: '1mb' }));
+    const allowedOrigins = (process.env.CLIENT_URL || '')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean);
+
     app.use(cors({
-        origin: process.env.CLIENT_URL,
+        origin(origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(null, false);
+            }
+        },
         credentials: true,
     }));
     app.use(mongoSanitize);
