@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Email is required'],
         unique: true,
+        lowercase: true,
+        trim: true,
         match: [/.+@.+\..+/, 'Please enter a valid email address'],
     },
     profilePicture: {

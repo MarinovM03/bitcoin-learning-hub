@@ -10,6 +10,7 @@ const usernameRule = z
 const emailRule = z
     .string()
     .trim()
+    .toLowerCase()
     .regex(/.+@.+\..+/, 'Please enter a valid email address');
 
 const passwordRule = z.string().min(8, 'Password must be at least 8 characters long!');
