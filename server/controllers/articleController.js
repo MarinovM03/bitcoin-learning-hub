@@ -5,6 +5,7 @@ import ReadArticle from '../models/ReadArticle.js';
 import mongoose from 'mongoose';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
@@ -50,7 +51,7 @@ export const getAll = asyncHandler(async (req, res) => {
     const filter = { status: 'published' };
 
     if (search) {
-        const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const safe = escapeRegex(search);
         filter.title = { $regex: safe, $options: 'i' };
     }
     if (category && category !== 'All') {
@@ -267,8 +268,15 @@ export const update = asyncHandler(async (req, res) => {
         throw new AppError(404, 'Article not found');
     }
 
-    const updateData = { title, category, imageUrl, summary, content };
-    if (content) updateData.readingTime = calculateReadingTime(content);
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (category !== undefined) updateData.category = category;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+    if (summary !== undefined) updateData.summary = summary;
+    if (content !== undefined) {
+        updateData.content = content;
+        updateData.readingTime = calculateReadingTime(content);
+    }
     if (difficulty) updateData.difficulty = difficulty;
     if (status === 'draft' || status === 'published') updateData.status = status;
     if (Array.isArray(quiz)) updateData.quiz = quiz;
@@ -350,6 +358,7 @@ export const getTrending = asyncHandler(async (req, res) => {
 
 const recentViews = new Map();
 const VIEW_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_TRACKED_VIEWS = 50_000;
 
 const getViewerKey = (req, articleId) => {
     const viewer = req.user ? req.user._id : (req.ip || 'unknown');
@@ -367,7 +376,21 @@ const hasViewedRecently = (req, articleId) => {
     return true;
 };
 
+const pruneExpiredViews = (now) => {
+    for (const [key, expiry] of recentViews) {
+        if (now > expiry) recentViews.delete(key);
+    }
+};
+
 const recordView = (req, articleId) => {
     const key = getViewerKey(req, articleId);
-    recentViews.set(key, Date.now() + VIEW_TTL_MS);
+    const now = Date.now();
+    if (recentViews.size >= MAX_TRACKED_VIEWS) {
+        pruneExpiredViews(now);
+        if (recentViews.size >= MAX_TRACKED_VIEWS) {
+            const oldestKey = recentViews.keys().next().value;
+            recentViews.delete(oldestKey);
+        }
+    }
+    recentViews.set(key, now + VIEW_TTL_MS);
 };

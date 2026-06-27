@@ -8,6 +8,7 @@ import Bookmark from '../models/Bookmark.js';
 import Like from '../models/Like.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 
 export const getStats = asyncHandler(async (_req, res) => {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -69,7 +70,7 @@ export const getUsers = asyncHandler(async (req, res) => {
     const filter = {};
     const trimmed = String(search).trim();
     if (trimmed) {
-        const safe = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const safe = escapeRegex(trimmed);
         filter.$or = [
             { username: { $regex: safe, $options: 'i' } },
             { email: { $regex: safe, $options: 'i' } },
@@ -147,7 +148,7 @@ export const adminListArticles = asyncHandler(async (req, res) => {
     const filter = {};
     const trimmed = String(search).trim();
     if (trimmed) {
-        const safe = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const safe = escapeRegex(trimmed);
         filter.title = { $regex: safe, $options: 'i' };
     }
 
