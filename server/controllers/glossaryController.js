@@ -51,7 +51,7 @@ export const getOne = asyncHandler(async (req, res) => {
 export const create = asyncHandler(async (req, res) => {
     const { term, definition, category, extendedDefinition, examples } = req.body;
 
-    const existing = await GlossaryTerm.findOne({ term: { $regex: new RegExp(`^${term}$`, 'i') } });
+    const existing = await GlossaryTerm.findOne({ term }).collation(CASE_INSENSITIVE);
     if (existing) {
         throw new AppError(400, 'This term already exists in the glossary!');
     }

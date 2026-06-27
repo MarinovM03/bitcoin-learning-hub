@@ -6,16 +6,19 @@ const glossaryTermSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
+        maxlength: 60,
     },
     definition: {
         type: String,
         required: true,
         minlength: 10,
+        maxlength: 600,
     },
     extendedDefinition: {
         type: String,
         default: '',
         trim: true,
+        maxlength: 2000,
     },
     examples: {
         type: [String],
@@ -30,11 +33,7 @@ const glossaryTermSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User',
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+}, { timestamps: true });
 
 glossaryTermSchema.index(
     { term: 'text', definition: 'text' },
