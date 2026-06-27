@@ -40,5 +40,16 @@ export default defineConfig(({ mode }) => {
 
     return {
         plugins: [react(), cspPlugin(apiOrigin)],
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        'react-vendor': ['react', 'react-dom', 'react-router'],
+                        recharts: ['recharts'],
+                        markdown: ['react-markdown', 'remark-gfm', 'rehype-sanitize'],
+                    },
+                },
+            },
+        },
     };
 });
