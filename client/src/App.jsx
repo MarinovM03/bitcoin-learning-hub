@@ -48,6 +48,8 @@ const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPas
 function App() {
     return (
         <AuthProvider>
+            <a href="#main-content" className="skip-link">Skip to content</a>
+
             <header className="app-chrome">
                 <TopBar />
                 <Navbar />
@@ -55,7 +57,7 @@ function App() {
 
             <Toaster />
 
-            <div className="main-area">
+            <main className="main-area" id="main-content" tabIndex={-1}>
                 <ScrollReset />
                 <ScrollToTop />
 
@@ -105,7 +107,7 @@ function App() {
                 </Suspense>
 
                 <Footer />
-            </div>
+            </main>
         </AuthProvider>
     );
 }

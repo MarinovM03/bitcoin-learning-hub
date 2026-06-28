@@ -61,6 +61,7 @@
 @import "markdown-content.css";
 @import "markdown-write-preview.css";
 @import "admin.css";
+@import "accessibility.css";
 
 :root {
     --btc-orange: #F7931A;
