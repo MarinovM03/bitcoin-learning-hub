@@ -1,6 +1,12 @@
-const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+interface HighlightTextProps {
+    text?: string;
+    query?: string;
+    className?: string;
+}
 
-export default function HighlightText({ text, query, className }) {
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+export default function HighlightText({ text, query, className }: HighlightTextProps) {
     if (!text) return null;
     const trimmed = (query || '').trim();
     if (trimmed.length < 2) {

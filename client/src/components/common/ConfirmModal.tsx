@@ -1,4 +1,15 @@
+import type { ReactNode } from "react";
 import { Trash2 } from "lucide-react";
+
+interface ConfirmModalProps {
+    icon?: ReactNode;
+    title?: string;
+    message?: ReactNode;
+    subMessage?: ReactNode;
+    confirmLabel?: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+}
 
 export default function ConfirmModal({
     icon,
@@ -7,8 +18,8 @@ export default function ConfirmModal({
     subMessage,
     confirmLabel = "Delete",
     onConfirm,
-    onCancel
-}) {
+    onCancel,
+}: ConfirmModalProps) {
     return (
         <div className="modal-overlay" onClick={onCancel}>
             <div className="modal-box" onClick={(e) => e.stopPropagation()}>

@@ -1,7 +1,14 @@
 import { useState } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function PasswordField({ label, id, placeholder, error, labelAction, ...inputProps }) {
+interface PasswordFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+    label: string;
+    error?: string;
+    labelAction?: ReactNode;
+}
+
+export default function PasswordField({ label, id, placeholder, error, labelAction, ...inputProps }: PasswordFieldProps) {
     const [visible, setVisible] = useState(false);
 
     return (

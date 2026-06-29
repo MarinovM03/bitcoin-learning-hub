@@ -2,12 +2,19 @@ const SITE_NAME = 'Bitcoin Learning Hub';
 const DEFAULT_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg';
 const DEFAULT_DESCRIPTION = 'Learn Bitcoin fundamentals, technology, and economics through articles, glossary terms, learning paths, and live market tools.';
 
+interface PageMetaProps {
+    title?: string;
+    description?: string;
+    image?: string;
+    type?: string;
+}
+
 const PageMeta = ({
     title,
     description = DEFAULT_DESCRIPTION,
     image = DEFAULT_IMAGE,
     type = 'website',
-}) => {
+}: PageMetaProps) => {
     const fullTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
 
     return (

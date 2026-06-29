@@ -2,7 +2,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 
-export default function MarkdownContent({ content, className = '' }) {
+interface MarkdownContentProps {
+    content?: string;
+    className?: string;
+}
+
+export default function MarkdownContent({ content, className = '' }: MarkdownContentProps) {
     if (!content) return null;
     return (
         <div className={`markdown-content ${className}`}>
