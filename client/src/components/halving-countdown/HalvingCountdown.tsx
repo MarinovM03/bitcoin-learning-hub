@@ -5,7 +5,7 @@ import { Pickaxe } from "lucide-react";
 const NEXT_HALVING_DATE = new Date("2028-04-18T00:00:00Z");
 
 function getTimeLeft() {
-    const diff = NEXT_HALVING_DATE - Date.now();
+    const diff = NEXT_HALVING_DATE.getTime() - Date.now();
     if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     return {
         days:    Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -23,7 +23,7 @@ export default function HalvingCountdown() {
         return () => clearInterval(timer);
     }, []);
 
-    const pad = (n) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
 
     return (
         <div className="halving-section">

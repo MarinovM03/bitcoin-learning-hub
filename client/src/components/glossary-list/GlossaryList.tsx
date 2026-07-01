@@ -1,7 +1,13 @@
 import { Link } from "react-router";
+import type { GlossaryTerm } from "../../types";
 
-export default function GlossaryList({ terms, highlightedId }) {
-    const grouped = terms.reduce((acc, term) => {
+interface GlossaryListProps {
+    terms: GlossaryTerm[];
+    highlightedId?: string | null;
+}
+
+export default function GlossaryList({ terms, highlightedId }: GlossaryListProps) {
+    const grouped = terms.reduce<Record<string, GlossaryTerm[]>>((acc, term) => {
         const letter = term.term[0].toUpperCase();
         if (!acc[letter]) acc[letter] = [];
         acc[letter].push(term);

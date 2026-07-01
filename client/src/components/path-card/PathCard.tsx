@@ -1,10 +1,26 @@
 import { Link } from 'react-router';
 import { Route, BookOpen, BadgeCheck } from 'lucide-react';
 import { handleImgError } from '../../utils/imageHelpers';
+import type { ArticleDifficulty } from '../../types';
+
+interface PathCardData {
+    _id: string;
+    title: string;
+    description: string;
+    coverImage?: string;
+    difficulty?: ArticleDifficulty;
+    articles?: { imageUrl?: string }[];
+    _ownerId?: { username?: string };
+}
+
+interface PathCardProps {
+    path: PathCardData;
+    certification?: { score: number } | null;
+}
 
 const defaultCover = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=60';
 
-export default function PathCard({ path, certification }) {
+export default function PathCard({ path, certification }: PathCardProps) {
     const cover = path.coverImage || path.articles?.[0]?.imageUrl || defaultCover;
     const articleCount = Array.isArray(path.articles) ? path.articles.length : 0;
     const authorName = path._ownerId?.username;

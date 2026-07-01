@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import * as adminService from '../../services/adminService';
+import type { AdminStats as AdminStatsData } from '../../services/adminService';
 import Spinner from '../spinner/Spinner';
 
-const STAT_CARDS = (data) => [
+const STAT_CARDS = (data: AdminStatsData) => [
     { label: 'Users', value: data.users.total, sub: `${data.users.lastWeek} new this week · ${data.users.admins} admin` },
     { label: 'Articles', value: data.articles.total, sub: `${data.articles.published} published · ${data.articles.drafts} drafts · ${data.articles.featured} featured` },
     { label: 'Comments', value: data.comments.total, sub: `${data.comments.lastWeek} new this week` },
@@ -13,7 +14,7 @@ const STAT_CARDS = (data) => [
 ];
 
 export default function AdminStats() {
-    const [stats, setStats] = useState(null);
+    const [stats, setStats] = useState<AdminStatsData | null>(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
