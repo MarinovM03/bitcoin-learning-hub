@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-const toRad = (deg) => (deg * Math.PI) / 180;
+const toRad = (deg: number) => (deg * Math.PI) / 180;
 
-function getSentimentKey(value) {
+function getSentimentKey(value: number) {
     if (value <= 25) return "extreme-fear";
     if (value <= 45) return "fear";
     if (value <= 55) return "neutral";
@@ -10,12 +10,16 @@ function getSentimentKey(value) {
     return "extreme-greed";
 }
 
-function GaugeArc({ value }) {
+interface GaugeArcProps {
+    value: number;
+}
+
+function GaugeArc({ value }: GaugeArcProps) {
     const radius = 54;
     const cx = 80;
     const cy = 72;
 
-    const arcPoint = (angle) => ({
+    const arcPoint = (angle: number) => ({
         x: cx + radius * Math.cos(toRad(angle)),
         y: cy + radius * Math.sin(toRad(angle)),
     });
@@ -48,8 +52,13 @@ function GaugeArc({ value }) {
     );
 }
 
+interface FearGreedData {
+    value: number;
+    label: string;
+}
+
 export default function FearGreedWidget() {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<FearGreedData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

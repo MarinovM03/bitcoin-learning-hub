@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../lib/apiConfig";
 
-function getSentimentKey(value) {
+function getSentimentKey(value: number) {
     if (value <= 25) return "extreme-fear";
     if (value <= 45) return "fear";
     if (value <= 55) return "neutral";
@@ -9,10 +9,20 @@ function getSentimentKey(value) {
     return "extreme-greed";
 }
 
+interface MarketState {
+    price: number | null;
+    change24h: number | null;
+}
+
+interface FearGreedState {
+    value: number;
+    label: string;
+}
+
 export default function TopBar() {
-    const [market, setMarket] = useState({ price: null, change24h: null });
-    const [dominance, setDominance] = useState(null);
-    const [fearGreed, setFearGreed] = useState(null);
+    const [market, setMarket] = useState<MarketState>({ price: null, change24h: null });
+    const [dominance, setDominance] = useState<number | null>(null);
+    const [fearGreed, setFearGreed] = useState<FearGreedState | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();

@@ -8,7 +8,13 @@ import ToolsDropdown from "./ToolsDropdown";
 import { TOOLS } from "../../utils/navTools";
 import SearchOverlay from "../search-overlay/SearchOverlay";
 
-const NAV_LINKS = [
+interface NavLinkItem {
+    to: string;
+    label: string;
+    end?: boolean;
+}
+
+const NAV_LINKS: NavLinkItem[] = [
     { to: "/", label: "Home", end: true },
     { to: "/articles", label: "Articles" },
     { to: "/paths", label: "Paths" },
@@ -31,7 +37,7 @@ export default function Navbar() {
     }, [location.pathname]);
 
     useEffect(() => {
-        const handleKey = (e) => {
+        const handleKey = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 setIsSearchOpen(true);
@@ -52,14 +58,14 @@ export default function Navbar() {
 
     useEffect(() => {
         if (!isMobileOpen) return;
-        const handleKey = (e) => {
+        const handleKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") setIsMobileOpen(false);
         };
         window.addEventListener("keydown", handleKey);
         return () => window.removeEventListener("keydown", handleKey);
     }, [isMobileOpen]);
 
-    const renderLinks = (onClick) => NAV_LINKS.map(link => (
+    const renderLinks = (onClick?: () => void) => NAV_LINKS.map(link => (
         <NavLink
             key={link.to}
             to={link.to}

@@ -8,18 +8,18 @@ const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-prof
 export default function AccountMenu() {
     const { username, profilePicture, logoutHandler, isAdmin } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
-    const wrapperRef = useRef(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!isOpen) return;
 
-        const handleClickOutside = (e) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
 
-        const handleKey = (e) => {
+        const handleKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") setIsOpen(false);
         };
 

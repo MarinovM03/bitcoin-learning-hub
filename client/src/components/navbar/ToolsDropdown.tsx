@@ -6,7 +6,7 @@ import { TOOLS } from '../../utils/navTools';
 export default function ToolsDropdown() {
     const [open, setOpen] = useState(false);
     const location = useLocation();
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const isActive = TOOLS.some(t => location.pathname === t.to || location.pathname.startsWith(t.to + '/'));
 
@@ -16,11 +16,11 @@ export default function ToolsDropdown() {
 
     useEffect(() => {
         if (!open) return;
-        const handleKey = (e) => {
+        const handleKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') setOpen(false);
         };
-        const handleClick = (e) => {
-            if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
+        const handleClick = (e: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
         };
         window.addEventListener('keydown', handleKey);
         window.addEventListener('mousedown', handleClick);

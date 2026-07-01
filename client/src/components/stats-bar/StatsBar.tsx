@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../lib/apiConfig";
 
-function formatLargeNumber(value) {
+function formatLargeNumber(value: number | null | undefined): string {
     if (value == null) return '—';
     if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
@@ -9,8 +9,16 @@ function formatLargeNumber(value) {
     return `$${value.toLocaleString()}`;
 }
 
+interface MarketStats {
+    price?: number;
+    change24h?: number;
+    volume?: number;
+    dominance?: number;
+    marketCap?: number;
+}
+
 export default function StatsBar() {
-    const [stats, setStats] = useState({});
+    const [stats, setStats] = useState<MarketStats>({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -85,8 +93,8 @@ export default function StatsBar() {
 
             <div className="stat-item">
                 <span className="stat-label">24h Change</span>
-                <span className={`stat-value ${stats.change24h >= 0 ? 'stat-positive' : 'stat-negative'}`}>
-                    {stats.change24h >= 0 ? '▲' : '▼'} {Math.abs(stats.change24h).toFixed(2)}%
+                <span className={`stat-value ${(stats.change24h ?? 0) >= 0 ? 'stat-positive' : 'stat-negative'}`}>
+                    {(stats.change24h ?? 0) >= 0 ? '▲' : '▼'} {Math.abs(stats.change24h ?? 0).toFixed(2)}%
                 </span>
             </div>
 
