@@ -2,13 +2,17 @@ import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
 
-export default function MempoolInfoModal({ onClose }) {
-    const closeRef = useRef(null);
+interface MempoolInfoModalProps {
+    onClose: () => void;
+}
+
+export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
+    const closeRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         closeRef.current?.focus();
 
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
         document.addEventListener('keydown', handleKeyDown);

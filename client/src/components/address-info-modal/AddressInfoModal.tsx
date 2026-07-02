@@ -12,13 +12,17 @@ const FORMAT_ROWS = [
     { type: ADDRESS_TYPES.TESTNET, prefix: 'm / n / 2 / tb1...' },
 ];
 
-export default function AddressInfoModal({ onClose }) {
-    const closeRef = useRef(null);
+interface AddressInfoModalProps {
+    onClose: () => void;
+}
+
+export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
+    const closeRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         closeRef.current?.focus();
 
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
         document.addEventListener('keydown', handleKeyDown);

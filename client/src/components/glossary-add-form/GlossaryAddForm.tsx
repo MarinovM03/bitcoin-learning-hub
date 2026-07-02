@@ -2,12 +2,20 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
+import { z } from "zod";
 import { createGlossarySchema } from "../../validators/glossarySchemas";
 import { useCreateGlossaryTerm } from "../../hooks/mutations/useGlossaryMutations";
+import type { GlossaryTerm } from "../../types";
 
 const CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
 
-export default function GlossaryAddForm({ onTermAdded }) {
+type GlossaryFormValues = z.infer<typeof createGlossarySchema>;
+
+interface GlossaryAddFormProps {
+    onTermAdded: (term: GlossaryTerm) => void;
+}
+
+export default function GlossaryAddForm({ onTermAdded }: GlossaryAddFormProps) {
     const [serverError, setServerError] = useState('');
     const createTerm = useCreateGlossaryTerm();
 
@@ -17,7 +25,7 @@ export default function GlossaryAddForm({ onTermAdded }) {
         control,
         reset,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<GlossaryFormValues>({
         resolver: zodResolver(createGlossarySchema),
         defaultValues: {
             term: '',
@@ -33,10 +41,10 @@ export default function GlossaryAddForm({ onTermAdded }) {
         name: 'examples',
     });
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: GlossaryFormValues) => {
         setServerError('');
         const cleanedExamples = (values.examples || [])
-            .map(item => (typeof item === 'string' ? item : item.value || '').trim())
+            .map(item => (item.value || '').trim())
             .filter(Boolean);
 
         try {
@@ -50,7 +58,7 @@ export default function GlossaryAddForm({ onTermAdded }) {
             reset();
             onTermAdded(newTerm);
         } catch (err) {
-            setServerError(err.message || "Failed to add term.");
+            setServerError(err instanceof Error ? err.message : "Failed to add term.");
         }
     };
 

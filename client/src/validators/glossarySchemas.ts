@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const GLOSSARY_CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'];
+const GLOSSARY_CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'Security'] as const;
 
 export const createGlossarySchema = z.object({
     term: z.string().trim().min(1, 'Term is required'),

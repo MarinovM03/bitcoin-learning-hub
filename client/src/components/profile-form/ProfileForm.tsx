@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
@@ -9,7 +10,7 @@ import PasswordField from "../common/PasswordField";
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
-const getUsernameStatus = (usernameChangedAt) => {
+const getUsernameStatus = (usernameChangedAt: string | null) => {
     if (!usernameChangedAt) return { locked: false, daysLeft: 0 };
     const daysSince = (Date.now() - new Date(usernameChangedAt).getTime()) / (1000 * 60 * 60 * 24);
     if (daysSince >= USERNAME_COOLDOWN_DAYS) return { locked: false, daysLeft: 0 };
@@ -18,7 +19,13 @@ const getUsernameStatus = (usernameChangedAt) => {
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
-export default function ProfileForm({ onSaveSuccess }) {
+type ProfileValues = z.infer<typeof updateProfileSchema>;
+
+interface ProfileFormProps {
+    onSaveSuccess: () => void;
+}
+
+export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     const { updateAuthState, usernameChangedAt } = useAuth();
     const [serverError, setServerError] = useState('');
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
@@ -31,7 +38,7 @@ export default function ProfileForm({ onSaveSuccess }) {
         reset,
         watch,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<ProfileValues>({
         resolver: zodResolver(updateProfileSchema),
         defaultValues: {
             username: '',
@@ -56,7 +63,7 @@ export default function ProfileForm({ onSaveSuccess }) {
         });
     }, [reset]);
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: ProfileValues) => {
         setServerError('');
 
         if (values.password && !values.confirmPassword) {
@@ -80,7 +87,7 @@ export default function ProfileForm({ onSaveSuccess }) {
             });
             onSaveSuccess();
         } catch (err) {
-            setServerError(err.message || "Failed to update profile.");
+            setServerError(err instanceof Error ? err.message : "Failed to update profile.");
         }
     };
 
