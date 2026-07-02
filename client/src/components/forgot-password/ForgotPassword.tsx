@@ -15,6 +15,8 @@ const schema = z.object({
         .regex(/.+@.+\..+/, 'Please enter a valid email address'),
 });
 
+type ForgotPasswordValues = z.infer<typeof schema>;
+
 export default function ForgotPassword() {
     const [submittedEmail, setSubmittedEmail] = useState('');
 
@@ -22,12 +24,12 @@ export default function ForgotPassword() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<ForgotPasswordValues>({
         resolver: zodResolver(schema),
         defaultValues: { email: '' },
     });
 
-    const onSubmit = async ({ email }) => {
+    const onSubmit = async ({ email }: ForgotPasswordValues) => {
         try {
             await request.post(`${API_BASE_URL}/users/forgot-password`, { email });
         } catch {

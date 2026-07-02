@@ -1,12 +1,22 @@
 import { useState, forwardRef } from "react";
+import type { ChangeEventHandler, FocusEventHandler } from "react";
 import { Eye, Pencil } from "lucide-react";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 
-const MarkdownWritePreview = forwardRef(function MarkdownWritePreview(
+interface MarkdownWritePreviewProps {
+    value?: string;
+    onChange?: ChangeEventHandler<HTMLTextAreaElement>;
+    onBlur?: FocusEventHandler<HTMLTextAreaElement>;
+    name?: string;
+    placeholder?: string;
+    rows?: number;
+}
+
+const MarkdownWritePreview = forwardRef<HTMLTextAreaElement, MarkdownWritePreviewProps>(function MarkdownWritePreview(
     { value, onChange, onBlur, name, placeholder, rows = 14 },
     ref
 ) {
-    const [tab, setTab] = useState("write");
+    const [tab, setTab] = useState<'write' | 'preview'>("write");
 
     return (
         <div className="md-wp">

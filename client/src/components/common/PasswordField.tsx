@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { ComponentPropsWithRef, ReactNode } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-interface PasswordFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+interface PasswordFieldProps extends ComponentPropsWithRef<'input'> {
     label: string;
     error?: string;
     labelAction?: ReactNode;

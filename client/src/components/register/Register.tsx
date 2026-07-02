@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
 import PasswordField from "../common/PasswordField";
 import { registerSchema } from "../../validators/authSchemas";
+
+type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function Register() {
     const { registerSubmitHandler } = useAuth();
@@ -15,7 +18,7 @@ export default function Register() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<RegisterValues>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
             username: '',
@@ -26,12 +29,12 @@ export default function Register() {
         },
     });
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: RegisterValues) => {
         setServerError('');
         try {
             await registerSubmitHandler(values);
         } catch (err) {
-            setServerError(err.message);
+            setServerError(err instanceof Error ? err.message : 'Registration failed');
         }
     };
 

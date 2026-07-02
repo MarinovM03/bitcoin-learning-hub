@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
 import PasswordField from "../common/PasswordField";
 import { loginSchema } from "../../validators/authSchemas";
+
+type LoginValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
@@ -15,17 +18,17 @@ export default function Login() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: { identifier: '', password: '' },
     });
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: LoginValues) => {
         setServerError('');
         try {
             await loginSubmitHandler(values);
         } catch (err) {
-            setServerError(err.message);
+            setServerError(err instanceof Error ? err.message : 'Sign in failed');
         }
     };
 
