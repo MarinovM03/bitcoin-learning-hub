@@ -1,8 +1,22 @@
 import { useEffect, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { Zap } from 'lucide-react';
 import PageMeta from '../page-meta/PageMeta';
 
-const PRESETS = [
+type FieldKey = 'btc' | 'sats' | 'usd';
+
+interface Preset {
+    label: string;
+    field: FieldKey;
+    value: string;
+    hint?: string;
+}
+
+interface BinancePriceResponse {
+    price: string;
+}
+
+const PRESETS: Preset[] = [
     { label: '1 sat', field: 'sats', value: '1' },
     { label: '1,000 sats', field: 'sats', value: '1000' },
     { label: '100k sats', field: 'sats', value: '100000' },
@@ -11,18 +25,18 @@ const PRESETS = [
     { label: '10,000 BTC', field: 'btc', value: '10000', hint: 'Pizza Day' },
 ];
 
-function formatBtc(n) {
+function formatBtc(n: number): string {
     if (!Number.isFinite(n) || n === 0) return '0';
     const fixed = n.toFixed(8);
     return fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
 }
 
-function formatSats(n) {
+function formatSats(n: number): string {
     if (!Number.isFinite(n)) return '0';
     return Math.round(n).toLocaleString('en-US');
 }
 
-function formatUsd(n) {
+function formatUsd(n: number): string {
     if (!Number.isFinite(n)) return '0';
     if (n !== 0 && Math.abs(n) < 0.01) {
         return n.toFixed(6).replace(/\.?0+$/, '');
@@ -30,15 +44,15 @@ function formatUsd(n) {
     return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function plainNumber(n, maxDecimals = 2) {
+function plainNumber(n: number, maxDecimals = 2): string {
     if (!Number.isFinite(n) || n === 0) return '';
     const fixed = n.toFixed(maxDecimals);
     return fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
 }
 
 export default function SatsConverter() {
-    const [btcPrice, setBtcPrice] = useState(null);
-    const [field, setField] = useState('usd');
+    const [btcPrice, setBtcPrice] = useState<number | null>(null);
+    const [field, setField] = useState<FieldKey>('usd');
     const [value, setValue] = useState('100');
 
     useEffect(() => {
@@ -46,10 +60,10 @@ export default function SatsConverter() {
 
         const fetchPrice = () => {
             fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT', { signal: controller.signal })
-                .then(res => res.ok ? res.json() : null)
+                .then(res => (res.ok ? (res.json() as Promise<BinancePriceResponse>) : null))
                 .then(data => {
-                    const p = data && parseFloat(data.price);
-                    if (p && !Number.isNaN(p)) setBtcPrice(p);
+                    const p = data ? parseFloat(data.price) : NaN;
+                    if (Number.isFinite(p) && p > 0) setBtcPrice(p);
                 })
                 .catch(() => {});
         };
@@ -66,7 +80,7 @@ export default function SatsConverter() {
     const safeNum = Number.isFinite(parsed) ? parsed : 0;
     const price = btcPrice ?? 0;
 
-    let btc, sats, usd;
+    let btc: number, sats: number, usd: number;
     if (field === 'btc') {
         btc = safeNum;
         sats = safeNum * 1e8;
@@ -85,7 +99,7 @@ export default function SatsConverter() {
     const displaySats = field === 'sats' ? value : formatSats(sats);
     const displayUsd = field === 'usd' ? value : formatUsd(usd);
 
-    const handleChange = (f) => (e) => {
+    const handleChange = (f: FieldKey) => (e: ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/,/g, '');
         if (raw === '' || /^\d*\.?\d*$/.test(raw)) {
             setField(f);
@@ -93,9 +107,9 @@ export default function SatsConverter() {
         }
     };
 
-    const handleFocus = (f) => () => {
+    const handleFocus = (f: FieldKey) => () => {
         if (field === f) return;
-        let next;
+        let next: string;
         if (f === 'btc') next = plainNumber(btc, 8);
         else if (f === 'sats') next = sats > 0 ? String(Math.round(sats)) : '';
         else next = plainNumber(usd, 2);
@@ -103,7 +117,7 @@ export default function SatsConverter() {
         setValue(next);
     };
 
-    const handlePreset = (preset) => {
+    const handlePreset = (preset: Preset) => {
         setField(preset.field);
         setValue(preset.value);
     };

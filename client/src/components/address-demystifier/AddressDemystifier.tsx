@@ -14,7 +14,7 @@ const SAMPLE_ADDRESSES = [
 export default function AddressDemystifier() {
     const [raw, setRaw] = useState('');
     const [showInfo, setShowInfo] = useState(false);
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const trimmed = raw.trim();
     const detection = useMemo(() => detectAddressType(trimmed), [trimmed]);
     const mempoolUrl = detection ? getMempoolUrl(detection) : null;
