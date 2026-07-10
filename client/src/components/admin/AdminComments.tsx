@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Trash2, ExternalLink } from 'lucide-react';
 import * as adminService from '../../services/adminService';
+import type { AdminCommentsResponse, AdminCommentRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 
 const PAGE_LIMIT = 20;
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
-const formatDate = (iso) => {
+const formatDate = (iso: string) => {
     if (!iso) return '';
     try {
         return new Date(iso).toLocaleString('en-US', {
@@ -23,11 +24,11 @@ const formatDate = (iso) => {
 };
 
 export default function AdminComments() {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<AdminCommentsResponse | null>(null);
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
-    const [pendingId, setPendingId] = useState(null);
-    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [pendingId, setPendingId] = useState<string | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<AdminCommentRow | null>(null);
 
     const reload = () => {
         setError('');
@@ -49,7 +50,7 @@ export default function AdminComments() {
             setDeleteTarget(null);
             reload();
         } catch (err) {
-            setError(err.message);
+            setError(err instanceof Error ? err.message : 'Something went wrong');
         } finally {
             setPendingId(null);
         }

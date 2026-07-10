@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Award, GraduationCap } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
+import type { CertificationSummary } from '../../services/pathCertificationService';
 import CertificationCardSkeleton from '../certification-card-skeleton/CertificationCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
 
-const formatDate = (iso) => {
+const formatDate = (iso: string) => {
     try {
         return new Date(iso).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -19,7 +20,7 @@ const formatDate = (iso) => {
 };
 
 export default function Certifications() {
-    const [certs, setCerts] = useState([]);
+    const [certs, setCerts] = useState<CertificationSummary[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

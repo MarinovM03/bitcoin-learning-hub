@@ -16,17 +16,17 @@ export default function MyPaths() {
     const deletePath = useDeletePath();
 
     const myPaths = useMemo(
-        () => (Array.isArray(rawPaths) ? rawPaths : (rawPaths?.paths || [])),
+        () => rawPaths ?? [],
         [rawPaths]
     );
     const error = queryError?.message || '';
 
-    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
     const [activeDifficulty, setActiveDifficulty] = useState('All');
     const [sortMode, setSortMode] = useState('newest');
 
     const availableDifficulties = useMemo(() => {
-        const set = new Set(myPaths.map(p => p.difficulty).filter(Boolean));
+        const set = new Set<string>(myPaths.map(p => p.difficulty).filter(Boolean));
         return Array.from(set).sort();
     }, [myPaths]);
 
@@ -49,17 +49,18 @@ export default function MyPaths() {
         if (sortMode === 'articles') {
             sorted.sort((a, b) => (b.articles?.length || 0) - (a.articles?.length || 0));
         } else {
-            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
         }
         return sorted;
     }, [myPaths, activeDifficulty, sortMode]);
 
     const confirmDelete = async () => {
+        if (!deleteTarget) return;
         try {
             await deletePath.mutateAsync(deleteTarget.id);
             toast.success('Learning path deleted.');
         } catch (err) {
-            toast.error(err.message || "Couldn't delete the learning path. Try again.");
+            toast.error(err instanceof Error ? err.message : "Couldn't delete the learning path. Try again.");
         } finally {
             setDeleteTarget(null);
         }

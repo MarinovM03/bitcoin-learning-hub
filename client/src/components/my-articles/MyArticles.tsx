@@ -9,10 +9,11 @@ import PageMeta from "../page-meta/PageMeta";
 import { useMyArticles } from "../../hooks/queries/useArticles";
 import { useDeleteArticle } from "../../hooks/mutations/useArticleMutations";
 import { toast } from "../../lib/toast";
+import type { SyntheticEvent } from "react";
 
-const handleImgError = (e) => {
-    e.target.onerror = null;
-    e.target.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
+const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
 };
 
 export default function MyArticles() {
@@ -20,7 +21,7 @@ export default function MyArticles() {
     const deleteArticle = useDeleteArticle();
 
     const [activeTab, setActiveTab] = useState('published');
-    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
     const [totalLikes, setTotalLikes] = useState(0);
     const [activeCategory, setActiveCategory] = useState('All');
     const [sortMode, setSortMode] = useState('newest');
@@ -43,11 +44,12 @@ export default function MyArticles() {
     }, [myArticles]);
 
     const confirmDelete = async () => {
+        if (!deleteTarget) return;
         try {
             await deleteArticle.mutateAsync(deleteTarget.id);
             toast.success('Article deleted.');
         } catch (err) {
-            toast.error(err.message || "Couldn't delete the article. Try again.");
+            toast.error(err instanceof Error ? err.message : "Couldn't delete the article. Try again.");
         } finally {
             setDeleteTarget(null);
         }
@@ -58,7 +60,7 @@ export default function MyArticles() {
     const tabArticles = activeTab === 'published' ? publishedArticles : draftArticles;
 
     const availableCategories = useMemo(() => {
-        const set = new Set(tabArticles.map(a => a.category).filter(Boolean));
+        const set = new Set<string>(tabArticles.map(a => a.category).filter(Boolean));
         return Array.from(set).sort();
     }, [tabArticles]);
 
@@ -81,7 +83,7 @@ export default function MyArticles() {
         if (sortMode === 'views') {
             sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
         } else {
-            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            sorted.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
         }
         return sorted;
     }, [tabArticles, activeCategory, sortMode]);

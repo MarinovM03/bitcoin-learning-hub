@@ -8,6 +8,7 @@ import PathCardSkeleton from '../path-card-skeleton/PathCardSkeleton';
 import PageMeta from '../page-meta/PageMeta';
 import { usePaths } from '../../hooks/queries/usePaths';
 import { useMyCertifications } from '../../hooks/queries/useCertifications';
+import type { CertificationSummary } from '../../services/pathCertificationService';
 
 export default function Paths() {
     const { isAuthenticated } = useAuth();
@@ -20,7 +21,7 @@ export default function Paths() {
     const error = pathsError?.message || '';
 
     const certByPathId = useMemo(() => {
-        const map = {};
+        const map: Record<string, CertificationSummary> = {};
         for (const cert of certifications) {
             const pid = cert.pathId?._id;
             if (pid) map[pid] = cert;

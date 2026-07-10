@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Search, Trash2, ShieldCheck, ShieldOff } from 'lucide-react';
+import { Link } from 'react-router';
+import { Search, Star, Trash2, Eye } from 'lucide-react';
 import * as adminService from '../../services/adminService';
-import { useAuth } from '../../contexts/AuthContext';
+import type { AdminArticlesResponse, AdminArticleRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 
 const PAGE_LIMIT = 20;
 
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-export default function AdminUsers() {
-    const { userId: currentUserId } = useAuth();
-    const [data, setData] = useState(null);
+export default function AdminArticles() {
+    const [data, setData] = useState<AdminArticlesResponse | null>(null);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [pendingId, setPendingId] = useState(null);
-    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [pendingId, setPendingId] = useState<string | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<AdminArticleRow | null>(null);
 
     const reload = () => {
         setError('');
-        adminService.getUsers({ search, page, limit: PAGE_LIMIT })
+        adminService.getArticles({ search, page, limit: PAGE_LIMIT })
             .then(setData)
             .catch(err => setError(err.message));
     };
@@ -31,15 +29,13 @@ export default function AdminUsers() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, page]);
 
-    const handleToggleRole = async (user) => {
-        if (String(user._id) === String(currentUserId)) return;
-        setPendingId(user._id);
+    const handleToggleFeatured = async (article: AdminArticleRow) => {
+        setPendingId(article._id);
         try {
-            const newRole = user.role === 'admin' ? 'user' : 'admin';
-            await adminService.updateUserRole(user._id, newRole);
+            await adminService.toggleFeatured(article._id);
             reload();
         } catch (err) {
-            setError(err.message);
+            setError(err instanceof Error ? err.message : 'Something went wrong');
         } finally {
             setPendingId(null);
         }
@@ -49,11 +45,11 @@ export default function AdminUsers() {
         if (!deleteTarget) return;
         setPendingId(deleteTarget._id);
         try {
-            await adminService.deleteUser(deleteTarget._id);
+            await adminService.deleteArticle(deleteTarget._id);
             setDeleteTarget(null);
             reload();
         } catch (err) {
-            setError(err.message);
+            setError(err instanceof Error ? err.message : 'Something went wrong');
         } finally {
             setPendingId(null);
         }
@@ -63,10 +59,10 @@ export default function AdminUsers() {
         <div className="admin-table-wrap">
             {deleteTarget && (
                 <ConfirmModal
-                    title="Delete User?"
-                    message={`Delete "${deleteTarget.username}" (${deleteTarget.email}).`}
-                    subMessage="This will also permanently delete all their articles, paths, comments, bookmarks, likes, and glossary terms. This cannot be undone."
-                    confirmLabel="Delete User"
+                    title="Delete Article?"
+                    message={`Delete "${deleteTarget.title}".`}
+                    subMessage="This permanently removes the article and all its comments and likes. This cannot be undone."
+                    confirmLabel="Delete Article"
                     onConfirm={handleDelete}
                     onCancel={() => setDeleteTarget(null)}
                 />
@@ -77,14 +73,14 @@ export default function AdminUsers() {
                     <Search size={14} strokeWidth={2.25} />
                     <input
                         type="text"
-                        placeholder="Search by username or email..."
+                        placeholder="Search by title..."
                         value={search}
                         onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                     />
                 </div>
                 {data && (
                     <span className="admin-toolbar-count">
-                        {data.total} {data.total === 1 ? 'user' : 'users'}
+                        {data.total} {data.total === 1 ? 'article' : 'articles'}
                     </span>
                 )}
             </div>
@@ -93,58 +89,67 @@ export default function AdminUsers() {
 
             {!data ? (
                 <Spinner />
-            ) : data.users.length === 0 ? (
-                <p className="admin-empty">No users found.</p>
+            ) : data.articles.length === 0 ? (
+                <p className="admin-empty">No articles found.</p>
             ) : (
                 <table className="admin-table">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Email</th>
-                            <th>Role</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Views</th>
                             <th className="admin-table-actions-col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {data.users.map(user => {
-                            const isSelf = String(user._id) === String(currentUserId);
-                            const isPending = pendingId === user._id;
+                        {data.articles.map(article => {
+                            const isPending = pendingId === article._id;
+                            const ownerName = article._ownerId?.username || '—';
                             return (
-                                <tr key={user._id}>
+                                <tr key={article._id}>
                                     <td>
-                                        <div className="admin-user-cell">
-                                            <img
-                                                src={user.profilePicture || defaultAvatar}
-                                                alt=""
-                                                className="admin-user-avatar"
-                                            />
-                                            <span>{user.username}{isSelf && <span className="admin-self-tag"> (you)</span>}</span>
+                                        <div className="admin-article-title">
+                                            {article.featured && (
+                                                <Star size={12} strokeWidth={2.5} fill="currentColor" className="admin-featured-icon" />
+                                            )}
+                                            <span>{article.title}</span>
                                         </div>
                                     </td>
-                                    <td className="admin-table-mono">{user.email}</td>
+                                    <td>{ownerName}</td>
+                                    <td>{article.category}</td>
                                     <td>
-                                        <span className={`admin-role-badge admin-role-badge--${user.role}`}>
-                                            {user.role}
+                                        <span className={`admin-status-badge admin-status-badge--${article.status}`}>
+                                            {article.status}
                                         </span>
                                     </td>
+                                    <td>{(article.views || 0).toLocaleString()}</td>
                                     <td>
                                         <div className="admin-row-actions">
+                                            <Link
+                                                to={`/articles/${article._id}/details`}
+                                                className="admin-row-btn"
+                                                title="View article"
+                                            >
+                                                <Eye size={14} strokeWidth={2.25} />
+                                                View
+                                            </Link>
                                             <button
                                                 type="button"
-                                                className="admin-row-btn"
-                                                onClick={() => handleToggleRole(user)}
-                                                disabled={isSelf || isPending}
-                                                title={isSelf ? 'You cannot change your own role' : (user.role === 'admin' ? 'Demote to user' : 'Promote to admin')}
+                                                className={`admin-row-btn ${article.featured ? 'admin-row-btn--active' : ''}`}
+                                                onClick={() => handleToggleFeatured(article)}
+                                                disabled={isPending || article.status !== 'published'}
+                                                title={article.status !== 'published' ? 'Only published articles can be featured' : (article.featured ? 'Unfeature' : 'Feature')}
                                             >
-                                                {user.role === 'admin' ? <ShieldOff size={14} strokeWidth={2.25} /> : <ShieldCheck size={14} strokeWidth={2.25} />}
-                                                {user.role === 'admin' ? 'Demote' : 'Promote'}
+                                                <Star size={14} strokeWidth={2.25} fill={article.featured ? 'currentColor' : 'none'} />
+                                                {article.featured ? 'Unfeature' : 'Feature'}
                                             </button>
                                             <button
                                                 type="button"
                                                 className="admin-row-btn admin-row-btn--danger"
-                                                onClick={() => setDeleteTarget(user)}
-                                                disabled={isSelf || isPending}
-                                                title={isSelf ? 'You cannot delete your own account here' : 'Delete user and all their content'}
+                                                onClick={() => setDeleteTarget(article)}
+                                                disabled={isPending}
                                             >
                                                 <Trash2 size={14} strokeWidth={2.25} />
                                                 Delete

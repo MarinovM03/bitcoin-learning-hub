@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { ArrowUp, BookOpen, HelpCircle, MessageSquare } from "lucide-react";
 
-const scrollToId = (id) => {
+const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY - 120;
@@ -10,7 +11,13 @@ const scrollToId = (id) => {
 
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
+interface ReadingPanelProps {
+    readProgress: number;
+    readingTime?: number;
+    hasQuiz?: boolean;
+}
+
+export default function ReadingPanel({ readProgress, readingTime, hasQuiz }: ReadingPanelProps) {
     const [activeSection, setActiveSection] = useState('article-body');
 
     const progress = Math.min(100, Math.max(0, readProgress));
@@ -28,7 +35,7 @@ export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
         const ids = jumpLinks.map(l => l.id);
         const elements = ids
             .map(id => document.getElementById(id))
-            .filter(Boolean);
+            .filter((el): el is HTMLElement => el !== null);
 
         if (elements.length === 0) return;
 
@@ -54,7 +61,7 @@ export default function ReadingPanel({ readProgress, readingTime, hasQuiz }) {
 
     return (
         <aside className="reading-rail" aria-label="Reading progress and navigation">
-            <div className="reading-rail-ring" style={{ '--progress': progress }}>
+            <div className="reading-rail-ring" style={{ '--progress': progress } as CSSProperties}>
                 <svg viewBox="0 0 80 80" className="reading-rail-ring-svg" aria-hidden="true">
                     <circle className="reading-rail-ring-track" cx="40" cy="40" r="34" />
                     <circle className="reading-rail-ring-fill"  cx="40" cy="40" r="34" />

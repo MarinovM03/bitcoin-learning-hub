@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import * as articleService from '../../services/articleService';
+import type { PublicProfile } from '../../services/articleService';
 import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
 import { handleImgError } from "../../utils/imageHelpers";
@@ -11,10 +12,11 @@ const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-prof
 export default function AuthorProfile() {
     const { userId } = useParams();
     const navigate = useNavigate();
-    const [profile, setProfile] = useState(null);
+    const [profile, setProfile] = useState<PublicProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!userId) return;
         articleService.getPublicProfile(userId)
             .then(data => setProfile(data))
             .catch(() => navigate('/not-found'))
@@ -22,6 +24,7 @@ export default function AuthorProfile() {
     }, [userId, navigate]);
 
     if (isLoading) return <AuthorProfileSkeleton />;
+    if (!profile) return null;
 
     const { username, profilePicture, articles, totalLikes } = profile;
 

@@ -10,11 +10,11 @@ export default function Bookmarks() {
     const { data: articles = [], isPending: isLoading } = useMyBookmarks();
     const toggleBookmark = useToggleBookmark();
 
-    const handleRemove = async (articleId) => {
+    const handleRemove = async (articleId: string) => {
         try {
             await toggleBookmark.mutateAsync(articleId);
         } catch (err) {
-            toast.error(err.message || "Couldn't remove the bookmark. Try again.");
+            toast.error(err instanceof Error ? err.message : "Couldn't remove the bookmark. Try again.");
         }
     };
 
