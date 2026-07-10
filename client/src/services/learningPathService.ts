@@ -16,8 +16,9 @@ export interface PathArticleCard {
     imageUrl: string;
 }
 
-export type LearningPathSummary = Omit<LearningPath, 'articles'> & {
+export type LearningPathSummary = Omit<LearningPath, 'articles' | '_ownerId'> & {
     articles: PathArticleCard[];
+    _ownerId: { _id: string; username: string };
 };
 
 export interface PathListResponse {

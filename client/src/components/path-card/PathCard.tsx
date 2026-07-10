@@ -1,20 +1,10 @@
 import { Link } from 'react-router';
 import { Route, BookOpen, BadgeCheck } from 'lucide-react';
 import { handleImgError } from '../../utils/imageHelpers';
-import type { ArticleDifficulty } from '../../types';
-
-interface PathCardData {
-    _id: string;
-    title: string;
-    description: string;
-    coverImage?: string;
-    difficulty?: ArticleDifficulty;
-    articles?: { imageUrl?: string }[];
-    _ownerId?: { username?: string };
-}
+import type { LearningPathSummary } from '../../services/learningPathService';
 
 interface PathCardProps {
-    path: PathCardData;
+    path: LearningPathSummary;
     certification?: { score: number } | null;
 }
 

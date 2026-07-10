@@ -5,7 +5,7 @@ import { queryKeys } from '../../lib/queryKeys';
 export const useDeleteArticle = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (articleId) => articleService.remove(articleId),
+        mutationFn: (articleId: string) => articleService.remove(articleId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
         },
@@ -15,7 +15,7 @@ export const useDeleteArticle = () => {
 export const useMarkRead = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (articleId) => articleService.markRead(articleId),
+        mutationFn: (articleId: string) => articleService.markRead(articleId),
         onSuccess: (_data, articleId) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.detail(articleId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.paths.all });
@@ -26,7 +26,7 @@ export const useMarkRead = () => {
 export const useMarkUnread = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (articleId) => articleService.markUnread(articleId),
+        mutationFn: (articleId: string) => articleService.markUnread(articleId),
         onSuccess: (_data, articleId) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.detail(articleId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.paths.all });

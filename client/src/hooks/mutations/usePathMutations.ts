@@ -5,7 +5,7 @@ import { queryKeys } from '../../lib/queryKeys';
 export const useDeletePath = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (pathId) => learningPathService.remove(pathId),
+        mutationFn: (pathId: string) => learningPathService.remove(pathId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.paths.all });
         },

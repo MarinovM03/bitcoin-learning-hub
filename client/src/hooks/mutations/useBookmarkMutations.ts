@@ -5,7 +5,7 @@ import { queryKeys } from '../../lib/queryKeys';
 export const useToggleBookmark = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (articleId) => bookmarkService.toggle(articleId),
+        mutationFn: (articleId: string) => bookmarkService.toggle(articleId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks.all });
         },
