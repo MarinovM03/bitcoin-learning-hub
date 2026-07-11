@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Sparkles, Key, CheckCircle2, Lock, Unlock, RotateCcw, ShieldCheck, Users, Lightbulb } from 'lucide-react';
 import {
     MAX_N,
@@ -14,10 +15,10 @@ const BROADCAST_DURATION_MS = 1200;
 export default function MultisigExplainer() {
     const [m, setM] = useState(2);
     const [n, setN] = useState(3);
-    const [signed, setSigned] = useState([]);
-    const [txState, setTxState] = useState('idle'); // 'idle' | 'broadcasting' | 'confirmed'
-    const [activeScenarioId, setActiveScenarioId] = useState('family');
-    const broadcastTimer = useRef(null);
+    const [signed, setSigned] = useState<number[]>([]);
+    const [txState, setTxState] = useState<'idle' | 'broadcasting' | 'confirmed'>('idle');
+    const [activeScenarioId, setActiveScenarioId] = useState<string | null>('family');
+    const broadcastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => () => {
         if (broadcastTimer.current) clearTimeout(broadcastTimer.current);
@@ -32,14 +33,14 @@ export default function MultisigExplainer() {
         setTxState('idle');
     };
 
-    const handleSetM = (nextM) => {
+    const handleSetM = (nextM: number) => {
         const clamped = Math.max(1, Math.min(nextM, n));
         setM(clamped);
         setActiveScenarioId(null);
         resetSignatures();
     };
 
-    const handleSetN = (nextN) => {
+    const handleSetN = (nextN: number) => {
         const clamped = Math.max(1, Math.min(nextN, MAX_N));
         setN(clamped);
         if (m > clamped) setM(clamped);
@@ -47,14 +48,14 @@ export default function MultisigExplainer() {
         resetSignatures();
     };
 
-    const applyScenario = (scenario) => {
+    const applyScenario = (scenario: typeof SCENARIOS[number]) => {
         setM(scenario.m);
         setN(scenario.n);
         setActiveScenarioId(scenario.id);
         resetSignatures();
     };
 
-    const toggleSign = (index) => {
+    const toggleSign = (index: number) => {
         if (txState !== 'idle') return;
         if (signed.includes(index)) return; // signatures are one-way; use Reset to start over
         const nextSigned = [...signed, index];
@@ -214,7 +215,7 @@ export default function MultisigExplainer() {
                                 type="button"
                                 role="listitem"
                                 className={`multisig-keyholder ${isSigned ? 'multisig-keyholder--signed' : ''}`}
-                                style={{ '--key-color': color }}
+                                style={{ '--key-color': color } as CSSProperties}
                                 onClick={() => toggleSign(i)}
                                 disabled={disabled}
                                 aria-label={isSigned ? `${name} has signed` : `Sign as ${name}`}

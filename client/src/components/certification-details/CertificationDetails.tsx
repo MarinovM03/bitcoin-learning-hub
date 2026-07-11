@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { ArrowLeft, Printer, Award } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
+import type { CertificationDetail } from '../../services/pathCertificationService';
 import Spinner from '../spinner/Spinner';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
 
 const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
-const formatDate = (iso) => {
+const formatDate = (iso: string) => {
     try {
         return new Date(iso).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -24,10 +25,11 @@ export default function CertificationDetails() {
     const { certId } = useParams();
     const navigate = useNavigate();
 
-    const [cert, setCert] = useState(null);
+    const [cert, setCert] = useState<CertificationDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!certId) return;
         setIsLoading(true);
         pathCertificationService.getOne(certId)
             .then(result => setCert(result))

@@ -1,5 +1,17 @@
 import { FileText, Pencil, Eye, Heart, Clock, TrendingUp } from "lucide-react";
 
+interface MyArticlesRailProps {
+    publishedCount: number;
+    draftCount: number;
+    totalViews: number;
+    totalLikes: number;
+    categories: string[];
+    activeCategory: string;
+    onCategoryChange: (category: string) => void;
+    sortMode: string;
+    onSortChange: (mode: string) => void;
+}
+
 export default function MyArticlesRail({
     publishedCount,
     draftCount,
@@ -10,7 +22,7 @@ export default function MyArticlesRail({
     onCategoryChange,
     sortMode,
     onSortChange,
-}) {
+}: MyArticlesRailProps) {
     const stats = [
         { Icon: FileText, label: 'Published', value: publishedCount },
         { Icon: Pencil,   label: 'Drafts',    value: draftCount },

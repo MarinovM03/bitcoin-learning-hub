@@ -52,7 +52,7 @@ export default function Profile() {
                     : `Cleared reading progress for ${result.cleared} article${result.cleared === 1 ? '' : 's'}.`
             );
         } catch (err) {
-            toast.error(err.message || "Couldn't reset your reading history. Try again.");
+            toast.error(err instanceof Error ? err.message : "Couldn't reset your reading history. Try again.");
         } finally {
             setIsResetting(false);
             setShowResetModal(false);

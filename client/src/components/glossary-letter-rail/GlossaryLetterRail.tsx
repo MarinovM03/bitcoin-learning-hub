@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-export default function GlossaryLetterRail({ availableLetters }) {
-    const [activeLetter, setActiveLetter] = useState(null);
+interface GlossaryLetterRailProps {
+    availableLetters: Set<string>;
+}
+
+export default function GlossaryLetterRail({ availableLetters }: GlossaryLetterRailProps) {
+    const [activeLetter, setActiveLetter] = useState<string | null>(null);
 
     useEffect(() => {
         const headings = Array.from(document.querySelectorAll('.glossary-letter-heading'));
@@ -19,7 +23,7 @@ export default function GlossaryLetterRail({ availableLetters }) {
                     .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
                 if (visible.length > 0) {
-                    const letter = visible[0].target.dataset.letter;
+                    const letter = (visible[0].target as HTMLElement).dataset.letter;
                     if (letter) setActiveLetter(letter);
                 }
             },
@@ -33,7 +37,7 @@ export default function GlossaryLetterRail({ availableLetters }) {
         return () => observer.disconnect();
     }, [availableLetters]);
 
-    const handleClick = (letter) => {
+    const handleClick = (letter: string) => {
         const el = document.getElementById(`glossary-letter-${letter}`);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };

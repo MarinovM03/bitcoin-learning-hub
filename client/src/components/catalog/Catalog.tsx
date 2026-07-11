@@ -15,12 +15,12 @@ const SORT_LABELS = {
 
 const ITEMS_PER_PAGE = 12;
 
-const getPaginationPages = (current, total) => {
+const getPaginationPages = (current: number, total: number) => {
     if (total <= 7) {
         return Array.from({ length: total }, (_, i) => i + 1);
     }
 
-    const pages = [];
+    const pages: (number | string)[] = [];
     pages.push(1);
     if (current > 3) pages.push('...');
     for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
@@ -56,7 +56,7 @@ export default function Catalog() {
     const error = isError ? "Failed to load articles. Please try again later." : '';
     const isLoading = isPending;
 
-    const setParam = (key, value) => {
+    const setParam = (key: string, value: string) => {
         const next = new URLSearchParams(searchParams);
         if (value === '' || value === 'All' || value === 'latest') {
             next.delete(key);
@@ -76,7 +76,7 @@ export default function Catalog() {
         if (search) chips.push({ key: 'search', label: 'Search', value: search, resetTo: '' });
         if (activeCategory !== 'All') chips.push({ key: 'category', label: 'Category', value: activeCategory, resetTo: 'All' });
         if (activeDifficulty !== 'All') chips.push({ key: 'difficulty', label: 'Level', value: activeDifficulty, resetTo: 'All' });
-        if (sort !== 'latest') chips.push({ key: 'sort', label: 'Sort', value: SORT_LABELS[sort] || sort, resetTo: 'latest' });
+        if (sort !== 'latest') chips.push({ key: 'sort', label: 'Sort', value: SORT_LABELS[sort as keyof typeof SORT_LABELS] || sort, resetTo: 'latest' });
         return chips;
     }, [search, activeCategory, activeDifficulty, sort]);
 

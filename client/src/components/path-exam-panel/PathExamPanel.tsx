@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { GraduationCap, Lock, Award, ArrowRight } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
+import type { CertificationSummary } from '../../services/pathCertificationService';
 import { useAuth } from '../../contexts/AuthContext';
 
-const formatDate = (iso) => {
+const formatDate = (iso: string) => {
     if (!iso) return '';
     try {
         return new Date(iso).toLocaleDateString('en-US', {
@@ -17,9 +18,15 @@ const formatDate = (iso) => {
     }
 };
 
-export default function PathExamPanel({ pathId, completed, total }) {
+interface PathExamPanelProps {
+    pathId: string;
+    completed: number;
+    total: number;
+}
+
+export default function PathExamPanel({ pathId, completed, total }: PathExamPanelProps) {
     const { isAuthenticated } = useAuth();
-    const [certification, setCertification] = useState(null);
+    const [certification, setCertification] = useState<CertificationSummary | null>(null);
     const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
