@@ -33,7 +33,7 @@ export interface ArticleWriteData {
     status?: ArticleStatus;
     quiz?: QuizQuestion[];
     seriesName?: string;
-    seriesPart?: number | null;
+    seriesPart?: number | string | null;
 }
 
 export interface RelatedArticle {

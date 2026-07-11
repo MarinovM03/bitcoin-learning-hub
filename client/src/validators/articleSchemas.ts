@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-const CATEGORIES = ['Basics', 'Technology', 'Economics', 'Security', 'History', 'Trading', 'Mining', 'Regulation', 'Culture'];
-const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
-const STATUSES = ['draft', 'published'];
+const CATEGORIES = ['Basics', 'Technology', 'Economics', 'Security', 'History', 'Trading', 'Mining', 'Regulation', 'Culture'] as const;
+const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'] as const;
+const STATUSES = ['draft', 'published'] as const;
 
 const httpUrl = z
     .string()

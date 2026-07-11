@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { Save } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from 'react-router';
+import { Save } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as articleService from '../../services/articleService';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
@@ -11,22 +11,19 @@ import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
 import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
 import { createArticleSchema } from '../../validators/articleSchemas';
+import type { QuizQuestion, ArticleStatus, ArticleCategory } from '../../types';
 
-export default function Edit() {
+export default function Create() {
     const navigate = useNavigate();
-    const { articleId } = useParams();
-
     const [serverError, setServerError] = useState('');
-    const [currentStatus, setCurrentStatus] = useState('published');
-    const [quiz, setQuiz] = useState([]);
+    const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
-    const [takenParts, setTakenParts] = useState([]);
+    const [takenParts, setTakenParts] = useState<number[]>([]);
 
     const {
         register,
         control,
         handleSubmit,
-        reset,
         watch,
         setValue,
         formState: { errors, isSubmitting },
@@ -34,7 +31,7 @@ export default function Edit() {
         resolver: zodResolver(createArticleSchema),
         defaultValues: {
             title: '',
-            category: '',
+            category: '' as ArticleCategory,
             difficulty: 'Beginner',
             imageUrl: '',
             summary: '',
@@ -48,7 +45,6 @@ export default function Edit() {
     const seriesPartRaw = watch('seriesPart');
     const summary = watch('summary') || '';
     const difficulty = watch('difficulty');
-    const title = watch('title');
 
     useEffect(() => {
         const name = seriesName.trim();
@@ -57,12 +53,12 @@ export default function Edit() {
             return;
         }
         const timer = setTimeout(() => {
-            articleService.getMySeriesParts(name, articleId)
+            articleService.getMySeriesParts(name)
                 .then(res => setTakenParts(res.parts || []))
                 .catch(() => setTakenParts([]));
         }, 300);
         return () => clearTimeout(timer);
-    }, [seriesName, articleId]);
+    }, [seriesName]);
 
     const partNum = Number(seriesPartRaw);
     const seriesPartTaken = Boolean(
@@ -72,26 +68,7 @@ export default function Edit() {
         takenParts.includes(partNum)
     );
 
-    useEffect(() => {
-        articleService.getOne(articleId)
-            .then(result => {
-                reset({
-                    title: result.title || '',
-                    category: result.category || '',
-                    difficulty: result.difficulty || 'Beginner',
-                    imageUrl: result.imageUrl || '',
-                    summary: result.summary || '',
-                    content: result.content || '',
-                    seriesName: result.seriesName || '',
-                    seriesPart: result.seriesPart ?? '',
-                });
-                setCurrentStatus(result.status || 'published');
-                setQuiz(result.quiz || []);
-            })
-            .catch(() => navigate('/not-found'));
-    }, [articleId, navigate, reset]);
-
-    const submitWithStatus = (status) => handleSubmit(async (values) => {
+    const submitWithStatus = (status: ArticleStatus) => handleSubmit(async (values) => {
         setServerError('');
 
         const hasSeriesName = (values.seriesName || '').trim().length > 0;
@@ -107,7 +84,7 @@ export default function Edit() {
                 return;
             }
             if (seriesPartTaken) {
-                setServerError(`Part ${partNumValue} is already used in "${values.seriesName.trim()}". Pick another part number.`);
+                setServerError(`Part ${partNumValue} is already used in "${values.seriesName?.trim()}". Pick another part number.`);
                 return;
             }
         }
@@ -120,21 +97,21 @@ export default function Edit() {
         }
 
         try {
-            await articleService.edit(articleId, { ...values, status, quiz });
-            navigate(status === 'draft' ? '/my-articles' : `/articles/${articleId}/details`);
+            await articleService.create({ ...values, status, quiz });
+            navigate(status === 'draft' ? '/my-articles' : '/articles');
         } catch (err) {
-            setServerError(err.message);
+            setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
         }
     });
 
     return (
         <section id="create-page" className="page-content">
-            <PageMeta title={title ? `Edit: ${title}` : 'Edit Article'} />
+            <PageMeta title="Write Article" description="Publish a new Bitcoin or cryptocurrency article on the platform." />
             <div className="create-page">
-                <h1>Edit Article</h1>
-                <p className="create-subtitle">Update your article details below</p>
+                <h1>Write Article</h1>
+                <p className="create-subtitle">Share your Bitcoin knowledge with the community</p>
 
-                <form id="edit" className="create-form" onSubmit={(e) => e.preventDefault()} noValidate>
+                <form id="create" className="create-form" onSubmit={(e) => e.preventDefault()} noValidate>
                     <div className="form-group">
                         <label htmlFor="title">Article Title</label>
                         <input
@@ -271,7 +248,7 @@ export default function Edit() {
                             disabled={isSubmitting}
                             onClick={submitWithStatus('published')}
                         >
-                            {isSubmitting ? "Publishing..." : currentStatus === 'draft' ? "Publish Article" : "Save & Publish"}
+                            {isSubmitting ? "Publishing..." : "Publish Article"}
                         </button>
                     </div>
                 </form>
