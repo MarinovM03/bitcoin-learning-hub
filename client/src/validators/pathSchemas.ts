@@ -5,6 +5,7 @@ const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'] as const;
 const optionalHttpUrl = z
     .string()
     .trim()
+    .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'URL must start with http:// or https://')
     .or(z.literal(''))
     .optional();

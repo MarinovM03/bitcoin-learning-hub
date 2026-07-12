@@ -8,11 +8,13 @@ export const objectId = z
 export const httpUrl = z
     .string()
     .trim()
+    .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'URL must start with http:// or https://');
 
 export const optionalHttpUrl = z
     .string()
     .trim()
+    .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'URL must start with http:// or https://')
     .or(z.literal(''))
     .optional();
