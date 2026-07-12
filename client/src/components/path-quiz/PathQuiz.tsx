@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { GraduationCap, ArrowLeft, ArrowRight, CheckCircle2, XCircle, Award, RotateCcw } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
+import type { PathQuizResponse, SubmitQuizResponse } from '../../services/pathCertificationService';
 import Spinner from '../spinner/Spinner';
 import PageMeta from '../page-meta/PageMeta';
 
@@ -9,16 +11,17 @@ export default function PathQuiz() {
     const { pathId } = useParams();
     const navigate = useNavigate();
 
-    const [quiz, setQuiz] = useState(null);
-    const [answers, setAnswers] = useState([]);
+    const [quiz, setQuiz] = useState<PathQuizResponse | null>(null);
+    const [answers, setAnswers] = useState<number[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [stage, setStage] = useState('quiz'); // quiz | review | result
-    const [result, setResult] = useState(null);
+    const [stage, setStage] = useState<'quiz' | 'review' | 'result'>('quiz');
+    const [result, setResult] = useState<SubmitQuizResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [loadError, setLoadError] = useState(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!pathId) return;
         setIsLoading(true);
         setLoadError(null);
         pathCertificationService.getQuiz(pathId)
@@ -26,8 +29,8 @@ export default function PathQuiz() {
                 setQuiz(data);
                 setAnswers(new Array(data.questions.length).fill(-1));
             })
-            .catch(err => {
-                setLoadError(err?.message || 'Could not load the exam.');
+            .catch((err: unknown) => {
+                setLoadError(err instanceof Error ? err.message : 'Could not load the exam.');
             })
             .finally(() => setIsLoading(false));
     }, [pathId]);
@@ -35,7 +38,7 @@ export default function PathQuiz() {
     const answeredCount = useMemo(() => answers.filter(a => a >= 0).length, [answers]);
     const allAnswered = quiz && answeredCount === quiz.questions.length;
 
-    const selectAnswer = (optionIndex) => {
+    const selectAnswer = (optionIndex: number) => {
         setAnswers(prev => {
             const next = [...prev];
             next[currentIndex] = optionIndex;
@@ -57,13 +60,14 @@ export default function PathQuiz() {
 
     const handleSubmit = async () => {
         if (!allAnswered || isSubmitting) return;
+        if (!pathId) return;
         setIsSubmitting(true);
         try {
             const res = await pathCertificationService.submitQuiz(pathId, answers);
             setResult(res);
             setStage('result');
         } catch (err) {
-            setLoadError(err?.message || 'Submission failed.');
+            setLoadError(err instanceof Error ? err.message : 'Submission failed.');
         } finally {
             setIsSubmitting(false);
         }
@@ -239,7 +243,7 @@ export default function PathQuiz() {
                     <div className="path-quiz-progress-bar">
                         <div
                             className="path-quiz-progress-bar-fill"
-                            style={{ '--progress': `${progressPercent}%` }}
+                            style={{ '--progress': `${progressPercent}%` } as CSSProperties}
                         />
                     </div>
                 </div>

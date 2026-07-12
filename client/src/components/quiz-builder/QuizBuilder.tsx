@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import type { QuizQuestion } from '../../types';
 
 const MAX_QUESTIONS = 5;
 const MAX_QUESTION_LENGTH = 200;
@@ -11,21 +12,27 @@ const emptyQuestion = () => ({
     correctIndex: 0,
 });
 
-export default function QuizBuilder({ quiz, onChange, showErrors = false }) {
+interface QuizBuilderProps {
+    quiz: QuizQuestion[];
+    onChange: (quiz: QuizQuestion[]) => void;
+    showErrors?: boolean;
+}
+
+export default function QuizBuilder({ quiz, onChange, showErrors = false }: QuizBuilderProps) {
     const addQuestion = () => {
         if (quiz.length >= MAX_QUESTIONS) return;
         onChange([...quiz, emptyQuestion()]);
     };
 
-    const removeQuestion = (index) => {
+    const removeQuestion = (index: number) => {
         onChange(quiz.filter((_, i) => i !== index));
     };
 
-    const updateQuestion = (index, value) => {
+    const updateQuestion = (index: number, value: string) => {
         onChange(quiz.map((q, i) => i === index ? { ...q, question: value } : q));
     };
 
-    const updateOption = (qIndex, optIndex, value) => {
+    const updateOption = (qIndex: number, optIndex: number, value: string) => {
         onChange(quiz.map((q, i) => {
             if (i !== qIndex) return q;
             const options = q.options.map((opt, oi) => oi === optIndex ? value : opt);
@@ -33,7 +40,7 @@ export default function QuizBuilder({ quiz, onChange, showErrors = false }) {
         }));
     };
 
-    const setCorrect = (qIndex, optIndex) => {
+    const setCorrect = (qIndex: number, optIndex: number) => {
         onChange(quiz.map((q, i) => i === qIndex ? { ...q, correctIndex: optIndex } : q));
     };
 
