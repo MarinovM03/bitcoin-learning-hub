@@ -5,6 +5,7 @@ import { Search, X, BookOpen, BookMarked, ArrowRight, Loader2 } from "lucide-rea
 import * as searchService from "../../services/searchService";
 import type { SearchArticleHit, SearchGlossaryHit } from "../../services/searchService";
 import HighlightText from "../common/HighlightText";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 const DEBOUNCE_MS = 300;
 const QUICK_LIMIT = 5;
@@ -21,6 +22,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     const [activeIndex, setActiveIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
     const activeItemRef = useRef<HTMLAnchorElement>(null);
+    const trapRef = useFocusTrap<HTMLDivElement>(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -127,7 +129,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
 
     return (
         <div className="search-overlay-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-label="Search">
-            <div className="search-overlay">
+            <div className="search-overlay" ref={trapRef}>
                 <form className="search-overlay-form" onSubmit={handleSubmit}>
                     <Search size={18} strokeWidth={2} className="search-overlay-icon" />
                     <input

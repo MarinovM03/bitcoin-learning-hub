@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface MempoolInfoModalProps {
     onClose: () => void;
@@ -8,6 +9,7 @@ interface MempoolInfoModalProps {
 
 export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
+    const trapRef = useFocusTrap<HTMLDivElement>(true);
 
     useEffect(() => {
         closeRef.current?.focus();
@@ -27,6 +29,7 @@ export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
                 aria-modal="true"
                 aria-labelledby="mempool-info-title"
                 onClick={e => e.stopPropagation()}
+                ref={trapRef}
             >
 
                 <div className="mempool-info-header">

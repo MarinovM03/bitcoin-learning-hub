@@ -7,6 +7,7 @@ import AccountMenu from "./AccountMenu";
 import ToolsDropdown from "./ToolsDropdown";
 import { TOOLS } from "../../utils/navTools";
 import SearchOverlay from "../search-overlay/SearchOverlay";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 interface NavLinkItem {
     to: string;
@@ -30,6 +31,7 @@ export default function Navbar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const location = useLocation();
+    const mobileTrapRef = useFocusTrap<HTMLDivElement>(isMobileOpen);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -133,7 +135,7 @@ export default function Navbar() {
             {isSearchOpen && <SearchOverlay onClose={() => setIsSearchOpen(false)} />}
 
             {isMobileOpen && createPortal(
-                <div className="navbar-mobile" role="dialog" aria-modal="true" aria-label="Navigation">
+                <div className="navbar-mobile" role="dialog" aria-modal="true" aria-label="Navigation" ref={mobileTrapRef}>
                     <div className="navbar-mobile-head">
                         <Link to="/" className="navbar-brand" onClick={() => setIsMobileOpen(false)}>
                             <span className="navbar-brand-mark" aria-hidden="true">₿</span>

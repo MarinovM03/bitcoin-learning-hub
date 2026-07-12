@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { ADDRESS_TYPES } from '../../utils/addressTypes';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 const FORMAT_ROWS = [
     { type: ADDRESS_TYPES.LEGACY, prefix: '1...' },
@@ -18,6 +19,7 @@ interface AddressInfoModalProps {
 
 export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
+    const trapRef = useFocusTrap<HTMLDivElement>(true);
 
     useEffect(() => {
         closeRef.current?.focus();
@@ -37,6 +39,7 @@ export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
                 aria-modal="true"
                 aria-labelledby="address-info-title"
                 onClick={e => e.stopPropagation()}
+                ref={trapRef}
             >
                 <div className="address-info-header">
                     <h2 className="address-info-title" id="address-info-title">

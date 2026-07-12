@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Trash2 } from "lucide-react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 interface ConfirmModalProps {
     icon?: ReactNode;
@@ -20,13 +21,22 @@ export default function ConfirmModal({
     onConfirm,
     onCancel,
 }: ConfirmModalProps) {
+    const trapRef = useFocusTrap<HTMLDivElement>(true, onCancel);
+
     return (
         <div className="modal-overlay" onClick={onCancel}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="modal-box"
+                onClick={(e) => e.stopPropagation()}
+                ref={trapRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="confirm-modal-title"
+            >
                 <div className="modal-icon">
                     {icon ?? <Trash2 size={28} strokeWidth={1.8} />}
                 </div>
-                <h3 className="modal-title">{title}</h3>
+                <h3 className="modal-title" id="confirm-modal-title">{title}</h3>
                 <p className="modal-message">{message}</p>
                 {subMessage && <p className="modal-sub-message">{subMessage}</p>}
                 <div className="modal-actions">
