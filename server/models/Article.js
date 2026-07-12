@@ -71,8 +71,11 @@ const articleSchema = new mongoose.Schema({
     _ownerId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
+        required: true,
     },
 }, { timestamps: true });
+
+articleSchema.index({ status: 1, createdAt: -1 });
 
 articleSchema.index(
     { title: 'text', summary: 'text', content: 'text' },
