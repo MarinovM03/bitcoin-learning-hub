@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
+import type { FormEvent } from "react";
 import { X } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
 import { toast } from "../../lib/toast";
+import type { Comment } from "../../types";
 
 const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
-function timeAgo(dateString) {
+function timeAgo(dateString: string) {
     const diff = Date.now() - new Date(dateString).getTime();
     const minutes = Math.floor(diff / 60000);
     if (minutes < 1) return "just now";
@@ -19,15 +21,20 @@ function timeAgo(dateString) {
     return new Date(dateString).toLocaleDateString();
 }
 
-export default function CommentsSection({ articleId, articleOwnerId }) {
+interface CommentsSectionProps {
+    articleId: string;
+    articleOwnerId?: string;
+}
+
+export default function CommentsSection({ articleId, articleOwnerId }: CommentsSectionProps) {
     const { isAuthenticated, userId, profilePicture } = useAuth();
 
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [text, setText] = useState("");
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
     useEffect(() => {
         commentService.getAllForArticle(articleId)
@@ -36,7 +43,7 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
             .finally(() => setIsLoading(false));
     }, [articleId]);
 
-    const onSubmit = async (e) => {
+    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (text.trim().length < 2) {
             setError("Comment must be at least 2 characters.");
@@ -49,19 +56,20 @@ export default function CommentsSection({ articleId, articleOwnerId }) {
             setText("");
             setError("");
         } catch (err) {
-            setError(err.message || "Failed to post comment.");
+            setError(err instanceof Error ? err.message : "Failed to post comment.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const confirmDelete = async () => {
+        if (!deleteTarget) return;
         try {
             await commentService.remove(deleteTarget);
             setComments(state => state.filter(c => c._id !== deleteTarget));
             toast.success('Comment deleted.');
         } catch (err) {
-            toast.error(err.message || "Couldn't delete the comment. Try again.");
+            toast.error(err instanceof Error ? err.message : "Couldn't delete the comment. Try again.");
         } finally {
             setDeleteTarget(null);
         }
