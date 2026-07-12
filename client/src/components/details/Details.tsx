@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle } from "lucide-react";
-import * as articleService from '../../services/articleService';
-import * as likeService from '../../services/likeService';
-import * as bookmarkService from '../../services/bookmarkService';
+import { useArticle, useRelatedArticles, useArticleSeries } from '../../hooks/queries/useArticles';
+import { useLikeSummary } from '../../hooks/queries/useLikes';
+import { useMyBookmarks } from '../../hooks/queries/useBookmarks';
+import { useToggleLike } from '../../hooks/mutations/useLikeMutations';
 import { useToggleBookmark } from '../../hooks/mutations/useBookmarkMutations';
+import { useMarkRead, useMarkUnread, useDeleteArticle } from '../../hooks/mutations/useArticleMutations';
 import { useAuth } from "../../contexts/AuthContext";
 import ArticleDetailsSkeleton from "../article-details-skeleton/ArticleDetailsSkeleton";
 import CommentsSection from "../comments/CommentsSection";
@@ -16,8 +19,6 @@ import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 import { toast } from "../../lib/toast";
-import type { ArticleDetail } from "../../types";
-import type { RelatedArticle, SeriesResponse } from "../../services/articleService";
 
 function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -33,20 +34,32 @@ export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
     const { userId, isAuthenticated } = useAuth();
-    const toggleBookmarkMutation = useToggleBookmark();
 
-    const [article, setArticle] = useState<ArticleDetail | null>(null);
-    const [totalLikes, setTotalLikes] = useState(0);
-    const [hasLiked, setHasLiked] = useState(false);
-    const [isBookmarked, setIsBookmarked] = useState(false);
-    const [hasRead, setHasRead] = useState(false);
-    const [isTogglingRead, setIsTogglingRead] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: article, isPending, isError } = useArticle(articleId);
+    const { data: relatedArticles = [] } = useRelatedArticles(articleId);
+    const { data: seriesInfo = { seriesName: '', parts: [] } } = useArticleSeries(articleId);
+    const { data: likeSummary } = useLikeSummary(articleId);
+    const { data: myBookmarks } = useMyBookmarks(isAuthenticated);
+
+    const toggleLikeMutation = useToggleLike();
+    const toggleBookmarkMutation = useToggleBookmark();
+    const markReadMutation = useMarkRead();
+    const markUnreadMutation = useMarkUnread();
+    const deleteArticleMutation = useDeleteArticle();
+
+    const totalLikes = likeSummary?.totalLikes ?? 0;
+    const hasLiked = likeSummary?.likedByMe ?? false;
+    const isBookmarked = (myBookmarks ?? []).some(a => a._id === articleId);
+    const hasRead = Boolean(article?.hasRead);
+    const isTogglingRead = markReadMutation.isPending || markUnreadMutation.isPending;
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [relatedArticles, setRelatedArticles] = useState<RelatedArticle[]>([]);
-    const [seriesInfo, setSeriesInfo] = useState<SeriesResponse>({ seriesName: '', parts: [] });
     const [readProgress, setReadProgress] = useState(0);
     const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (isError && !article) navigate('/not-found');
+    }, [isError, article, navigate]);
 
     useEffect(() => {
         let rafId = 0;
@@ -84,37 +97,6 @@ export default function Details() {
         };
     }, [article?._id]);
 
-    useEffect(() => {
-        if (!articleId) return;
-
-        Promise.all([
-            articleService.getOne(articleId),
-            likeService.getAllForArticle(articleId),
-            isAuthenticated ? bookmarkService.getMyBookmarks().catch(() => []) : Promise.resolve(null),
-        ])
-            .then(([articleData, likesArray, bookmarks]) => {
-                setArticle(articleData);
-                setHasRead(Boolean(articleData?.hasRead));
-                setTotalLikes(likesArray.length);
-                if (userId) {
-                    setHasLiked(likesArray.some(like => like._ownerId === userId));
-                }
-                if (bookmarks) {
-                    setIsBookmarked(bookmarks.some(a => a._id === articleId));
-                }
-                return Promise.all([
-                    articleService.getRelated(articleId),
-                    articleService.getSeries(articleId).catch(() => ({ seriesName: '', parts: [] })),
-                ]);
-            })
-            .then(([related, series]) => {
-                setRelatedArticles(related);
-                setSeriesInfo(series || { seriesName: '', parts: [] });
-            })
-            .catch(() => navigate('/not-found'))
-            .finally(() => setIsLoading(false));
-    }, [articleId, userId, isAuthenticated, navigate]);
-
     const ownerId = article?._ownerId?._id;
     const ownerUsername = article?._ownerId?.username;
     const ownerProfilePicture = article?._ownerId?.profilePicture;
@@ -133,7 +115,7 @@ export default function Details() {
     const confirmDelete = async () => {
         if (!articleId) return;
         try {
-            await articleService.remove(articleId);
+            await deleteArticleMutation.mutateAsync(articleId);
             toast.success('Article deleted.');
             navigate('/articles');
         } catch (err) {
@@ -145,9 +127,7 @@ export default function Details() {
     const onLike = async () => {
         if (!articleId) return;
         try {
-            const { liked, totalLikes } = await likeService.toggle(articleId);
-            setHasLiked(liked);
-            setTotalLikes(totalLikes);
+            await toggleLikeMutation.mutateAsync(articleId);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Couldn't update your like. Try again.");
         }
@@ -156,29 +136,22 @@ export default function Details() {
     const onBookmark = async () => {
         if (!articleId) return;
         try {
-            const result = await toggleBookmarkMutation.mutateAsync(articleId);
-            setIsBookmarked(result.bookmarked);
+            await toggleBookmarkMutation.mutateAsync(articleId);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Couldn't update your bookmark. Try again.");
         }
     };
 
     const onToggleRead = async () => {
-        if (isTogglingRead) return;
-        if (!articleId) return;
-        setIsTogglingRead(true);
+        if (isTogglingRead || !articleId) return;
         try {
             if (hasRead) {
-                await articleService.markUnread(articleId);
-                setHasRead(false);
+                await markUnreadMutation.mutateAsync(articleId);
             } else {
-                await articleService.markRead(articleId);
-                setHasRead(true);
+                await markReadMutation.mutateAsync(articleId);
             }
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Couldn't update your reading progress.");
-        } finally {
-            setIsTogglingRead(false);
         }
     };
 
@@ -192,7 +165,7 @@ export default function Details() {
         }
     };
 
-    if (isLoading || !article || !articleId) return <ArticleDetailsSkeleton />;
+    if (isPending || !article || !articleId) return <ArticleDetailsSkeleton />;
 
     return (
         <section id="details-page" className="page-content">
@@ -202,7 +175,7 @@ export default function Details() {
                 image={article.imageUrl}
                 type="article"
             />
-            <div className="read-progress-bar" style={{ width: `${readProgress}%` }} />
+            <div className="read-progress-bar" style={{ '--progress': `${readProgress}%` } as CSSProperties} />
 
             <ReadingPanel
                 readProgress={readProgress}
@@ -342,7 +315,7 @@ export default function Details() {
                         )}
 
                         <div id="article-quiz">
-                            <QuizSection quiz={article.quiz} />
+                            <QuizSection articleId={articleId} quiz={article.quiz} />
                         </div>
 
                         <div id="article-comments">
@@ -511,7 +484,7 @@ export default function Details() {
                                             title: article.title,
                                             text: article.summary,
                                             url: window.location.href,
-                                        })}
+                                        }).catch(() => {})}
                                         title="Share"
                                     >
                                         <Share2 size={16} strokeWidth={2} />

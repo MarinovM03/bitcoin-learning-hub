@@ -2,6 +2,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    width: var(--progress, 0%);
     height: 3px;
     background-color: var(--btc-orange);
     z-index: 9999;

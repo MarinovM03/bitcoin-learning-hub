@@ -195,7 +195,7 @@ export default function MultisigExplainer() {
                     <div className="multisig-progress-track">
                         <div
                             className={`multisig-progress-fill ${vaultOpen ? 'multisig-progress-fill--complete' : ''}`}
-                            style={{ width: `${progressPct}%` }}
+                            style={{ '--progress': `${progressPct}%` } as CSSProperties}
                         />
                     </div>
                     <span className="multisig-progress-label">

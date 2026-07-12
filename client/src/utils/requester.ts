@@ -36,14 +36,21 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
         return {} as T;
     }
 
-    const result = await response.json();
+    let result: unknown = null;
+    try {
+        result = await response.json();
+    } catch {
+        result = null;
+    }
 
     if (!response.ok) {
         if (response.status === 401 && serializedAuth) {
             toast.info('Your session has expired. Please sign in again.');
             window.dispatchEvent(new Event('auth:unauthorized'));
         }
-        throw new Error(parseApiError(result));
+        throw new Error(result !== null
+            ? parseApiError(result)
+            : `The server returned an unexpected response (${response.status}). Please try again.`);
     }
 
     return result as T;

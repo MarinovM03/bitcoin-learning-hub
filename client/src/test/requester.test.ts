@@ -67,4 +67,14 @@ describe('requester', () => {
         vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(null, { status: 204 }));
         await expect(requester.del('/test')).resolves.toEqual({});
     });
+
+    it('throws a readable error when an error response is not JSON', async () => {
+        vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+            new Response('<html>Bad Gateway</html>', {
+                status: 502,
+                headers: { 'Content-Type': 'text/html' },
+            }),
+        );
+        await expect(requester.get('/test')).rejects.toThrow(/unexpected response \(502\)/);
+    });
 });

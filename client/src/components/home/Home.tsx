@@ -8,12 +8,7 @@ import OnThisDay from "../on-this-day/OnThisDay";
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 import { TOOLS } from "../../utils/navTools";
-import type { SyntheticEvent } from "react";
-
-const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = 'https://placehold.co/600x400/1a1a1a/F7931A?text=₿';
-};
+import { handleImgError } from "../../utils/imageHelpers";
 
 export default function Home() {
     const { data: latestData, isPending: isLoading } = useArticles({ limit: 4, sort: 'latest' });
