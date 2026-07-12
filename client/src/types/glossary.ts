@@ -15,3 +15,15 @@ export interface GlossaryTerm {
     _ownerId?: string;
     createdAt: string;
 }
+
+export interface GlossaryTermRef {
+    _id: string;
+    term: string;
+    definition: string;
+}
+
+export interface GlossaryTermDetail extends GlossaryTerm {
+    related?: GlossaryTermRef[];
+    prev?: { _id: string; term: string } | null;
+    next?: { _id: string; term: string } | null;
+}

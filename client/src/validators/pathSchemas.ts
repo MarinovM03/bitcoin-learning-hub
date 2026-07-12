@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
+const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'] as const;
 
 const optionalHttpUrl = z
     .string()
@@ -18,3 +18,5 @@ export const createPathSchema = z.object({
 });
 
 export const updatePathSchema = createPathSchema.partial();
+
+export type CreatePathValues = z.infer<typeof createPathSchema>;

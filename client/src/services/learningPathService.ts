@@ -1,5 +1,5 @@
 import * as request from '../utils/requester';
-import type { Article, ArticleDifficulty, LearningPath } from '../types';
+import type { Article, ArticleDifficulty, ArticleOwnerRef, LearningPath } from '../types';
 import { API_BASE_URL } from '../lib/apiConfig';
 
 const baseUrl = `${API_BASE_URL}/paths`;
@@ -36,10 +36,13 @@ export interface PathProgress {
 
 export type PathArticleDetail = Pick<
     Article,
-    '_id' | 'title' | 'summary' | 'imageUrl' | 'category' | 'difficulty' | 'readingTime' | 'status' | '_ownerId'
->;
+    '_id' | 'title' | 'summary' | 'imageUrl' | 'category' | 'difficulty' | 'readingTime' | 'status'
+> & {
+    _ownerId: ArticleOwnerRef;
+};
 
-export interface LearningPathDetail extends Omit<LearningPath, 'articles'> {
+export interface LearningPathDetail extends Omit<LearningPath, 'articles' | '_ownerId'> {
+    _ownerId: ArticleOwnerRef;
     articles: PathArticleDetail[];
     progress: PathProgress;
 }

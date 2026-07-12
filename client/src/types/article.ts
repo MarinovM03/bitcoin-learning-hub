@@ -15,8 +15,8 @@ export type ArticleStatus = 'draft' | 'published';
 
 export interface QuizQuestion {
     question: string;
-    options: [string, string, string, string];
-    correctIndex: 0 | 1 | 2 | 3;
+    options: string[];
+    correctIndex: number;
 }
 
 export interface ArticleOwnerRef {
@@ -43,6 +43,10 @@ export interface Article {
     createdAt: string;
     updatedAt: string;
     hasRead?: boolean;
+}
+
+export interface ArticleDetail extends Omit<Article, '_ownerId'> {
+    _ownerId: ArticleOwnerRef;
 }
 
 export type ArticleDraft = Omit<

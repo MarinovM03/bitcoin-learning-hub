@@ -1,5 +1,5 @@
 import * as request from '../utils/requester';
-import type { Article, ArticleCategory, ArticleDifficulty, ArticleStatus, QuizQuestion } from '../types';
+import type { Article, ArticleCategory, ArticleDifficulty, ArticleStatus, ArticleDetail, QuizQuestion } from '../types';
 import { API_BASE_URL } from '../lib/apiConfig';
 
 const baseUrl = `${API_BASE_URL}/articles`;
@@ -105,8 +105,8 @@ export const getAll = ({
 export const getMyArticles = (): Promise<Article[]> =>
     request.get<Article[]>(`${baseUrl}/my`);
 
-export const getOne = (articleId: string): Promise<Article> =>
-    request.get<Article>(`${baseUrl}/${articleId}`);
+export const getOne = (articleId: string): Promise<ArticleDetail> =>
+    request.get<ArticleDetail>(`${baseUrl}/${articleId}`);
 
 export const getRelated = (articleId: string): Promise<RelatedArticle[]> =>
     request.get<RelatedArticle[]>(`${baseUrl}/${articleId}/related`);
