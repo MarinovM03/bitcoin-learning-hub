@@ -1,5 +1,4 @@
 import * as request from '../utils/requester';
-import type { Like } from '../types';
 import { API_BASE_URL } from '../lib/apiConfig';
 
 const baseUrl = `${API_BASE_URL}/likes`;
@@ -9,13 +8,18 @@ export interface LikeToggleResponse {
     totalLikes: number;
 }
 
+export interface LikeSummary {
+    totalLikes: number;
+    likedByMe: boolean;
+}
+
 export const toggle = (articleId: string): Promise<LikeToggleResponse> =>
     request.post<LikeToggleResponse>(baseUrl, { articleId });
 
-export const getAllForArticle = async (articleId: string): Promise<Like[]> => {
+export const getSummary = async (articleId: string): Promise<LikeSummary> => {
     try {
-        return await request.get<Like[]>(`${baseUrl}/${articleId}`);
+        return await request.get<LikeSummary>(`${baseUrl}/${articleId}`);
     } catch {
-        return [];
+        return { totalLikes: 0, likedByMe: false };
     }
 };

@@ -122,6 +122,8 @@ export const submitQuiz = asyncHandler(async (req, res) => {
             certification = await PathCertification.create({
                 _ownerId: req.user._id,
                 pathId: path._id,
+                pathTitle: path.title,
+                pathDifficulty: path.difficulty,
                 score,
                 correctAnswers,
                 totalQuestions: questions.length,
@@ -131,6 +133,8 @@ export const submitQuiz = asyncHandler(async (req, res) => {
             existing.score = score;
             existing.correctAnswers = correctAnswers;
             existing.totalQuestions = questions.length;
+            existing.pathTitle = path.title;
+            existing.pathDifficulty = path.difficulty;
             existing.passedAt = new Date();
             await existing.save();
             certification = existing;

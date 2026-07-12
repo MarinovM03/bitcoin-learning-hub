@@ -35,7 +35,7 @@ export default function MyArticles() {
         let cancelled = false;
         Promise.all(
             published.map(a =>
-                likeService.getAllForArticle(a._id).then(likes => likes.length).catch(() => 0)
+                likeService.getSummary(a._id).then(summary => summary.totalLikes).catch(() => 0)
             )
         ).then(counts => {
             if (!cancelled) setTotalLikes(counts.reduce((sum, n) => sum + n, 0));

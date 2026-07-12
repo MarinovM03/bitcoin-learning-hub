@@ -1,6 +1,7 @@
 import Comment from '../models/Comment.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { requireAccessibleArticle } from '../utils/articleAccess.js';
 
 export const getAllForArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
@@ -12,6 +13,8 @@ export const getAllForArticle = asyncHandler(async (req, res) => {
 
 export const create = asyncHandler(async (req, res) => {
     const { articleId, text } = req.body;
+
+    await requireAccessibleArticle(articleId, req.user._id);
 
     const comment = await Comment.create({
         articleId,

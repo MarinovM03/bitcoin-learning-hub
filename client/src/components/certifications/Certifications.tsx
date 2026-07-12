@@ -89,13 +89,13 @@ export default function Certifications() {
                                     </div>
                                 </div>
                                 <div className="certification-card-body">
-                                    {cert.pathId?.difficulty && (
-                                        <span className={`difficulty-badge difficulty-badge--${cert.pathId.difficulty.toLowerCase()}`}>
-                                            {cert.pathId.difficulty}
+                                    {(cert.pathId?.difficulty || cert.pathDifficulty) && (
+                                        <span className={`difficulty-badge difficulty-badge--${(cert.pathId?.difficulty || cert.pathDifficulty || '').toLowerCase()}`}>
+                                            {cert.pathId?.difficulty || cert.pathDifficulty}
                                         </span>
                                     )}
                                     <h3 className="certification-card-title">
-                                        {cert.pathId?.title || 'Deleted Path'}
+                                        {cert.pathId?.title || cert.pathTitle || 'Deleted Path'}
                                     </h3>
                                     <div className="certification-card-meta">
                                         <span>Passed {formatDate(cert.passedAt)}</span>

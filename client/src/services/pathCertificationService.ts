@@ -56,6 +56,8 @@ export interface CertificationSummary {
     totalQuestions: number;
     passedAt: string;
     pathId: CertificationPathInfo | null;
+    pathTitle?: string;
+    pathDifficulty?: string;
 }
 
 export interface CertificationDetail extends CertificationSummary {

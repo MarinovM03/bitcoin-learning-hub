@@ -34,8 +34,14 @@ describe('Likes', () => {
         await toggle(a, article._id);
         await toggle(b, article._id);
 
-        const list = await request(app()).get(`/likes/${article._id}`);
-        expect(list.status).toBe(200);
-        expect(list.body).toHaveLength(2);
+        const summary = await request(app()).get(`/likes/${article._id}`);
+        expect(summary.status).toBe(200);
+        expect(summary.body).toEqual({ totalLikes: 2, likedByMe: false });
+
+        const authed = await request(app())
+            .get(`/likes/${article._id}`)
+            .set('x-authorization', a);
+        expect(authed.status).toBe(200);
+        expect(authed.body).toEqual({ totalLikes: 2, likedByMe: true });
     });
 });

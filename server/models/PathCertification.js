@@ -11,6 +11,14 @@ const pathCertificationSchema = new mongoose.Schema({
         ref: 'LearningPath',
         required: true,
     },
+    pathTitle: {
+        type: String,
+        default: '',
+    },
+    pathDifficulty: {
+        type: String,
+        default: '',
+    },
     score: {
         type: Number,
         required: true,

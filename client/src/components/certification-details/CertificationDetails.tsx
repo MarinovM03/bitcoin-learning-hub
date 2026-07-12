@@ -48,8 +48,8 @@ export default function CertificationDetails() {
     if (!cert) return null;
 
     const ownerUsername = cert._ownerId?.username || 'Student';
-    const pathTitle = cert.pathId?.title || 'Learning Path';
-    const difficulty = cert.pathId?.difficulty;
+    const pathTitle = cert.pathId?.title || cert.pathTitle || 'Learning Path';
+    const difficulty = cert.pathId?.difficulty || cert.pathDifficulty;
 
     return (
         <section className="page-content certificate-page">

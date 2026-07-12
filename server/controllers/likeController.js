@@ -1,9 +1,12 @@
 import Like from '../models/Like.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { requireAccessibleArticle } from '../utils/articleAccess.js';
 
 export const toggleLike = asyncHandler(async (req, res) => {
     const { articleId } = req.body;
     const _ownerId = req.user._id;
+
+    await requireAccessibleArticle(articleId, _ownerId);
 
     const existing = await Like.findOneAndDelete({ articleId, _ownerId });
 
@@ -24,6 +27,9 @@ export const toggleLike = asyncHandler(async (req, res) => {
 
 export const getLikes = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
-    const likes = await Like.find({ articleId });
-    res.json(likes);
+    const [totalLikes, likedByMe] = await Promise.all([
+        Like.countDocuments({ articleId }),
+        req.user ? Like.exists({ articleId, _ownerId: req.user._id }) : Promise.resolve(null),
+    ]);
+    res.json({ totalLikes, likedByMe: Boolean(likedByMe) });
 });

@@ -1,9 +1,12 @@
 import Bookmark from '../models/Bookmark.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { requireAccessibleArticle } from '../utils/articleAccess.js';
 
 export const toggle = asyncHandler(async (req, res) => {
     const { articleId } = req.body;
     const _ownerId = req.user._id;
+
+    await requireAccessibleArticle(articleId, _ownerId);
 
     const deleted = await Bookmark.findOneAndDelete({ articleId, _ownerId });
     if (deleted) {
@@ -23,7 +26,7 @@ export const toggle = asyncHandler(async (req, res) => {
 
 export const getMyBookmarks = asyncHandler(async (req, res) => {
     const bookmarks = await Bookmark.find({ _ownerId: req.user._id })
-        .populate('articleId')
+        .populate('articleId', 'title category imageUrl summary difficulty seriesName seriesPart readingTime views status createdAt')
         .sort({ createdAt: -1 });
 
     const articles = bookmarks
