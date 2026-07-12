@@ -9,10 +9,11 @@ import PageMeta from '../page-meta/PageMeta';
 import { usePaths } from '../../hooks/queries/usePaths';
 import { useMyCertifications } from '../../hooks/queries/useCertifications';
 import type { CertificationSummary } from '../../services/pathCertificationService';
+import type { ArticleDifficulty } from '../../types';
 
 export default function Paths() {
     const { isAuthenticated } = useAuth();
-    const [difficulty, setDifficulty] = useState('All');
+    const [difficulty, setDifficulty] = useState<ArticleDifficulty | 'All'>('All');
 
     const { data: pathsData, isPending: isLoading, error: pathsError } = usePaths({ difficulty });
     const { data: certifications = [] } = useMyCertifications(isAuthenticated);
@@ -56,7 +57,7 @@ export default function Paths() {
                     <div className="paths-filter-group">
                         <span className="paths-filter-label">Difficulty</span>
                         <div className="paths-filter-buttons">
-                            {['All', ...ARTICLE_DIFFICULTIES].map(d => (
+                            {(['All', ...ARTICLE_DIFFICULTIES] as const).map(d => (
                                 <button
                                     key={d}
                                     type="button"

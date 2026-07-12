@@ -23,7 +23,16 @@ export const KEYHOLDER_COLORS = [
     '#1abc9c', // teal
 ];
 
-export const SCENARIOS = [
+export interface MultisigScenario {
+    id: string;
+    label: string;
+    subtitle: string;
+    m: number;
+    n: number;
+    description: string;
+}
+
+export const SCENARIOS: MultisigScenario[] = [
     {
         id: 'family',
         label: 'Family Vault',
@@ -55,7 +64,7 @@ export const SCENARIOS = [
 
 // Returns a short, specific sentence explaining the security / availability
 // trade-off for the current (m, n) configuration.
-export function describeConfig(m, n) {
+export function describeConfig(m: number, n: number): string {
     if (m === 1 && n === 1) {
         return 'Standard single-signature wallet. No redundancy: if the key is lost or stolen, the funds are gone forever.';
     }

@@ -7,6 +7,8 @@ import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles } from '../../hooks/queries/useArticles';
+import type { ArticleSort } from '../../services/articleService';
+import type { ArticleCategory, ArticleDifficulty } from '../../types';
 
 const SORT_LABELS = {
     latest: 'Latest',
@@ -36,9 +38,17 @@ export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const search = searchParams.get('search') || '';
-    const activeCategory = searchParams.get('category') || 'All';
-    const activeDifficulty = searchParams.get('difficulty') || 'All';
-    const sort = searchParams.get('sort') || 'latest';
+    const rawCategory = searchParams.get('category') || 'All';
+    const rawDifficulty = searchParams.get('difficulty') || 'All';
+    const activeCategory: ArticleCategory | 'All' =
+        (ARTICLE_CATEGORIES as readonly string[]).includes(rawCategory)
+            ? rawCategory as ArticleCategory
+            : 'All';
+    const activeDifficulty: ArticleDifficulty | 'All' =
+        (ARTICLE_DIFFICULTIES as readonly string[]).includes(rawDifficulty)
+            ? rawDifficulty as ArticleDifficulty
+            : 'All';
+    const sort: ArticleSort = searchParams.get('sort') === 'views' ? 'views' : 'latest';
     const page = parseInt(searchParams.get('page') || '1');
 
     const { data, isPending, isError } = useArticles({

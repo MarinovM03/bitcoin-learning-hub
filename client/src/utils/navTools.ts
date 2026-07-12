@@ -1,6 +1,15 @@
 import { ArrowLeftRight, LineChart, FileSearch, Layers, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-export const TOOLS = [
+export interface NavTool {
+    to: string;
+    label: string;
+    short: string;
+    description: string;
+    Icon: LucideIcon;
+}
+
+export const TOOLS: NavTool[] = [
     {
         to: '/converter',
         label: 'Sats Converter',

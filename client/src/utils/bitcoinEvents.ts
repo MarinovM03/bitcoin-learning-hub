@@ -1,4 +1,16 @@
-export const BITCOIN_EVENTS = {
+export interface BitcoinEvent {
+    year: number;
+    title: string;
+    body: string;
+    category: string;
+}
+
+export type BitcoinEventWithDate = BitcoinEvent & {
+    date: string;
+    mode: 'today' | 'upcoming';
+};
+
+export const BITCOIN_EVENTS: Record<string, BitcoinEvent> = {
     '01-03': {
         year: 2009,
         title: 'Genesis Block Mined',
@@ -439,19 +451,19 @@ export const BITCOIN_EVENTS = {
     },
 };
 
-function toKey(date) {
+function toKey(date: Date): string {
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const dd = String(date.getDate()).padStart(2, '0');
     return `${mm}-${dd}`;
 }
 
-export function getTodaysEvent(today = new Date()) {
+export function getTodaysEvent(today: Date = new Date()): BitcoinEventWithDate {
     const todayKey = toKey(today);
     if (BITCOIN_EVENTS[todayKey]) {
         return { ...BITCOIN_EVENTS[todayKey], date: todayKey, mode: 'today' };
     }
 
     const sortedKeys = Object.keys(BITCOIN_EVENTS).sort();
-    const upcoming = sortedKeys.find(k => k > todayKey) ?? sortedKeys[0];
-    return { ...BITCOIN_EVENTS[upcoming], date: upcoming, mode: 'upcoming' };
+    const upcoming = (sortedKeys.find(k => k > todayKey) ?? sortedKeys[0])!;
+    return { ...BITCOIN_EVENTS[upcoming]!, date: upcoming, mode: 'upcoming' };
 }

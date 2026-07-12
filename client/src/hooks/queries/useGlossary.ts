@@ -7,8 +7,8 @@ export const useGlossaryTerms = () => useQuery({
     queryFn: glossaryService.getAll,
 });
 
-export const useGlossaryTerm = (termId) => useQuery({
+export const useGlossaryTerm = (termId?: string) => useQuery({
     queryKey: queryKeys.glossary.detail(termId),
-    queryFn: () => glossaryService.getOne(termId),
+    queryFn: () => glossaryService.getOne(termId!),
     enabled: !!termId,
 });

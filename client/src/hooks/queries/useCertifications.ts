@@ -8,8 +8,8 @@ export const useMyCertifications = (enabled = true) => useQuery({
     enabled,
 });
 
-export const useCertification = (certId) => useQuery({
+export const useCertification = (certId?: string) => useQuery({
     queryKey: queryKeys.certifications.detail(certId),
-    queryFn: () => pathCertificationService.getOne(certId),
+    queryFn: () => pathCertificationService.getOne(certId!),
     enabled: !!certId,
 });
