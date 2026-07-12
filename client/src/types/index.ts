@@ -7,6 +7,7 @@ export type {
     ArticleDetail,
     ArticleOwnerRef,
     QuizQuestion,
+    QuizFormQuestion,
 } from './article';
 export type { User, AuthUser } from './user';
 export type { LearningPath, PopulatedLearningPath } from './learningPath';

@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import type { QuizQuestion } from '../../types';
+import type { QuizFormQuestion } from '../../types';
 
 const MAX_QUESTIONS = 5;
 const MAX_QUESTION_LENGTH = 200;
@@ -13,8 +13,8 @@ const emptyQuestion = () => ({
 });
 
 interface QuizBuilderProps {
-    quiz: QuizQuestion[];
-    onChange: (quiz: QuizQuestion[]) => void;
+    quiz: QuizFormQuestion[];
+    onChange: (quiz: QuizFormQuestion[]) => void;
     showErrors?: boolean;
 }
 

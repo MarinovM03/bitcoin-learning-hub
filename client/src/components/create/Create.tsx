@@ -11,12 +11,12 @@ import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
 import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
 import { createArticleSchema } from '../../validators/articleSchemas';
-import type { QuizQuestion, ArticleStatus, ArticleCategory } from '../../types';
+import type { QuizFormQuestion, ArticleStatus, ArticleCategory } from '../../types';
 
 export default function Create() {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
-    const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
+    const [quiz, setQuiz] = useState<QuizFormQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
     const [takenParts, setTakenParts] = useState<number[]>([]);
 

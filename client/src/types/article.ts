@@ -16,6 +16,12 @@ export type ArticleStatus = 'draft' | 'published';
 export interface QuizQuestion {
     question: string;
     options: string[];
+    correctIndex?: number;
+}
+
+export interface QuizFormQuestion {
+    question: string;
+    options: string[];
     correctIndex: number;
 }
 
@@ -32,13 +38,13 @@ export interface Article {
     difficulty: ArticleDifficulty;
     imageUrl: string;
     summary: string;
-    content: string;
+    content?: string;
     readingTime: number;
     views: number;
     status: ArticleStatus;
     seriesName: string;
     seriesPart: number | null;
-    quiz: QuizQuestion[];
+    quiz?: QuizQuestion[];
     _ownerId: string | ArticleOwnerRef;
     createdAt: string;
     updatedAt: string;

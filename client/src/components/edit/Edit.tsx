@@ -11,7 +11,7 @@ import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
 import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
 import { createArticleSchema } from '../../validators/articleSchemas';
-import type { QuizQuestion, ArticleStatus, ArticleCategory } from '../../types';
+import type { QuizFormQuestion, ArticleStatus, ArticleCategory } from '../../types';
 
 export default function Edit() {
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Edit() {
 
     const [serverError, setServerError] = useState('');
     const [currentStatus, setCurrentStatus] = useState('published');
-    const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
+    const [quiz, setQuiz] = useState<QuizFormQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
     const [takenParts, setTakenParts] = useState<number[]>([]);
 
@@ -88,7 +88,11 @@ export default function Edit() {
                     seriesPart: result.seriesPart ?? '',
                 });
                 setCurrentStatus(result.status || 'published');
-                setQuiz(result.quiz || []);
+                setQuiz((result.quiz ?? []).map(q => ({
+                    question: q.question,
+                    options: q.options,
+                    correctIndex: q.correctIndex ?? 0,
+                })));
             })
             .catch(() => navigate('/not-found'));
     }, [articleId, navigate, reset]);

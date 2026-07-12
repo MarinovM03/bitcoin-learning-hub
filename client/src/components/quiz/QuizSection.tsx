@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { getResultMessage } from '../../utils/quizHelpers';
+import * as articleService from '../../services/articleService';
+import { toast } from '../../lib/toast';
 import type { QuizQuestion } from '../../types';
 
 interface QuizAnswer {
@@ -10,13 +12,15 @@ interface QuizAnswer {
 }
 
 interface QuizSectionProps {
+    articleId: string;
     quiz?: QuizQuestion[];
 }
 
-export default function QuizSection({ quiz }: QuizSectionProps) {
+export default function QuizSection({ articleId, quiz }: QuizSectionProps) {
     const [started, setStarted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [isChecking, setIsChecking] = useState(false);
     const [score, setScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [answers, setAnswers] = useState<QuizAnswer[]>([]);
@@ -46,13 +50,19 @@ export default function QuizSection({ quiz }: QuizSectionProps) {
         setAnswers([]);
     };
 
-    const handleSelect = (optIndex: number) => {
-        if (selectedIndex !== null) return;
-        setSelectedIndex(optIndex);
-
-        const isCorrect = optIndex === quiz[currentIndex].correctIndex;
-        if (isCorrect) setScore(s => s + 1);
-        setAnswers(prev => [...prev, { selected: optIndex, correct: quiz[currentIndex].correctIndex, isCorrect }]);
+    const handleSelect = async (optIndex: number) => {
+        if (selectedIndex !== null || isChecking) return;
+        setIsChecking(true);
+        try {
+            const { isCorrect, correctIndex } = await articleService.checkQuizAnswer(articleId, currentIndex, optIndex);
+            setSelectedIndex(optIndex);
+            if (isCorrect) setScore(s => s + 1);
+            setAnswers(prev => [...prev, { selected: optIndex, correct: correctIndex, isCorrect }]);
+        } catch {
+            toast.error("Couldn't check your answer. Try again.");
+        } finally {
+            setIsChecking(false);
+        }
     };
 
     const handleNext = () => {
@@ -65,15 +75,16 @@ export default function QuizSection({ quiz }: QuizSectionProps) {
     };
 
     const q = quiz[currentIndex];
+    const currentAnswer = answers[currentIndex] ?? null;
     const result = getResultMessage(score, quiz.length);
     const answeredCount = currentIndex + (selectedIndex !== null ? 1 : 0);
     const progressPct = (answeredCount / quiz.length) * 100;
 
-    const feedbackMessage = selectedIndex === null
+    const feedbackMessage = currentAnswer === null
         ? ''
-        : selectedIndex === q?.correctIndex
+        : currentAnswer.isCorrect
             ? 'Correct!'
-            : `Incorrect. The correct answer was ${q?.options[q.correctIndex]}.`;
+            : `Incorrect. The correct answer was ${q?.options[currentAnswer.correct]}.`;
 
     if (!started) {
         return (
@@ -121,8 +132,8 @@ export default function QuizSection({ quiz }: QuizSectionProps) {
                             <span className="quiz-result-row-icon" aria-hidden="true">{answers[i]?.isCorrect ? '✓' : '✗'}</span>
                             <span className="sr-only">{answers[i]?.isCorrect ? 'Correct.' : 'Incorrect.'}</span>
                             <span className="quiz-result-row-q">{q.question}</span>
-                            {!answers[i]?.isCorrect && (
-                                <span className="quiz-result-row-answer">Correct: {q.options[q.correctIndex]}</span>
+                            {answers[i] && !answers[i].isCorrect && (
+                                <span className="quiz-result-row-answer">Correct: {q.options[answers[i].correct]}</span>
                             )}
                         </li>
                     ))}
@@ -160,11 +171,11 @@ export default function QuizSection({ quiz }: QuizSectionProps) {
                 {q.options.map((opt, optIndex) => {
                     let cls = 'quiz-option';
                     let stateLabel = '';
-                    if (selectedIndex !== null) {
-                        if (optIndex === q.correctIndex) {
+                    if (currentAnswer !== null) {
+                        if (optIndex === currentAnswer.correct) {
                             cls += ' quiz-option--correct';
                             stateLabel = ' (correct answer)';
-                        } else if (optIndex === selectedIndex) {
+                        } else if (optIndex === currentAnswer.selected) {
                             cls += ' quiz-option--wrong';
                             stateLabel = ' (your answer, incorrect)';
                         } else {
@@ -177,15 +188,15 @@ export default function QuizSection({ quiz }: QuizSectionProps) {
                             key={optIndex}
                             className={cls}
                             onClick={() => handleSelect(optIndex)}
-                            disabled={selectedIndex !== null}
+                            disabled={selectedIndex !== null || isChecking}
                             aria-label={`Option ${String.fromCharCode(65 + optIndex)}: ${opt}${stateLabel}`}
                         >
                             <span className="quiz-option-letter" aria-hidden="true">{String.fromCharCode(65 + optIndex)}</span>
                             <span className="quiz-option-text">{opt}</span>
-                            {selectedIndex !== null && optIndex === q.correctIndex && (
+                            {currentAnswer !== null && optIndex === currentAnswer.correct && (
                                 <span className="quiz-option-badge" aria-hidden="true">✓</span>
                             )}
-                            {selectedIndex === optIndex && optIndex !== q.correctIndex && (
+                            {currentAnswer !== null && optIndex === currentAnswer.selected && !currentAnswer.isCorrect && (
                                 <span className="quiz-option-badge quiz-option-badge--wrong" aria-hidden="true">✗</span>
                             )}
                         </button>

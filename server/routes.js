@@ -14,8 +14,14 @@ import * as adminController from './controllers/adminController.js';
 import * as searchController from './controllers/searchController.js';
 import * as marketController from './controllers/marketController.js';
 import mongoose from 'mongoose';
-import { registerSchema, loginSchema, updateProfileSchema } from './validators/authSchemas.js';
-import { createArticleSchema, updateArticleSchema } from './validators/articleSchemas.js';
+import {
+    registerSchema,
+    loginSchema,
+    updateProfileSchema,
+    forgotPasswordSchema,
+    resetPasswordSchema,
+} from './validators/authSchemas.js';
+import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
 import { createCommentSchema } from './validators/commentSchemas.js';
 import { likeArticleSchema } from './validators/likeSchemas.js';
@@ -47,6 +53,7 @@ router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', validate({ params: articleIdParam }), articleController.getRelated);
 router.get('/articles/:articleId/series', validate({ params: articleIdParam }), articleController.getSeries);
 router.get('/articles/:articleId', validate({ params: articleIdParam }), articleController.getOne);
+router.post('/articles/:articleId/quiz/check', validate({ params: articleIdParam, body: checkQuizAnswerSchema }), articleController.checkQuizAnswer);
 router.post('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markRead);
 router.delete('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markUnread);
 router.post('/articles', requireAuth, validate({ body: createArticleSchema }), articleController.create);
@@ -74,6 +81,8 @@ router.get('/certifications/:certId', requireAuth, validate({ params: certIdPara
 router.post('/users/register', validate({ body: registerSchema }), authController.register);
 router.post('/users/login', validate({ body: loginSchema }), authController.login);
 router.post('/users/logout', authController.logout);
+router.post('/users/forgot-password', validate({ body: forgotPasswordSchema }), authController.forgotPassword);
+router.post('/users/reset-password', validate({ body: resetPasswordSchema }), authController.resetPassword);
 router.get('/users/profile', requireAuth, authController.getProfile);
 router.put('/users/profile', requireAuth, validate({ body: updateProfileSchema }), authController.updateProfile);
 router.get('/users/:userId/public', validate({ params: userIdParam }), articleController.getPublicProfile);
@@ -97,8 +106,9 @@ router.get('/comments/:articleId', validate({ params: articleIdParam }), comment
 router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
 router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
 
-// Admin routes — guards mount once on the prefix so every handler below
-router.use('/admin', requireAuth, requireAdmin);
+// Admin routes — requireAdmin verifies both the session and the role in one
+// lookup, so it mounts alone on the prefix
+router.use('/admin', requireAdmin);
 router.get('/admin/stats', adminController.getStats);
 router.get('/admin/users', adminController.getUsers);
 router.patch('/admin/users/:userId/role', validate({ params: userIdParam }), adminController.updateUserRole);

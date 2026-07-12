@@ -1,5 +1,5 @@
 import * as request from '../utils/requester';
-import type { Article, ArticleCategory, ArticleDifficulty, ArticleStatus, ArticleDetail, QuizQuestion } from '../types';
+import type { Article, ArticleCategory, ArticleDifficulty, ArticleStatus, ArticleDetail, QuizFormQuestion } from '../types';
 import { API_BASE_URL } from '../lib/apiConfig';
 
 const baseUrl = `${API_BASE_URL}/articles`;
@@ -31,7 +31,7 @@ export interface ArticleWriteData {
     summary: string;
     content: string;
     status?: ArticleStatus;
-    quiz?: QuizQuestion[];
+    quiz?: QuizFormQuestion[];
     seriesName?: string;
     seriesPart?: number | string | null;
 }
@@ -134,6 +134,18 @@ export const edit = (articleId: string, data: ArticleWriteData): Promise<Article
 
 export const getTrending = (): Promise<TrendingArticle[]> =>
     request.get<TrendingArticle[]>(`${baseUrl}/trending`);
+
+export interface QuizCheckResponse {
+    isCorrect: boolean;
+    correctIndex: number;
+}
+
+export const checkQuizAnswer = (
+    articleId: string,
+    questionIndex: number,
+    answerIndex: number,
+): Promise<QuizCheckResponse> =>
+    request.post<QuizCheckResponse>(`${baseUrl}/${articleId}/quiz/check`, { questionIndex, answerIndex });
 
 export interface ReadStateResponse {
     read: boolean;

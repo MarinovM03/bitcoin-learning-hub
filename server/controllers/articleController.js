@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
@@ -36,8 +37,8 @@ const findDuplicateSeriesPart = async (ownerId, series, excludeArticleId = null)
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const pageNum = parseInt(req.query.page) || 1;
-    const limitNum = parseInt(req.query.limit) || 12;
+    const pageNum = Math.max(parseInt(req.query.page) || 1, 1);
+    const limitNum = Math.min(Math.max(parseInt(req.query.limit) || 12, 1), 50);
     const skip = (pageNum - 1) * limitNum;
 
     const sort = typeof req.query.sort === 'string' ? req.query.sort : '';
@@ -62,7 +63,12 @@ export const getAll = asyncHandler(async (req, res) => {
     }
 
     const [articles, total] = await Promise.all([
-        Article.find(filter).sort(sortOption).skip(skip).limit(limitNum).populate('_ownerId', 'username'),
+        Article.find(filter)
+            .select('-content -quiz')
+            .sort(sortOption)
+            .skip(skip)
+            .limit(limitNum)
+            .populate('_ownerId', 'username'),
         Article.countDocuments(filter)
     ]);
 
@@ -70,7 +76,9 @@ export const getAll = asyncHandler(async (req, res) => {
 });
 
 export const getMyArticles = asyncHandler(async (req, res) => {
-    const articles = await Article.find({ _ownerId: req.user._id }).sort({ createdAt: -1 });
+    const articles = await Article.find({ _ownerId: req.user._id })
+        .select('-content -quiz')
+        .sort({ createdAt: -1 });
     res.json(articles);
 });
 
@@ -136,7 +144,37 @@ export const getOne = asyncHandler(async (req, res) => {
         hasRead = Boolean(readDoc);
     }
 
-    res.json({ ...article.toObject(), hasRead });
+    const payload = { ...article.toObject(), hasRead };
+    if (!isOwner) {
+        payload.quiz = (payload.quiz || []).map(({ question, options }) => ({ question, options }));
+    }
+
+    res.json(payload);
+});
+
+export const checkQuizAnswer = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    const { questionIndex, answerIndex } = req.body;
+
+    const article = await Article.findById(articleId).select('status quiz _ownerId');
+    if (!article) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const isOwner = req.user && String(req.user._id) === String(article._ownerId);
+    if (article.status === 'draft' && !isOwner) {
+        throw new AppError(404, 'Article not found');
+    }
+
+    const question = article.quiz?.[questionIndex];
+    if (!question) {
+        throw new AppError(404, 'Question not found');
+    }
+
+    res.json({
+        isCorrect: question.correctIndex === answerIndex,
+        correctIndex: question.correctIndex,
+    });
 });
 
 export const markRead = asyncHandler(async (req, res) => {
@@ -245,7 +283,9 @@ export const getPublicProfile = asyncHandler(async (req, res) => {
 
     const [user, articles] = await Promise.all([
         User.findById(userId).select('username profilePicture'),
-        Article.find({ _ownerId: userId, status: 'published' }).sort({ createdAt: -1 })
+        Article.find({ _ownerId: userId, status: 'published' })
+            .select('-content -quiz')
+            .sort({ createdAt: -1 })
     ]);
 
     if (!user) {
@@ -281,7 +321,16 @@ export const update = asyncHandler(async (req, res) => {
     if (status === 'draft' || status === 'published') updateData.status = status;
     if (Array.isArray(quiz)) updateData.quiz = quiz;
     if (seriesName !== undefined || seriesPart !== undefined) {
-        const series = normalizeSeriesInput(seriesName, seriesPart);
+        const existing = await Article.findOne({ _id: articleId, _ownerId: req.user._id })
+            .select('seriesName seriesPart');
+        if (!existing) {
+            throw new AppError(403, 'Forbidden');
+        }
+
+        const series = normalizeSeriesInput(
+            seriesName !== undefined ? seriesName : existing.seriesName,
+            seriesPart !== undefined ? seriesPart : existing.seriesPart,
+        );
         updateData.seriesName = series.seriesName;
         updateData.seriesPart = series.seriesPart;
 
@@ -319,6 +368,8 @@ export const remove = asyncHandler(async (req, res) => {
     if (!deletedArticle) {
         throw new AppError(403, 'Forbidden');
     }
+
+    await cascadeArticleDelete(articleId);
 
     res.json({ message: 'Article deleted successfully' });
 });
