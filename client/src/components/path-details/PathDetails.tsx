@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { MouseEvent, CSSProperties } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { PenLine, Trash2, CheckCircle2, Circle, Route, Clock } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,6 +13,7 @@ import PageMeta from '../page-meta/PageMeta';
 import { usePath } from '../../hooks/queries/usePaths';
 import { useDeletePath } from '../../hooks/mutations/usePathMutations';
 import { queryKeys } from '../../lib/queryKeys';
+import type { LearningPathDetail } from '../../services/learningPathService';
 
 const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
@@ -25,13 +27,14 @@ export default function PathDetails() {
     const deletePath = useDeletePath();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [pendingToggleId, setPendingToggleId] = useState(null);
+    const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
 
     if (queryError) {
         navigate('/not-found');
     }
 
     const confirmDelete = async () => {
+        if (!pathId) return;
         try {
             await deletePath.mutateAsync(pathId);
             navigate('/paths');
@@ -40,7 +43,7 @@ export default function PathDetails() {
         }
     };
 
-    const toggleRead = async (e, articleId, currentlyRead) => {
+    const toggleRead = async (e: MouseEvent<HTMLButtonElement>, articleId: string, currentlyRead: boolean) => {
         e.preventDefault();
         e.stopPropagation();
         if (pendingToggleId) return;
@@ -48,7 +51,7 @@ export default function PathDetails() {
 
         const detailKey = queryKeys.paths.detail(pathId);
 
-        queryClient.setQueryData(detailKey, (prev) => {
+        queryClient.setQueryData<LearningPathDetail>(detailKey, (prev) => {
             if (!prev) return prev;
             const prevIds = prev.progress?.completedIds || [];
             const idStr = String(articleId);
@@ -78,7 +81,7 @@ export default function PathDetails() {
         }
     };
 
-    if (isLoading || !path) return <PathDetailsSkeleton />;
+    if (isLoading || !path || !pathId) return <PathDetailsSkeleton />;
 
     const isOwner = userId && path._ownerId?._id && userId === String(path._ownerId._id);
     const completedSet = new Set((path.progress?.completedIds || []).map(String));
@@ -142,7 +145,7 @@ export default function PathDetails() {
                             <div className="path-progress-bar">
                                 <div
                                     className="path-progress-bar-fill"
-                                    style={{ '--progress': `${progressPercent}%` }}
+                                    style={{ '--progress': `${progressPercent}%` } as CSSProperties}
                                 />
                             </div>
                         </div>

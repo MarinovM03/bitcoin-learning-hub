@@ -10,15 +10,19 @@ import { handleImgError } from '../../utils/imageHelpers';
 import Spinner from '../spinner/Spinner';
 import PageMeta from '../page-meta/PageMeta';
 import { createPathSchema } from '../../validators/pathSchemas';
+import type { CreatePathValues } from '../../validators/pathSchemas';
+import type { Article } from '../../types';
+
+type PathPickerArticle = Pick<Article, '_id' | 'title' | 'imageUrl'>;
 
 export default function EditPath() {
     const navigate = useNavigate();
     const { pathId } = useParams();
     const [serverError, setServerError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedArticles, setSelectedArticles] = useState([]);
+    const [selectedArticles, setSelectedArticles] = useState<PathPickerArticle[]>([]);
     const [articleSearch, setArticleSearch] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<Article[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
     const {
@@ -43,6 +47,7 @@ export default function EditPath() {
     const title = watch('title');
 
     useEffect(() => {
+        if (!pathId) return;
         learningPathService.getOne(pathId)
             .then(result => {
                 reset({
@@ -73,16 +78,16 @@ export default function EditPath() {
         return () => clearTimeout(timer);
     }, [articleSearch]);
 
-    const addArticle = (article) => {
+    const addArticle = (article: Article) => {
         if (selectedArticles.some(a => String(a._id) === String(article._id))) return;
         setSelectedArticles(state => [...state, article]);
     };
 
-    const removeArticle = (articleId) => {
+    const removeArticle = (articleId: string) => {
         setSelectedArticles(state => state.filter(a => String(a._id) !== String(articleId)));
     };
 
-    const moveArticle = (index, direction) => {
+    const moveArticle = (index: number, direction: number) => {
         setSelectedArticles(state => {
             const next = [...state];
             const target = index + direction;
@@ -92,8 +97,9 @@ export default function EditPath() {
         });
     };
 
-    const onSubmit = async (values) => {
+    const onSubmit = async (values: CreatePathValues) => {
         setServerError('');
+        if (!pathId) return;
         if (selectedArticles.length === 0) {
             setServerError('Add at least one article to the path.');
             return;
@@ -105,11 +111,11 @@ export default function EditPath() {
             });
             navigate(`/paths/${pathId}`);
         } catch (err) {
-            setServerError(err.message);
+            setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
         }
     };
 
-    const isAlreadySelected = (id) => selectedArticles.some(a => String(a._id) === String(id));
+    const isAlreadySelected = (id: string) => selectedArticles.some(a => String(a._id) === String(id));
 
     if (isLoading) return <Spinner />;
 
