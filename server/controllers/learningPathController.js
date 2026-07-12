@@ -32,8 +32,8 @@ const computeProgress = async (userId, articleIds) => {
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const pageNum = parseInt(req.query.page) || 1;
-    const limitNum = parseInt(req.query.limit) || 12;
+    const pageNum = Math.max(parseInt(req.query.page) || 1, 1);
+    const limitNum = Math.min(Math.max(parseInt(req.query.limit) || 12, 1), 50);
     const skip = (pageNum - 1) * limitNum;
 
     const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty : '';

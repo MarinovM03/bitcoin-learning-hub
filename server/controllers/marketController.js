@@ -10,7 +10,9 @@ export const getBtcGlobal = asyncHandler(async (req, res) => {
         return res.json(btcGlobalCache.data);
     }
     try {
-        const response = await fetch('https://api.coingecko.com/api/v3/global');
+        const response = await fetch('https://api.coingecko.com/api/v3/global', {
+            signal: AbortSignal.timeout(5000),
+        });
         if (!response.ok) {
             if (btcGlobalCache.data) return res.json(btcGlobalCache.data);
             throw new AppError(response.status, 'CoinGecko request failed');
