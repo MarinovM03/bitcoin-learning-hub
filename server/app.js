@@ -27,7 +27,6 @@ export const createApp = ({ disableRateLimit = false } = {}) => {
                 callback(null, false);
             }
         },
-        credentials: true,
     }));
     app.use(mongoSanitize);
     app.use(authMiddleware);
@@ -43,6 +42,8 @@ export const createApp = ({ disableRateLimit = false } = {}) => {
 
         app.use('/users/login', authLimiter);
         app.use('/users/register', authLimiter);
+        app.use('/users/forgot-password', authLimiter);
+        app.use('/users/reset-password', authLimiter);
 
         const writeLimiter = rateLimit({
             windowMs: 15 * 60 * 1000,

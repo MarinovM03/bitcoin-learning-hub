@@ -82,10 +82,10 @@ describe('Register form', () => {
     });
 
     it('surfaces server errors from the submit handler', async () => {
-        registerSubmitHandler.mockRejectedValueOnce(new Error('User already exists!'));
+        registerSubmitHandler.mockRejectedValueOnce(new Error('Registration failed.'));
         renderRegister();
         await fill();
         await userEvent.click(screen.getByRole('button', { name: /create account/i }));
-        expect(await screen.findByText('User already exists!')).toBeInTheDocument();
+        expect(await screen.findByText('Registration failed.')).toBeInTheDocument();
     });
 });

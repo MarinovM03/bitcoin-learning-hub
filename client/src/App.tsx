@@ -44,6 +44,7 @@ const Certifications = lazy(() => import("./components/certifications/Certificat
 const CertificationDetails = lazy(() => import("./components/certification-details/CertificationDetails"));
 const Admin = lazy(() => import("./components/admin/Admin"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword"));
 
 function App() {
     return (
@@ -96,6 +97,7 @@ function App() {
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route path="/reset-password" element={<ResetPassword />} />
                         </Route>
 
                         <Route element={<AdminGuard />}>

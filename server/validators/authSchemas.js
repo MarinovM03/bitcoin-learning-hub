@@ -11,13 +11,18 @@ const emailRule = z
     .string()
     .trim()
     .toLowerCase()
+    .max(254, 'Email is too long')
     .regex(/.+@.+\..+/, 'Please enter a valid email address');
 
-const passwordRule = z.string().min(8, 'Password must be at least 8 characters long!');
+const passwordRule = z
+    .string()
+    .min(8, 'Password must be at least 8 characters long!')
+    .max(128, 'Password must be at most 128 characters');
 
 const profilePictureRule = z
     .string()
     .trim()
+    .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'Profile picture must be a valid URL')
     .or(z.literal(''))
     .optional();
@@ -38,12 +43,26 @@ export const loginSchema = z.object({
     password: z.string().min(1, 'Please enter your password'),
 });
 
+export const forgotPasswordSchema = z.object({
+    email: emailRule,
+});
+
+export const resetPasswordSchema = z.object({
+    token: z.string().trim().min(1, 'Reset token is required'),
+    password: passwordRule,
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match!',
+    path: ['confirmPassword'],
+});
+
 export const updateProfileSchema = z.object({
     username: usernameRule.optional(),
     email: emailRule.optional(),
     profilePicture: profilePictureRule,
     password: passwordRule.optional(),
     confirmPassword: z.string().optional(),
+    currentPassword: z.string().optional(),
 }).refine(
     (data) => !data.password || data.password === data.confirmPassword,
     { message: 'Passwords do not match!', path: ['confirmPassword'] },

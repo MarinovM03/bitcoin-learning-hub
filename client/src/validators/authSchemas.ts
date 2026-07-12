@@ -11,13 +11,18 @@ const emailRule = z
     .string()
     .trim()
     .toLowerCase()
+    .max(254, 'Email is too long')
     .regex(/.+@.+\..+/, 'Please enter a valid email address');
 
-const passwordRule = z.string().min(8, 'Password must be at least 8 characters long!');
+const passwordRule = z
+    .string()
+    .min(8, 'Password must be at least 8 characters long!')
+    .max(128, 'Password must be at most 128 characters');
 
 const profilePictureRule = z
     .string()
     .trim()
+    .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'Profile picture must be a valid URL')
     .or(z.literal(''))
     .optional();
@@ -44,6 +49,7 @@ export const updateProfileSchema = z.object({
     profilePicture: profilePictureRule,
     password: z.union([passwordRule, z.literal('')]).optional(),
     confirmPassword: z.string().optional(),
+    currentPassword: z.string().optional(),
 }).refine(
     (data) => !data.password || data.password === data.confirmPassword,
     { message: 'Passwords do not match!', path: ['confirmPassword'] },

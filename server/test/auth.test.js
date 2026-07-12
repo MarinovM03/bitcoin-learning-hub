@@ -144,6 +144,77 @@ describe('PUT /users/profile', () => {
             .send({ password: 'new-pass-1234', confirmPassword: 'different-1234' });
         expect(res.status).toBe(400);
     });
+
+    it('rejects a password change without the current password', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({ password: 'new-pass-1234', confirmPassword: 'new-pass-1234' });
+        expect(res.status).toBe(400);
+    });
+
+    it('rejects a password change with a wrong current password', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({
+                password: 'new-pass-1234',
+                confirmPassword: 'new-pass-1234',
+                currentPassword: 'wrong-password',
+            });
+        expect(res.status).toBe(400);
+    });
+
+    it('changes the password when the current password is provided', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({
+                password: 'new-pass-1234',
+                confirmPassword: 'new-pass-1234',
+                currentPassword: userFixtures.primary.password,
+            });
+        expect(res.status).toBe(200);
+
+        const newLogin = await login({ password: 'new-pass-1234' });
+        expect(newLogin.status).toBe(200);
+    });
+
+    it('rejects an email change without the current password', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({ email: 'changed@example.com' });
+        expect(res.status).toBe(400);
+    });
+
+    it('changes the email when the current password is provided', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({ email: 'changed@example.com', currentPassword: userFixtures.primary.password });
+        expect(res.status).toBe(200);
+        expect(res.body.email).toBe('changed@example.com');
+    });
+
+    it('allows username and picture changes without the current password', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({
+                username: 'freshname',
+                profilePicture: 'https://example.com/pic.png',
+                email: userFixtures.primary.email,
+            });
+        expect(res.status).toBe(200);
+        expect(res.body.username).toBe('freshname');
+    });
 });
 
 describe('POST /users/logout', () => {

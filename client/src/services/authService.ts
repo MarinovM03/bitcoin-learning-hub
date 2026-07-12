@@ -16,6 +16,7 @@ export interface ProfileUpdateData {
     email?: string;
     profilePicture?: string;
     password?: string;
+    currentPassword?: string;
 }
 
 export const login = (identifier: string, password: string): Promise<AuthUser> =>
@@ -27,6 +28,20 @@ export const register = (registerData: RegisterData): Promise<AuthUser> =>
 export const logout = async (): Promise<void> => {
     await request.post<unknown>(`${baseUrl}/logout`);
 };
+
+export interface AuthMessageResponse {
+    message: string;
+}
+
+export const forgotPassword = (email: string): Promise<AuthMessageResponse> =>
+    request.post<AuthMessageResponse>(`${baseUrl}/forgot-password`, { email });
+
+export const resetPassword = (
+    token: string,
+    password: string,
+    confirmPassword: string,
+): Promise<AuthMessageResponse> =>
+    request.post<AuthMessageResponse>(`${baseUrl}/reset-password`, { token, password, confirmPassword });
 
 export const updateProfile = (data: ProfileUpdateData): Promise<AuthUser> =>
     request.put<AuthUser>(`${baseUrl}/profile`, data);

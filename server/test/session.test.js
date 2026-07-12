@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { app, registerAndToken } from './helpers.js';
+import { app, registerAndToken, userFixtures } from './helpers.js';
 
 describe('Session revocation via tokenVersion', () => {
     it('rejects a token after the user logs out', async () => {
@@ -19,7 +19,11 @@ describe('Session revocation via tokenVersion', () => {
         await request(app())
             .put('/users/profile')
             .set('x-authorization', token)
-            .send({ password: 'rotated-password-1', confirmPassword: 'rotated-password-1' })
+            .send({
+                password: 'rotated-password-1',
+                confirmPassword: 'rotated-password-1',
+                currentPassword: userFixtures.primary.password,
+            })
             .expect(200);
 
         const after = await request(app()).get('/users/profile').set('x-authorization', token);

@@ -5,8 +5,8 @@ import { Link } from "react-router";
 import { z } from "zod";
 import { Mail, ArrowLeft } from "lucide-react";
 import PageMeta from "../page-meta/PageMeta";
-import * as request from "../../utils/requester";
-import { API_BASE_URL } from "../../lib/apiConfig";
+import * as authService from "../../services/authService";
+import { toast } from "../../lib/toast";
 
 const schema = z.object({
     email: z
@@ -31,12 +31,11 @@ export default function ForgotPassword() {
 
     const onSubmit = async ({ email }: ForgotPasswordValues) => {
         try {
-            await request.post(`${API_BASE_URL}/users/forgot-password`, { email });
-        } catch {
-            // Swallow errors so the response is uniform; once the endpoint
-            // exists this catch becomes effectively a no-op.
+            await authService.forgotPassword(email);
+            setSubmittedEmail(email);
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Couldn't send the reset email. Try again.");
         }
-        setSubmittedEmail(email);
     };
 
     if (submittedEmail) {

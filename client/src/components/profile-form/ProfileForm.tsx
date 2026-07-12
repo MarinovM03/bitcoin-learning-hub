@@ -29,6 +29,7 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     const { updateAuthState, usernameChangedAt } = useAuth();
     const [serverError, setServerError] = useState('');
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
+    const [initialEmail, setInitialEmail] = useState('');
 
     const { locked: usernameLocked, daysLeft } = getUsernameStatus(usernameChangedAt);
 
@@ -46,19 +47,26 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             profilePicture: '',
             password: '',
             confirmPassword: '',
+            currentPassword: '',
         },
     });
 
     const profilePictureValue = watch('profilePicture');
+    const emailValue = watch('email');
+    const passwordValue = watch('password');
+    const needsCurrentPassword = Boolean(passwordValue) ||
+        (Boolean(initialEmail) && (emailValue || '').trim().toLowerCase() !== initialEmail);
 
     useEffect(() => {
         authService.getProfile().then(result => {
+            setInitialEmail((result.email || '').toLowerCase());
             reset({
                 username: result.username || '',
                 email: result.email || '',
                 profilePicture: result.profilePicture || '',
                 password: '',
                 confirmPassword: '',
+                currentPassword: '',
             });
         });
     }, [reset]);
@@ -74,16 +82,22 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             setServerError("Please enter a value for the New Password field.");
             return;
         }
+        if (needsCurrentPassword && !values.currentPassword) {
+            setServerError("Enter your current password to change your email or password.");
+            return;
+        }
 
         try {
             const updatedUser = await authService.updateProfile(values);
             updateAuthState(updatedUser);
+            setInitialEmail((updatedUser.email || '').toLowerCase());
             reset({
                 username: updatedUser.username || '',
                 email: updatedUser.email || '',
                 profilePicture: updatedUser.profilePicture || '',
                 password: '',
                 confirmPassword: '',
+                currentPassword: '',
             });
             onSaveSuccess();
         } catch (err) {
@@ -175,6 +189,20 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                     error={errors.confirmPassword?.message}
                     {...register('confirmPassword')}
                 />
+
+                {needsCurrentPassword && (
+                    <>
+                        <p className="profile-password-heading">Confirm It's You</p>
+                        <PasswordField
+                            id="profile-current-password"
+                            label="Current Password"
+                            placeholder="Required to change email or password"
+                            autoComplete="current-password"
+                            error={errors.currentPassword?.message}
+                            {...register('currentPassword')}
+                        />
+                    </>
+                )}
 
                 <input
                     type="submit"
