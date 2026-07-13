@@ -465,3 +465,25 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+.profile-security-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 11px 16px;
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-security-btn:hover {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}

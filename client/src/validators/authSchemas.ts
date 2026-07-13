@@ -47,10 +47,5 @@ export const updateProfileSchema = z.object({
     username: usernameRule.optional().or(z.literal('')),
     email: emailRule.optional().or(z.literal('')),
     profilePicture: profilePictureRule,
-    password: z.union([passwordRule, z.literal('')]).optional(),
-    confirmPassword: z.string().optional(),
     currentPassword: z.string().optional(),
-}).refine(
-    (data) => !data.password || data.password === data.confirmPassword,
-    { message: 'Passwords do not match!', path: ['confirmPassword'] },
-);
+});

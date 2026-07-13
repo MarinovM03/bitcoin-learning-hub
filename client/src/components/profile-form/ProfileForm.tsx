@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Lock, AlertCircle } from "lucide-react";
+import { Lock, AlertCircle, KeyRound } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 import { updateProfileSchema } from "../../validators/authSchemas";
 import PasswordField from "../common/PasswordField";
+import ChangePasswordModal from "../change-password-modal/ChangePasswordModal";
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
@@ -30,6 +31,7 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     const [serverError, setServerError] = useState('');
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
     const [initialEmail, setInitialEmail] = useState('');
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
     const { locked: usernameLocked, daysLeft } = getUsernameStatus(usernameChangedAt);
 
@@ -45,17 +47,14 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             username: '',
             email: '',
             profilePicture: '',
-            password: '',
-            confirmPassword: '',
             currentPassword: '',
         },
     });
 
     const profilePictureValue = watch('profilePicture');
     const emailValue = watch('email');
-    const passwordValue = watch('password');
-    const needsCurrentPassword = Boolean(passwordValue) ||
-        (Boolean(initialEmail) && (emailValue || '').trim().toLowerCase() !== initialEmail);
+    const needsCurrentPassword =
+        Boolean(initialEmail) && (emailValue || '').trim().toLowerCase() !== initialEmail;
 
     useEffect(() => {
         authService.getProfile().then(result => {
@@ -64,8 +63,6 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                 username: result.username || '',
                 email: result.email || '',
                 profilePicture: result.profilePicture || '',
-                password: '',
-                confirmPassword: '',
                 currentPassword: '',
             });
         });
@@ -74,29 +71,28 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     const onSubmit = async (values: ProfileValues) => {
         setServerError('');
 
-        if (values.password && !values.confirmPassword) {
-            setServerError("Please re-enter your new password in the confirmation field.");
-            return;
-        }
-        if (!values.password && values.confirmPassword) {
-            setServerError("Please enter a value for the New Password field.");
-            return;
-        }
         if (needsCurrentPassword && !values.currentPassword) {
-            setServerError("Enter your current password to change your email or password.");
+            setServerError("Enter your current password to change your email.");
             return;
         }
 
+        const payload: authService.ProfileUpdateData = {
+            username: values.username,
+            email: values.email,
+            profilePicture: values.profilePicture,
+        };
+        if (values.currentPassword) {
+            payload.currentPassword = values.currentPassword;
+        }
+
         try {
-            const updatedUser = await authService.updateProfile(values);
+            const updatedUser = await authService.updateProfile(payload);
             updateAuthState(updatedUser);
             setInitialEmail((updatedUser.email || '').toLowerCase());
             reset({
                 username: updatedUser.username || '',
                 email: updatedUser.email || '',
                 profilePicture: updatedUser.profilePicture || '',
-                password: '',
-                confirmPassword: '',
                 currentPassword: '',
             });
             onSaveSuccess();
@@ -172,31 +168,13 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                     {errors.profilePicture && <p className="field-error">{errors.profilePicture.message}</p>}
                 </div>
 
-                <p className="profile-password-heading">Change Password</p>
-
-                <PasswordField
-                    id="profile-new-password"
-                    label="New Password"
-                    placeholder="Leave blank to keep current"
-                    error={errors.password?.message}
-                    {...register('password')}
-                />
-
-                <PasswordField
-                    id="profile-confirm-password"
-                    label="Confirm New Password"
-                    placeholder="Repeat new password"
-                    error={errors.confirmPassword?.message}
-                    {...register('confirmPassword')}
-                />
-
                 {needsCurrentPassword && (
                     <>
                         <p className="profile-password-heading">Confirm It's You</p>
                         <PasswordField
                             id="profile-current-password"
                             label="Current Password"
-                            placeholder="Required to change email or password"
+                            placeholder="Required to change email"
                             autoComplete="current-password"
                             error={errors.currentPassword?.message}
                             {...register('currentPassword')}
@@ -210,7 +188,21 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                     className="btn-submit"
                     disabled={isSubmitting}
                 />
+
+                <p className="profile-section-label">Security</p>
+                <button
+                    type="button"
+                    className="profile-security-btn"
+                    onClick={() => setIsPasswordModalOpen(true)}
+                >
+                    <KeyRound size={15} strokeWidth={2.25} />
+                    Change Password…
+                </button>
             </form>
+
+            {isPasswordModalOpen && (
+                <ChangePasswordModal onClose={() => setIsPasswordModalOpen(false)} />
+            )}
         </div>
     );
 }

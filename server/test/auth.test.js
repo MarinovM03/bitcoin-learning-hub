@@ -215,6 +215,39 @@ describe('PUT /users/profile', () => {
         expect(res.status).toBe(200);
         expect(res.body.username).toBe('freshname');
     });
+
+    it('treats empty password fields as no password change', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({
+                username: userFixtures.primary.username,
+                email: userFixtures.primary.email,
+                profilePicture: 'https://example.com/avatar.png',
+                password: '',
+                confirmPassword: '',
+                currentPassword: '',
+            });
+        expect(res.status).toBe(200);
+        expect(res.body.profilePicture).toBe('https://example.com/avatar.png');
+
+        const stillValid = await login();
+        expect(stillValid.status).toBe(200);
+    });
+
+    it('rejects a new password identical to the current one', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .put('/users/profile')
+            .set('x-authorization', token)
+            .send({
+                password: userFixtures.primary.password,
+                confirmPassword: userFixtures.primary.password,
+                currentPassword: userFixtures.primary.password,
+            });
+        expect(res.status).toBe(400);
+    });
 });
 
 describe('POST /users/logout', () => {

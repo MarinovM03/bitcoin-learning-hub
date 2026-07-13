@@ -60,7 +60,7 @@ export const updateProfileSchema = z.object({
     username: usernameRule.optional(),
     email: emailRule.optional(),
     profilePicture: profilePictureRule,
-    password: passwordRule.optional(),
+    password: passwordRule.or(z.literal('')).optional(),
     confirmPassword: z.string().optional(),
     currentPassword: z.string().optional(),
 }).refine(

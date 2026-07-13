@@ -247,6 +247,13 @@ export const updateProfile = asyncHandler(async (req, res) => {
         }
     }
 
+    if (wantsPasswordChange) {
+        const isSameAsCurrent = await bcrypt.compare(password, user.password);
+        if (isSameAsCurrent) {
+            throw new AppError(400, 'New password must be different from your current password.');
+        }
+    }
+
     if (username && username !== user.username) {
         if (isUsernameLocked(user.usernameChangedAt)) {
             const days = daysUntilUnlock(user.usernameChangedAt);

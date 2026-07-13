@@ -16,6 +16,7 @@ export interface ProfileUpdateData {
     email?: string;
     profilePicture?: string;
     password?: string;
+    confirmPassword?: string;
     currentPassword?: string;
 }
 
