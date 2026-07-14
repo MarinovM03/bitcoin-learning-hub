@@ -60,4 +60,4 @@ export const get = <T>(url: string) => request<T>('GET', url);
 export const post = <T>(url: string, data?: unknown) => request<T>('POST', url, data);
 export const put = <T>(url: string, data?: unknown) => request<T>('PUT', url, data);
 export const patch = <T>(url: string, data?: unknown) => request<T>('PATCH', url, data);
-export const del = <T>(url: string) => request<T>('DELETE', url);
+export const del = <T>(url: string, data?: unknown) => request<T>('DELETE', url, data);

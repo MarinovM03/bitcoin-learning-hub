@@ -43,6 +43,10 @@ export const loginSchema = z.object({
     password: z.string().min(1, 'Please enter your password'),
 });
 
+export const deleteAccountSchema = z.object({
+    password: z.string().min(1, 'Enter your password to delete your account.'),
+});
+
 export const forgotPasswordSchema = z.object({
     email: emailRule,
 });

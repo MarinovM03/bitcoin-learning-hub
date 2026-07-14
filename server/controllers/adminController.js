@@ -6,12 +6,11 @@ import GlossaryTerm from '../models/GlossaryTerm.js';
 import LearningPath from '../models/LearningPath.js';
 import Bookmark from '../models/Bookmark.js';
 import Like from '../models/Like.js';
-import ReadArticle from '../models/ReadArticle.js';
-import PathCertification from '../models/PathCertification.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
+import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
 
 export const getStats = asyncHandler(async (_req, res) => {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -130,20 +129,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndDelete(targetId);
     if (!user) throw new AppError(404, 'User not found');
 
-    const ownedArticles = await Article.find({ _ownerId: targetId }).select('_id');
-    const ownedArticleIds = ownedArticles.map((a) => a._id);
-
-    await Promise.all([
-        Article.deleteMany({ _ownerId: targetId }),
-        Comment.deleteMany({ _ownerId: targetId }),
-        Bookmark.deleteMany({ _ownerId: targetId }),
-        Like.deleteMany({ _ownerId: targetId }),
-        GlossaryTerm.deleteMany({ _ownerId: targetId }),
-        LearningPath.deleteMany({ _ownerId: targetId }),
-        ReadArticle.deleteMany({ _ownerId: targetId }),
-        PathCertification.deleteMany({ _ownerId: targetId }),
-    ]);
-    await cascadeArticleDelete(ownedArticleIds);
+    await cascadeUserDelete(targetId);
 
     res.json({ message: 'User and all their content deleted.' });
 });

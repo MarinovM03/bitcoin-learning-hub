@@ -487,3 +487,19 @@
     border-color: var(--btc-orange);
     color: var(--btc-orange);
 }
+
+.profile-danger-heading {
+    color: var(--danger-color);
+    opacity: 0.8;
+}
+
+.profile-danger-btn {
+    border-color: var(--danger-dim);
+    color: var(--danger-color);
+}
+
+.profile-danger-btn:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background-color: var(--danger-dim);
+}

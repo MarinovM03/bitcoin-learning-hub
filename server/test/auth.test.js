@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { app, register, login, userFixtures, registerAndToken } from './helpers.js';
+import { app, register, login, userFixtures, registerAndToken, promoteToAdmin } from './helpers.js';
 
 describe('POST /users/register', () => {
     it('creates a user and returns an access token', async () => {
@@ -247,6 +247,81 @@ describe('PUT /users/profile', () => {
                 currentPassword: userFixtures.primary.password,
             });
         expect(res.status).toBe(400);
+    });
+});
+
+describe('DELETE /users/me', () => {
+    it('requires authentication', async () => {
+        const res = await request(app()).delete('/users/me').send({ password: 'whatever1' });
+        expect(res.status).toBe(401);
+    });
+
+    it('rejects a wrong password and keeps the account', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app())
+            .delete('/users/me')
+            .set('x-authorization', token)
+            .send({ password: 'not-the-password' });
+        expect(res.status).toBe(400);
+
+        const stillThere = await login();
+        expect(stillThere.status).toBe(200);
+    });
+
+    it('deletes the account and its content with the correct password', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await request(app())
+            .post('/articles')
+            .set('x-authorization', token)
+            .send({
+                title: 'Doomed article',
+                category: 'Basics',
+                imageUrl: 'https://example.com/img.jpg',
+                summary: 'Will be deleted with the account.',
+                content: 'Some content to go down with the ship.',
+            });
+
+        const res = await request(app())
+            .delete('/users/me')
+            .set('x-authorization', token)
+            .send({ password: userFixtures.primary.password });
+        expect(res.status).toBe(200);
+
+        const loginAfter = await login();
+        expect(loginAfter.status).toBe(401);
+
+        const staleSession = await request(app())
+            .get('/users/profile')
+            .set('x-authorization', token);
+        expect(staleSession.status).toBe(401);
+
+        const articleAfter = await request(app()).get(`/articles/${article._id}`);
+        expect(articleAfter.status).toBe(404);
+    });
+
+    it('blocks the only admin from deleting their account', async () => {
+        const { user, token } = await registerAndToken();
+        await promoteToAdmin(user._id);
+
+        const res = await request(app())
+            .delete('/users/me')
+            .set('x-authorization', token)
+            .send({ password: userFixtures.primary.password });
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/only admin/i);
+    });
+
+    it('lets an admin delete their account when another admin exists', async () => {
+        const { user, token } = await registerAndToken();
+        const { user: other } = await registerAndToken(userFixtures.secondary);
+        await promoteToAdmin(user._id);
+        await promoteToAdmin(other._id);
+
+        const res = await request(app())
+            .delete('/users/me')
+            .set('x-authorization', token)
+            .send({ password: userFixtures.primary.password });
+        expect(res.status).toBe(200);
     });
 });
 

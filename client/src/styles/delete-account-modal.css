@@ -1,0 +1,6 @@
+.dam-icon {
+    background-color: var(--danger-dim);
+    color: var(--danger-color);
+    border-color: rgba(231, 76, 60, 0.3);
+    box-shadow: 0 0 24px var(--danger-dim);
+}

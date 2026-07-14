@@ -20,6 +20,7 @@ import {
     updateProfileSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
+    deleteAccountSchema,
 } from './validators/authSchemas.js';
 import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
@@ -72,6 +73,9 @@ router.delete('/paths/:pathId', requireAuth, validate({ params: pathIdParam }), 
 
 // Reading history
 router.delete('/users/me/read-history', requireAuth, articleController.resetReadHistory);
+
+// Account deletion
+router.delete('/users/me', requireAuth, validate({ body: deleteAccountSchema }), authController.deleteAccount);
 
 // Path certification routes
 router.get('/users/me/certifications', requireAuth, pathCertificationController.getMyCertifications);

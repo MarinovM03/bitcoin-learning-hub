@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Lock, AlertCircle, KeyRound } from "lucide-react";
+import { Lock, AlertCircle, KeyRound, Trash2 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 import { updateProfileSchema } from "../../validators/authSchemas";
 import PasswordField from "../common/PasswordField";
 import ChangePasswordModal from "../change-password-modal/ChangePasswordModal";
+import DeleteAccountModal from "../delete-account-modal/DeleteAccountModal";
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
@@ -32,6 +33,7 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     const [usernameWarningVisible, setUsernameWarningVisible] = useState(false);
     const [initialEmail, setInitialEmail] = useState('');
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const { locked: usernameLocked, daysLeft } = getUsernameStatus(usernameChangedAt);
 
@@ -198,10 +200,23 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                     <KeyRound size={15} strokeWidth={2.25} />
                     Change Password…
                 </button>
+
+                <p className="profile-password-heading profile-danger-heading">Danger Zone</p>
+                <button
+                    type="button"
+                    className="profile-security-btn profile-danger-btn"
+                    onClick={() => setIsDeleteModalOpen(true)}
+                >
+                    <Trash2 size={15} strokeWidth={2.25} />
+                    Delete Account…
+                </button>
             </form>
 
             {isPasswordModalOpen && (
                 <ChangePasswordModal onClose={() => setIsPasswordModalOpen(false)} />
+            )}
+            {isDeleteModalOpen && (
+                <DeleteAccountModal onClose={() => setIsDeleteModalOpen(false)} />
             )}
         </div>
     );

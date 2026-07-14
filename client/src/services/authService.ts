@@ -47,5 +47,8 @@ export const resetPassword = (
 export const updateProfile = (data: ProfileUpdateData): Promise<AuthUser> =>
     request.put<AuthUser>(`${baseUrl}/profile`, data);
 
+export const deleteAccount = (password: string): Promise<AuthMessageResponse> =>
+    request.del<AuthMessageResponse>(`${baseUrl}/me`, { password });
+
 export const getProfile = (): Promise<AuthUser> =>
     request.get<AuthUser>(`${baseUrl}/profile`);

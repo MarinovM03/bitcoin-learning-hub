@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
 
 const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
@@ -211,6 +212,32 @@ export const resetPassword = asyncHandler(async (req, res) => {
     await PasswordResetToken.deleteMany({ _ownerId: user._id });
 
     res.json({ message: 'Your password has been reset. You can now sign in.' });
+});
+
+export const deleteAccount = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+        throw new AppError(404, 'User not found');
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+        throw new AppError(400, 'Password is incorrect.');
+    }
+
+    if (user.role === 'admin') {
+        const adminCount = await User.countDocuments({ role: 'admin' });
+        if (adminCount <= 1) {
+            throw new AppError(400, 'You are the only admin. Promote another admin before deleting your account.');
+        }
+    }
+
+    await User.deleteOne({ _id: user._id });
+    await cascadeUserDelete(user._id);
+
+    res.json({ message: 'Your account and all your content have been deleted.' });
 });
 
 export const logout = asyncHandler(async (req, res) => {
