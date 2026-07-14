@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent, MouseEvent as ReactMouseEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
+import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { Search, X, BookOpen, BookMarked, ArrowRight, Loader2 } from "lucide-react";
 import * as searchService from "../../services/searchService";
 import type { SearchArticleHit, SearchGlossaryHit } from "../../services/searchService";
 import HighlightText from "../common/HighlightText";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { useBackdropClose } from "../../hooks/useBackdropClose";
 
 const DEBOUNCE_MS = 300;
 const QUICK_LIMIT = 5;
@@ -23,6 +24,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const activeItemRef = useRef<HTMLAnchorElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
+    const backdropHandlers = useBackdropClose(onClose);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -89,10 +91,6 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
         activeItemRef.current?.scrollIntoView({ block: 'nearest' });
     }, [activeIndex]);
 
-    const handleBackdropClick = (e: ReactMouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) onClose();
-    };
-
     const goToSearchPage = () => {
         const trimmed = query.trim();
         if (trimmed.length < 2) return;
@@ -128,7 +126,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
         `search-overlay-item ${activeIndex === index ? 'search-overlay-item--active' : ''}`;
 
     return (
-        <div className="search-overlay-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-label="Search">
+        <div className="search-overlay-backdrop" {...backdropHandlers} role="dialog" aria-modal="true" aria-label="Search">
             <div className="search-overlay" ref={trapRef}>
                 <form className="search-overlay-form" onSubmit={handleSubmit}>
                     <Search size={18} strokeWidth={2} className="search-overlay-icon" />

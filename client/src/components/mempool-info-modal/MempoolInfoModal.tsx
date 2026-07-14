@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useBackdropClose } from '../../hooks/useBackdropClose';
 
 interface MempoolInfoModalProps {
     onClose: () => void;
@@ -10,6 +11,7 @@ interface MempoolInfoModalProps {
 export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
+    const backdropHandlers = useBackdropClose(onClose);
 
     useEffect(() => {
         closeRef.current?.focus();
@@ -22,7 +24,7 @@ export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
     }, [onClose]);
 
     return (
-        <div className="mempool-info-overlay" onClick={onClose}>
+        <div className="mempool-info-overlay" {...backdropHandlers}>
             <div
                 className="mempool-info-modal"
                 role="dialog"

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { ADDRESS_TYPES } from '../../utils/addressTypes';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useBackdropClose } from '../../hooks/useBackdropClose';
 
 const FORMAT_ROWS = [
     { type: ADDRESS_TYPES.LEGACY, prefix: '1...' },
@@ -20,6 +21,7 @@ interface AddressInfoModalProps {
 export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
+    const backdropHandlers = useBackdropClose(onClose);
 
     useEffect(() => {
         closeRef.current?.focus();
@@ -32,7 +34,7 @@ export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
     }, [onClose]);
 
     return (
-        <div className="address-info-overlay" onClick={onClose}>
+        <div className="address-info-overlay" {...backdropHandlers}>
             <div
                 className="address-info-modal"
                 role="dialog"
