@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ChangePasswordModal from '../components/change-password-modal/ChangePasswordModal';
 
@@ -72,6 +72,25 @@ describe('ChangePasswordModal', () => {
             expect(updateAuthState).toHaveBeenCalled();
             expect(onClose).toHaveBeenCalled();
         });
+    });
+
+    it('stays open when a drag starts inside the dialog and ends on the backdrop', async () => {
+        const onClose = renderModal();
+        const overlay = document.querySelector('.modal-overlay')!;
+        const input = screen.getByLabelText(/current password/i);
+
+        fireEvent.mouseDown(input);
+        fireEvent.click(overlay);
+        expect(onClose).not.toHaveBeenCalled();
+    });
+
+    it('closes when the backdrop itself is pressed and released', async () => {
+        const onClose = renderModal();
+        const overlay = document.querySelector('.modal-overlay')!;
+
+        fireEvent.mouseDown(overlay);
+        fireEvent.click(overlay);
+        expect(onClose).toHaveBeenCalledOnce();
     });
 
     it('shows the server error and stays open on failure', async () => {

@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { KeyRound } from "lucide-react";
+import { KeyRound, X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 import PasswordField from "../common/PasswordField";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { useBackdropClose } from "../../hooks/useBackdropClose";
 import { toast } from "../../lib/toast";
 
 const schema = z.object({
@@ -34,6 +35,7 @@ export default function ChangePasswordModal({ onClose }: ChangePasswordModalProp
     const { updateAuthState } = useAuth();
     const [serverError, setServerError] = useState('');
     const trapRef = useFocusTrap<HTMLDivElement>(true, onClose);
+    const backdropHandlers = useBackdropClose(onClose);
 
     const {
         register,
@@ -61,7 +63,7 @@ export default function ChangePasswordModal({ onClose }: ChangePasswordModalProp
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" {...backdropHandlers}>
             <div
                 className="cpm-box"
                 onClick={(e) => e.stopPropagation()}
@@ -70,6 +72,9 @@ export default function ChangePasswordModal({ onClose }: ChangePasswordModalProp
                 aria-modal="true"
                 aria-labelledby="change-password-title"
             >
+                <button type="button" className="cpm-close" onClick={onClose} aria-label="Close">
+                    <X size={18} strokeWidth={2.25} />
+                </button>
                 <div className="cpm-icon">
                     <KeyRound size={24} strokeWidth={1.8} />
                 </div>

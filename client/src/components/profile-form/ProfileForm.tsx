@@ -189,7 +189,7 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                     disabled={isSubmitting}
                 />
 
-                <p className="profile-section-label">Security</p>
+                <p className="profile-password-heading">Security</p>
                 <button
                     type="button"
                     className="profile-security-btn"
