@@ -6,7 +6,7 @@ import PageMeta from "../page-meta/PageMeta";
 export default function NotFound() {
     return (
         <section className="page-content">
-            <PageMeta title="Page Not Found" description="The page you're looking for doesn't exist." />
+            <PageMeta title="Page Not Found" description="The page you're looking for doesn't exist." noindex />
             <div className="not-found-page">
                 <div className="not-found-glow" />
 

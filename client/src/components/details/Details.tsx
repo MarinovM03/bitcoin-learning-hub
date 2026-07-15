@@ -19,6 +19,7 @@ import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 import { toast } from "../../lib/toast";
+import { useJsonLd } from "../../hooks/useJsonLd";
 
 function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -96,6 +97,40 @@ export default function Details() {
             window.removeEventListener('resize', onScroll);
         };
     }, [article?._id]);
+
+    useJsonLd(article ? {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: article.title,
+        description: article.summary,
+        image: article.imageUrl,
+        datePublished: article.createdAt,
+        dateModified: article.updatedAt,
+        author: {
+            '@type': 'Person',
+            name: article._ownerId?.username,
+            url: `${window.location.origin}/users/${article._ownerId?._id}`,
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Bitcoin Learning Hub',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${window.location.origin}/icon-512.png`,
+            },
+        },
+        mainEntityOfPage: `${window.location.origin}${window.location.pathname}`,
+    } : null);
+
+    useJsonLd(article ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: window.location.origin },
+            { '@type': 'ListItem', position: 2, name: 'Articles', item: `${window.location.origin}/articles` },
+            { '@type': 'ListItem', position: 3, name: article.title },
+        ],
+    } : null);
 
     const ownerId = article?._ownerId?._id;
     const ownerUsername = article?._ownerId?.username;

@@ -41,7 +41,7 @@ export default function ForgotPassword() {
     if (submittedEmail) {
         return (
             <section id="forgot-password-page" className="page-content">
-                <PageMeta title="Check your inbox" description="Password reset request sent." />
+                <PageMeta title="Check your inbox" description="Password reset request sent." noindex />
                 <div className="login-page">
                     <div className="forgot-password-icon">
                         <Mail size={28} strokeWidth={2} />
@@ -72,7 +72,7 @@ export default function ForgotPassword() {
 
     return (
         <section id="forgot-password-page" className="page-content">
-            <PageMeta title="Reset your password" description="Recover access to your Bitcoin Learning Hub account." />
+            <PageMeta title="Reset your password" description="Recover access to your Bitcoin Learning Hub account." noindex />
             <div className="login-page">
                 <h1>Reset your password</h1>
                 <p className="login-subtitle">

@@ -34,7 +34,7 @@ export default function Login() {
 
     return (
         <section id="login-page" className="page-content">
-            <PageMeta title="Sign In" description="Sign in to your Bitcoin Learning Hub account." />
+            <PageMeta title="Sign In" description="Sign in to your Bitcoin Learning Hub account." noindex />
             <div className="login-page">
                 <h1>Welcome Back</h1>
                 <p className="login-subtitle">Sign in to your account to continue</p>

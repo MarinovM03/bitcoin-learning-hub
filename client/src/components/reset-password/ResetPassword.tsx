@@ -46,7 +46,7 @@ export default function ResetPassword() {
     if (!token) {
         return (
             <section id="reset-password-page" className="page-content">
-                <PageMeta title="Reset your password" />
+                <PageMeta title="Reset your password" noindex />
                 <div className="login-page">
                     <h1>Reset link missing</h1>
                     <p className="login-subtitle">
@@ -65,7 +65,7 @@ export default function ResetPassword() {
     if (isDone) {
         return (
             <section id="reset-password-page" className="page-content">
-                <PageMeta title="Password updated" />
+                <PageMeta title="Password updated" noindex />
                 <div className="login-page">
                     <div className="forgot-password-icon">
                         <CheckCircle2 size={28} strokeWidth={2} />
@@ -86,7 +86,7 @@ export default function ResetPassword() {
 
     return (
         <section id="reset-password-page" className="page-content">
-            <PageMeta title="Set a new password" description="Choose a new password for your Bitcoin Learning Hub account." />
+            <PageMeta title="Set a new password" description="Choose a new password for your Bitcoin Learning Hub account." noindex />
             <div className="login-page">
                 <h1>Set a new password</h1>
                 <p className="login-subtitle">

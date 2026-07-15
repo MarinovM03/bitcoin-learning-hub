@@ -40,7 +40,7 @@ export default function Register() {
 
     return (
         <section id="register-page" className="page-content">
-            <PageMeta title="Create Account" description="Join the Bitcoin Learning Hub community to publish articles, save bookmarks, and earn certifications." />
+            <PageMeta title="Create Account" description="Join the Bitcoin Learning Hub community to publish articles, save bookmarks, and earn certifications." noindex />
             <div className="register-page">
                 <h1>Create Account</h1>
                 <p className="register-subtitle">Join the Bitcoin Learning Hub community</p>

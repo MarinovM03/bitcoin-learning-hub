@@ -9,10 +9,24 @@ import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 import { TOOLS } from "../../utils/navTools";
 import { handleImgError } from "../../utils/imageHelpers";
+import { useJsonLd } from "../../hooks/useJsonLd";
 
 export default function Home() {
     const { data: latestData, isPending: isLoading } = useArticles({ limit: 4, sort: 'latest' });
     const { data: trendingData, isPending: isTrendingLoading } = useTrendingArticles();
+
+    useJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Bitcoin Learning Hub',
+        description: 'Community-driven Bitcoin education — articles, glossary, learning paths, certifications, and live market tools.',
+        url: window.location.origin,
+        potentialAction: {
+            '@type': 'SearchAction',
+            target: `${window.location.origin}/search?q={search_term_string}`,
+            'query-input': 'required name=search_term_string',
+        },
+    });
 
     const latestArticles = latestData?.articles ?? [];
     const trendingArticles = Array.isArray(trendingData) ? trendingData : [];
