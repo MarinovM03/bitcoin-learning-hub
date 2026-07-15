@@ -1,6 +1,6 @@
 # 🪙 Bitcoin Learning Hub
 
-A full-stack Single Page Application (SPA) built with **ReactJS** and **Node.js/Express**. Bitcoin Learning Hub is an educational platform where users can read and contribute articles about Bitcoin, explore a community-driven glossary of cryptocurrency terms, use live on-chain and market tools, and engage in article discussions through a comments system.
+A full-stack Single Page Application (SPA) built with **ReactJS + TypeScript** and **Node.js/Express**. Bitcoin Learning Hub is an educational platform where users can read and contribute articles about Bitcoin, follow structured learning paths and earn certifications, explore a community-driven glossary of cryptocurrency terms, use live on-chain and market tools, and engage in article discussions through a comments system.
 
 ---
 
@@ -25,7 +25,8 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
 - **Learning Paths** — Curated multi-article learning tracks organized by skill level, with progress tracking and a certifying quiz at the end of each path.
 - **Global Search** — `Ctrl+K` / `⌘ K` search overlay with arrow-key navigation, plus a dedicated search page covering articles and glossary terms with shareable URL filters by category, difficulty, and reading time.
-- **Authentication** — Login by email or username, and Register with full validation. Show/hide password toggles on every password field, a `Forgot password?` flow with an account-existence-safe confirmation screen, and clear feedback when a session expires mid-request.
+- **Article Quizzes** — "Test Your Knowledge" quizzes at the end of articles, graded by the server with instant per-question feedback and a final score breakdown.
+- **Authentication** — Login by email or username, and Register with full validation. Show/hide password toggles on every password field, a full `Forgot password?` email flow with single-use expiring reset links, and clear feedback when a session expires mid-request.
 
 ### Private Area (Logged-in User)
 - **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
@@ -57,13 +58,14 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 ### User Profile
 - **Edit Profile** — Update username, email, and profile picture URL.
 - **Username Change Lock** — Username changes are locked for 30 days after each change.
-- **Change Password** — Securely update your password with confirmation validation.
+- **Change Password** — Dedicated dialog that confirms your current password, validates the new one, and signs out every other device on success.
+- **Delete Account** — Password-confirmed "Danger Zone" dialog that permanently removes the account and all of its content.
 - **Reset Reading History** — Clear every "marked as read" flag in one click, with a confirmation modal to prevent accidents.
 - **Stats Overview** — At-a-glance count of published articles, saved drafts, and total likes received.
 
 ### Admin Area
 - **Stats Dashboard** — Totals and last-7-days deltas for users, articles, comments, glossary terms, paths, bookmarks, and likes.
-- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, and paths).
+- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, paths, reading history, and certifications).
 - **Article Moderation** — Paginated list with search, hard-delete for any article, and a one-click toggle to feature an article on the home page.
 - **Comment Moderation** — Paginated feed of every comment with article context and one-click removal.
 
@@ -91,14 +93,18 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 
 | Layer | Technology |
 | :--- | :--- |
-| Frontend Library | ReactJS 19 |
+| Frontend Library | ReactJS 19 + TypeScript |
 | Routing | React Router v7 |
-| State Management | React Context API |
+| Server State | TanStack Query (React Query) |
+| Client State | React Context API |
+| Forms & Validation | react-hook-form + Zod (shared schemas client and server) |
 | Build Tool | Vite |
 | Backend Runtime | Node.js |
 | Backend Framework | Express.js v5 |
 | Database | MongoDB via Mongoose |
 | Authentication | JWT + bcrypt |
+| Transactional Email | Resend |
+| Testing | Vitest + Testing Library (client), Vitest + Supertest + mongodb-memory-server (API) |
 | Styling | Pure CSS (no frameworks) |
 | Icons | lucide-react |
 | Live Market Data | Binance API, CoinGecko API, CoinStats API |
@@ -113,6 +119,8 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Reverse-proxy aware** — configured to resolve real client addresses behind Render/Heroku/Fly/nginx so rate limiting and view de-duplication operate on the right key.
 - **Tiered rate limiting** — separate per-client limiters for authentication endpoints and for state-changing requests.
 - **Per-account login lockout** — repeated failed sign-in attempts temporarily lock the account regardless of source IP. The counter resets on the next successful sign-in.
+- **Password reset by email** — single-use reset links that expire after 30 minutes; a successful reset signs out every existing session.
+- **Re-authentication for sensitive changes** — changing the account email or password, or deleting the account, always requires the current password.
 - **Defensive input handling** — request payloads, URL parameters, and query strings are sanitized and type-coerced before they reach the database layer.
 - **Indexed text search** — article search runs against a weighted text index instead of scanning the collection.
 - **Sanitized markdown rendering** — every article body and glossary definition passes through `rehype-sanitize` before reaching the DOM.
@@ -131,6 +139,7 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/login` | User Login | Guest only |
 | `/register` | User Registration | Guest only |
 | `/forgot-password` | Password Reset Request | Guest only |
+| `/reset-password` | Set a New Password (from email link) | Guest only |
 | `/articles` | Articles Catalog | Public |
 | `/articles/:id/details` | Article Details + Comments | Public |
 | `/articles/create` | Create Article | Authenticated |
@@ -184,14 +193,20 @@ JWT_SECRET=<generate_with_openssl_rand_base64_48>
 CLIENT_URL=http://localhost:5173
 PORT=5000
 
-# Optional: comma-separated list of emails auto-promoted to admin on login/register
+# Optional: comma-separated list of emails auto-promoted to admin on register
 ADMIN_EMAILS=
+
+# Optional: Resend API key for password reset emails.
+# Without it, reset links are printed to the server console instead.
+RESEND_API_KEY=
+# Optional: verified sender, e.g. "Bitcoin Learning Hub <noreply@yourdomain.com>"
+EMAIL_FROM=
 ```
 > The server fails fast at startup if `MONGO_URI`, `CLIENT_URL`, or `JWT_SECRET` are missing. `JWT_SECRET` has a minimum length requirement — generate one with `openssl rand -base64 48`.
 Install dependencies and start:
 ```bash
 npm install
-node index.js
+npm run dev
 ```
 The server will run on `http://localhost:5000`.
 
@@ -202,6 +217,12 @@ npm install
 npm run dev
 ```
 The app will run on `http://localhost:5173`.
+
+### 4. Run the test suites
+```bash
+cd server && npm test   # API integration tests (in-memory MongoDB)
+cd client && npm test   # component and unit tests
+```
 
 ---
 
