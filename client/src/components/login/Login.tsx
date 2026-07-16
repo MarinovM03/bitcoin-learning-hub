@@ -46,6 +46,7 @@ export default function Login() {
                             type="text"
                             id="identifier"
                             placeholder="Enter email or username..."
+                            autoComplete="username"
                             {...register('identifier')}
                         />
                         {errors.identifier && <p className="field-error">{errors.identifier.message}</p>}
@@ -55,6 +56,7 @@ export default function Login() {
                         id="password"
                         label="Password"
                         placeholder="Enter your password..."
+                        autoComplete="current-password"
                         labelAction={<Link to="/forgot-password" className="label-action">Forgot password?</Link>}
                         error={errors.password?.message}
                         {...register('password')}

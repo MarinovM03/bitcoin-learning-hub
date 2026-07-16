@@ -5,6 +5,7 @@ import * as authService from '../services/authService';
 import type { RegisterData } from '../services/authService';
 import type { AuthUser } from '../types';
 import { isTokenValid } from '../utils/tokenExpiry';
+import { queryClient } from '../lib/queryClient';
 
 interface LoginFormValues {
     identifier: string;
@@ -70,6 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await authService.logout().catch(() => {});
         setAuth({});
         localStorage.removeItem('auth');
+        queryClient.clear();
         navigate('/');
     }, [navigate]);
 
@@ -82,6 +84,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const onUnauthorized = () => {
             setAuth({});
             localStorage.removeItem('auth');
+            queryClient.clear();
         };
         window.addEventListener('auth:unauthorized', onUnauthorized);
         return () => window.removeEventListener('auth:unauthorized', onUnauthorized);

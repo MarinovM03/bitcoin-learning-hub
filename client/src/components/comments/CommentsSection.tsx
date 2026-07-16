@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router";
 import { X } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
@@ -123,7 +124,7 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                 </form>
             ) : (
                 <p className="comments-login-prompt">
-                    <a href="/login">Log in</a> to join the discussion.
+                    <Link to="/login">Log in</Link> to join the discussion.
                 </p>
             )}
 

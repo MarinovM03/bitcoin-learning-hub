@@ -52,6 +52,7 @@ export default function Register() {
                             type="text"
                             id="username"
                             placeholder="e.g. SatoshiNakamoto"
+                            autoComplete="username"
                             {...register('username')}
                         />
                         {errors.username && <p className="field-error">{errors.username.message}</p>}
@@ -63,6 +64,7 @@ export default function Register() {
                             type="email"
                             id="email"
                             placeholder="your@email.com"
+                            autoComplete="email"
                             {...register('email')}
                         />
                         {errors.email && <p className="field-error">{errors.email.message}</p>}
@@ -72,6 +74,7 @@ export default function Register() {
                         id="password"
                         label="Password"
                         placeholder="Min. 8 characters"
+                        autoComplete="new-password"
                         error={errors.password?.message}
                         {...register('password')}
                     />
@@ -80,6 +83,7 @@ export default function Register() {
                         id="confirmPassword"
                         label="Confirm Password"
                         placeholder="Repeat your password"
+                        autoComplete="new-password"
                         error={errors.confirmPassword?.message}
                         {...register('confirmPassword')}
                     />

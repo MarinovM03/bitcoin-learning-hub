@@ -38,7 +38,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                     <div className="error-boundary__badge">!</div>
                     <h1 className="error-boundary__title">Something broke.</h1>
                     <p className="error-boundary__message">
-                        An unexpected error knocked the page off the rails. The team has been notified — give it another shot from the home page.
+                        An unexpected error knocked the page off the rails. Head back to
+                        the home page and give it another shot.
                     </p>
                     <button
                         type="button"

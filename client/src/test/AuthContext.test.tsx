@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { queryClient } from '../lib/queryClient';
 
 vi.mock('../services/authService', () => ({
     login: vi.fn(),
@@ -113,6 +114,21 @@ describe('AuthContext', () => {
 
         expect(screen.getByTestId('isAuth').textContent).toBe('false');
         expect(localStorage.getItem('auth')).toBeNull();
+    });
+
+    it('clears cached query data on logout', async () => {
+        localStorage.setItem('auth', JSON.stringify({
+            accessToken: futureToken(),
+            username: 'martin',
+        }));
+        queryClient.setQueryData(['bookmarks', 'list'], [{ _id: 'a1', title: 'Private bookmark' }]);
+        renderWithProviders();
+
+        await act(async () => {
+            screen.getByText('logout').click();
+        });
+
+        expect(queryClient.getQueryData(['bookmarks', 'list'])).toBeUndefined();
     });
 
     it('responds to auth:unauthorized events by clearing state', () => {
