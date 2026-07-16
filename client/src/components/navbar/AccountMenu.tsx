@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { ChevronDown, User, FileText, Bookmark, Route, Award, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 
 export default function AccountMenu() {
     const { username, profilePicture, logoutHandler, isAdmin } = useAuth();
@@ -49,9 +48,10 @@ export default function AccountMenu() {
                 aria-label="Account menu"
             >
                 <img
-                    src={profilePicture || defaultAvatar}
+                    src={profilePicture || DEFAULT_AVATAR}
                     alt=""
                     className="account-menu-avatar"
+                    onError={handleAvatarError}
                 />
                 <ChevronDown size={14} strokeWidth={2.5} className="account-menu-chevron" />
             </button>
@@ -60,9 +60,10 @@ export default function AccountMenu() {
                 <div className="account-menu-panel" role="menu">
                     <div className="account-menu-header">
                         <img
-                            src={profilePicture || defaultAvatar}
+                            src={profilePicture || DEFAULT_AVATAR}
                             alt=""
                             className="account-menu-header-avatar"
+                            onError={handleAvatarError}
                         />
                         <div className="account-menu-header-text">
                             <span className="account-menu-header-name">{username}</span>

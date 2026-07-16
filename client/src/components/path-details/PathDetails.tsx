@@ -8,14 +8,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import PathDetailsSkeleton from '../path-details-skeleton/PathDetailsSkeleton';
 import PathExamPanel from '../path-exam-panel/PathExamPanel';
 import ConfirmModal from '../common/ConfirmModal';
-import { handleImgError } from '../../utils/imageHelpers';
+import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
 import { usePath } from '../../hooks/queries/usePaths';
 import { useDeletePath } from '../../hooks/mutations/usePathMutations';
 import { queryKeys } from '../../lib/queryKeys';
 import type { LearningPathDetail } from '../../services/learningPathService';
-
-const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
 export default function PathDetails() {
     const { pathId } = useParams();
@@ -127,9 +125,9 @@ export default function PathDetails() {
                         {path._ownerId && (
                             <Link to={`/users/${path._ownerId._id}`} className="path-details-author-chip">
                                 <img
-                                    src={path._ownerId.profilePicture || defaultAvatar}
+                                    src={path._ownerId.profilePicture || DEFAULT_AVATAR}
                                     alt={path._ownerId.username}
-                                    onError={handleImgError}
+                                    onError={handleAvatarError}
                                 />
                                 <span>@{path._ownerId.username}</span>
                             </Link>

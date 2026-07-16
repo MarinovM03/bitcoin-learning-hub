@@ -4,22 +4,9 @@ import { ArrowLeft, Printer, Award } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
 import type { CertificationDetail } from '../../services/pathCertificationService';
 import Spinner from '../spinner/Spinner';
-import { handleImgError } from '../../utils/imageHelpers';
+import { handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
-
-const defaultAvatar = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-
-const formatDate = (iso: string) => {
-    try {
-        return new Date(iso).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    } catch {
-        return '';
-    }
-};
+import { formatDateLong } from '../../utils/formatters';
 
 export default function CertificationDetails() {
     const { certId } = useParams();
@@ -90,9 +77,9 @@ export default function CertificationDetails() {
 
                         <div className="certificate-recipient">
                             <img
-                                src={cert._ownerId?.profilePicture || defaultAvatar}
+                                src={cert._ownerId?.profilePicture || DEFAULT_AVATAR}
                                 alt={ownerUsername}
-                                onError={handleImgError}
+                                onError={handleAvatarError}
                                 className="certificate-avatar"
                             />
                             <div className="certificate-name">@{ownerUsername}</div>
@@ -122,7 +109,7 @@ export default function CertificationDetails() {
                             <div className="certificate-stat-divider" />
                             <div className="certificate-stat">
                                 <span className="certificate-stat-label">Awarded</span>
-                                <span className="certificate-stat-value">{formatDate(cert.passedAt)}</span>
+                                <span className="certificate-stat-value">{formatDateLong(cert.passedAt)}</span>
                             </div>
                         </div>
                     </div>

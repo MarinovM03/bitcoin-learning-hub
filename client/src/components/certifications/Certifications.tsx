@@ -6,18 +6,7 @@ import type { CertificationSummary } from '../../services/pathCertificationServi
 import CertificationCardSkeleton from '../certification-card-skeleton/CertificationCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
 import PageMeta from '../page-meta/PageMeta';
-
-const formatDate = (iso: string) => {
-    try {
-        return new Date(iso).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    } catch {
-        return '';
-    }
-};
+import { formatDate } from '../../utils/formatters';
 
 export default function Certifications() {
     const [certs, setCerts] = useState<CertificationSummary[]>([]);

@@ -1,9 +1,11 @@
 import { useRef, useEffect, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent, CSSProperties } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Network, AlertCircle, Info } from 'lucide-react';
 import Spinner from '../spinner/Spinner';
 import MempoolInfoModal from '../mempool-info-modal/MempoolInfoModal';
 import PageMeta from '../page-meta/PageMeta';
+import { queryKeys } from '../../lib/queryKeys';
 import {
     FEE_TIERS,
     MAX_BUBBLES,
@@ -27,13 +29,34 @@ export default function MempoolVisualizer() {
     const animRef = useRef<number | null>(null);
     const seenRef = useRef<Set<string>>(new Set());
 
-    const [stats, setStats] = useState<MempoolStats | null>(null);
-    const [fees, setFees] = useState<RecommendedFees | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
     const [hovered, setHovered] = useState<Bubble | null>(null);
     const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
     const [showInfo, setShowInfo] = useState(false);
+
+    const statsQuery = useQuery({
+        queryKey: queryKeys.market.mempoolStats,
+        queryFn: async ({ signal }): Promise<{ stats: MempoolStats; fees: RecommendedFees }> => {
+            const [stats, fees] = await Promise.all([
+                fetchMempoolStats(signal),
+                fetchRecommendedFees(signal),
+            ]);
+            return { stats, fees };
+        },
+        refetchInterval: REFRESH_STATS,
+    });
+
+    const txsQuery = useQuery({
+        queryKey: queryKeys.market.mempoolTxs,
+        queryFn: ({ signal }) => fetchRecentTxs(signal),
+        refetchInterval: REFRESH_TXS,
+    });
+
+    const stats = statsQuery.data?.stats ?? null;
+    const fees = statsQuery.data?.fees ?? null;
+    const loading = statsQuery.isPending;
+    const error = statsQuery.isError
+        ? 'Could not connect to mempool.space. Check your connection and try refreshing.'
+        : '';
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -140,55 +163,13 @@ export default function MempoolVisualizer() {
         bubblesRef.current = [...bubblesRef.current, ...fresh];
     };
 
+    const addBubblesRef = useRef(addBubbles);
+    addBubblesRef.current = addBubbles;
+
+    const latestTxs = txsQuery.data;
     useEffect(() => {
-        const controller = new AbortController();
-        const { signal } = controller;
-
-        const loadAll = async () => {
-            try {
-                const [statsData, txsData, feesData] = await Promise.all([
-                    fetchMempoolStats(signal),
-                    fetchRecentTxs(signal),
-                    fetchRecommendedFees(signal),
-                ]);
-                setStats(statsData);
-                setFees(feesData);
-                addBubbles(txsData);
-            } catch (err) {
-                if (!(err instanceof DOMException && err.name === 'AbortError')) {
-                    setError('Could not connect to mempool.space. Check your connection and try refreshing.');
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadAll();
-
-        const statsTimer = setInterval(async () => {
-            try {
-                const [statsData, feesData] = await Promise.all([
-                    fetchMempoolStats(signal),
-                    fetchRecommendedFees(signal),
-                ]);
-                setStats(statsData);
-                setFees(feesData);
-            } catch { /* */ }
-        }, REFRESH_STATS);
-
-        const txTimer = setInterval(async () => {
-            try {
-                const txs = await fetchRecentTxs(signal);
-                addBubbles(txs);
-            } catch { /* */ }
-        }, REFRESH_TXS);
-
-        return () => {
-            controller.abort();
-            clearInterval(statsTimer);
-            clearInterval(txTimer);
-        };
-    }, []);
+        if (latestTxs) addBubblesRef.current(latestTxs);
+    }, [latestTxs]);
 
     const mouseMoveRafRef = useRef<number | null>(null);
 

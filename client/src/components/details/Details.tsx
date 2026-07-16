@@ -14,22 +14,12 @@ import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 import QuizSection from "../quiz/QuizSection";
 import ReadingPanel from "../reading-panel/ReadingPanel";
-import { formatViews } from '../../utils/formatters';
-import { handleImgError } from '../../utils/imageHelpers';
+import { formatViews, formatDate } from '../../utils/formatters';
+import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 import { toast } from "../../lib/toast";
 import { useJsonLd } from "../../hooks/useJsonLd";
-
-function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
-}
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 export default function Details() {
     const navigate = useNavigate();
@@ -420,10 +410,10 @@ export default function Details() {
                             <span className="details-action-panel-title">Written by</span>
                             <Link to={`/users/${ownerId}`} className="details-author details-author--link">
                                 <img
-                                    src={ownerProfilePicture || defaultAvatar}
+                                    src={ownerProfilePicture || DEFAULT_AVATAR}
                                     alt={ownerUsername}
                                     className="details-author-avatar"
-                                    onError={handleImgError}
+                                    onError={handleAvatarError}
                                 />
                                 <div className="details-author-info">
                                     <span className="details-author-name">{ownerUsername}</span>

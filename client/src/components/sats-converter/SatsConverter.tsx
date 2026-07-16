@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { Zap } from 'lucide-react';
 import PageMeta from '../page-meta/PageMeta';
+import { useBinanceTicker } from '../../hooks/queries/useMarketData';
 
 type FieldKey = 'btc' | 'sats' | 'usd';
 
@@ -10,10 +11,6 @@ interface Preset {
     field: FieldKey;
     value: string;
     hint?: string;
-}
-
-interface BinancePriceResponse {
-    price: string;
 }
 
 const PRESETS: Preset[] = [
@@ -51,30 +48,11 @@ function plainNumber(n: number, maxDecimals = 2): string {
 }
 
 export default function SatsConverter() {
-    const [btcPrice, setBtcPrice] = useState<number | null>(null);
+    const { data: ticker } = useBinanceTicker();
     const [field, setField] = useState<FieldKey>('usd');
     const [value, setValue] = useState('100');
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchPrice = () => {
-            fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT', { signal: controller.signal })
-                .then(res => (res.ok ? (res.json() as Promise<BinancePriceResponse>) : null))
-                .then(data => {
-                    const p = data ? parseFloat(data.price) : NaN;
-                    if (Number.isFinite(p) && p > 0) setBtcPrice(p);
-                })
-                .catch(() => {});
-        };
-
-        fetchPrice();
-        const interval = setInterval(fetchPrice, 5000);
-        return () => {
-            controller.abort();
-            clearInterval(interval);
-        };
-    }, []);
+    const btcPrice = ticker?.price ?? null;
 
     const parsed = parseFloat(value);
     const safeNum = Number.isFinite(parsed) ? parsed : 0;

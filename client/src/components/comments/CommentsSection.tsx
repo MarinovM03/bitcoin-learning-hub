@@ -7,20 +7,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
 import { toast } from "../../lib/toast";
 import type { Comment } from "../../types";
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-function timeAgo(dateString: string) {
-    const diff = Date.now() - new Date(dateString).getTime();
-    const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return "just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    return new Date(dateString).toLocaleDateString();
-}
+import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
+import { timeAgo } from '../../utils/formatters';
 
 interface CommentsSectionProps {
     articleId: string;
@@ -96,9 +84,10 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
             {isAuthenticated ? (
                 <form className="comment-form" onSubmit={onSubmit}>
                     <img
-                        src={profilePicture || defaultAvatar}
+                        src={profilePicture || DEFAULT_AVATAR}
                         alt="Your avatar"
                         className="comment-avatar"
+                        onError={handleAvatarError}
                     />
                     <div className="comment-input-wrapper">
                         <textarea
@@ -138,9 +127,10 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                         comments.map(comment => (
                             <div key={comment._id} className="comment-card">
                                 <img
-                                    src={comment._ownerId?.profilePicture || defaultAvatar}
+                                    src={comment._ownerId?.profilePicture || DEFAULT_AVATAR}
                                     alt={comment._ownerId?.username}
                                     className="comment-avatar"
+                                    onError={handleAvatarError}
                                 />
                                 <div className="comment-body">
                                     <div className="comment-meta">

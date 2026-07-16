@@ -4,19 +4,7 @@ import { GraduationCap, Lock, Award, ArrowRight } from 'lucide-react';
 import * as pathCertificationService from '../../services/pathCertificationService';
 import type { CertificationSummary } from '../../services/pathCertificationService';
 import { useAuth } from '../../contexts/AuthContext';
-
-const formatDate = (iso: string) => {
-    if (!iso) return '';
-    try {
-        return new Date(iso).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    } catch {
-        return '';
-    }
-};
+import { formatDate } from '../../utils/formatters';
 
 interface PathExamPanelProps {
     pathId: string;

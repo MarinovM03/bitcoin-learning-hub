@@ -4,10 +4,8 @@ import * as articleService from '../../services/articleService';
 import type { PublicProfile } from '../../services/articleService';
 import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
-import { handleImgError } from "../../utils/imageHelpers";
+import { handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 export default function AuthorProfile() {
     const { userId } = useParams();
@@ -38,10 +36,10 @@ export default function AuthorProfile() {
             />
             <div className="author-profile-header">
                 <img
-                    src={profilePicture || defaultAvatar}
+                    src={profilePicture || DEFAULT_AVATAR}
                     alt={username}
                     className="author-profile-avatar"
-                    onError={handleImgError}
+                    onError={handleAvatarError}
                 />
                 <div className="author-profile-info">
                     <h1 className="author-profile-name">{username}</h1>

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../../contexts/AuthContext";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import PageMeta from "../page-meta/PageMeta";
 import PasswordField from "../common/PasswordField";
 import { loginSchema } from "../../validators/authSchemas";
@@ -12,7 +12,10 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
     const { loginSubmitHandler } = useAuth();
+    const location = useLocation();
     const [serverError, setServerError] = useState('');
+
+    const redirectTo = (location.state as { from?: string } | null)?.from;
 
     const {
         register,
@@ -26,7 +29,7 @@ export default function Login() {
     const onSubmit = async (values: LoginValues) => {
         setServerError('');
         try {
-            await loginSubmitHandler(values);
+            await loginSubmitHandler(values, redirectTo);
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'Sign in failed');
         }

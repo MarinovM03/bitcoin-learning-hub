@@ -1,96 +1,13 @@
-import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../lib/apiConfig";
-
-function getSentimentKey(value: number) {
-    if (value <= 25) return "extreme-fear";
-    if (value <= 45) return "fear";
-    if (value <= 55) return "neutral";
-    if (value <= 75) return "greed";
-    return "extreme-greed";
-}
-
-interface MarketState {
-    price: number | null;
-    change24h: number | null;
-}
-
-interface FearGreedState {
-    value: number;
-    label: string;
-}
+import { useBinanceTicker, useBtcGlobal, useFearGreed, getSentimentKey } from "../../hooks/queries/useMarketData";
 
 export default function TopBar() {
-    const [market, setMarket] = useState<MarketState>({ price: null, change24h: null });
-    const [dominance, setDominance] = useState<number | null>(null);
-    const [fearGreed, setFearGreed] = useState<FearGreedState | null>(null);
+    const { data: ticker } = useBinanceTicker();
+    const { data: global } = useBtcGlobal();
+    const { data: fearGreed } = useFearGreed();
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchMarket = () => {
-            fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT", { signal: controller.signal })
-                .then(res => res.ok ? res.json() : null)
-                .then(data => {
-                    if (!data) return;
-                    const price = parseFloat(data.lastPrice);
-                    const change24h = parseFloat(data.priceChangePercent);
-                    if (Number.isNaN(price) || Number.isNaN(change24h)) return;
-                    setMarket({ price, change24h });
-                })
-                .catch(() => {});
-        };
-
-        fetchMarket();
-        const interval = setInterval(fetchMarket, 5000);
-        return () => {
-            controller.abort();
-            clearInterval(interval);
-        };
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchDominance = () => {
-            fetch(`${API_BASE_URL}/proxy/btc-global`, { signal: controller.signal })
-                .then(res => res.ok ? res.json() : null)
-                .then(data => {
-                    const pct = data?.data?.market_cap_percentage?.btc;
-                    if (pct == null) return;
-                    setDominance(pct);
-                })
-                .catch(() => {});
-        };
-
-        fetchDominance();
-        const interval = setInterval(fetchDominance, 60000);
-        return () => {
-            controller.abort();
-            clearInterval(interval);
-        };
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        fetch("https://api.alternative.me/fng/", { signal: controller.signal })
-            .then(res => res.ok ? res.json() : null)
-            .then(json => {
-                const entry = json?.data?.[0];
-                if (!entry) return;
-                setFearGreed({
-                    value: parseInt(entry.value, 10),
-                    label: entry.value_classification,
-                });
-            })
-            .catch(() => {});
-
-        return () => controller.abort();
-    }, []);
-
-    const changeClass = market.change24h == null
+    const changeClass = ticker == null
         ? ""
-        : market.change24h >= 0 ? "topbar-value--up" : "topbar-value--down";
+        : ticker.change24h >= 0 ? "topbar-value--up" : "topbar-value--down";
 
     const fgKey = fearGreed ? getSentimentKey(fearGreed.value) : null;
 
@@ -105,8 +22,8 @@ export default function TopBar() {
                 <div className="topbar-item">
                     <span className="topbar-label">BTC</span>
                     <span className="topbar-value">
-                        {market.price != null
-                            ? `$${market.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        {ticker != null
+                            ? `$${ticker.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                             : "—"}
                     </span>
                 </div>
@@ -114,8 +31,8 @@ export default function TopBar() {
                 <div className="topbar-item topbar-item--hide-sm">
                     <span className="topbar-label">24h</span>
                     <span className={`topbar-value ${changeClass}`}>
-                        {market.change24h != null
-                            ? `${market.change24h >= 0 ? "+" : ""}${market.change24h.toFixed(2)}%`
+                        {ticker != null
+                            ? `${ticker.change24h >= 0 ? "+" : ""}${ticker.change24h.toFixed(2)}%`
                             : "—"}
                     </span>
                 </div>
@@ -123,7 +40,7 @@ export default function TopBar() {
                 <div className="topbar-item topbar-item--hide-md">
                     <span className="topbar-label">Dominance</span>
                     <span className="topbar-value">
-                        {dominance != null ? `${dominance.toFixed(1)}%` : "—"}
+                        {global != null ? `${global.dominance.toFixed(1)}%` : "—"}
                     </span>
                 </div>
 

@@ -15,7 +15,7 @@ interface LoginFormValues {
 type AuthState = Partial<AuthUser>;
 
 interface AuthContextValue {
-    loginSubmitHandler: (values: LoginFormValues) => Promise<void>;
+    loginSubmitHandler: (values: LoginFormValues, redirectTo?: string) => Promise<void>;
     registerSubmitHandler: (values: RegisterData) => Promise<void>;
     logoutHandler: () => Promise<void>;
     updateAuthState: (newAuth: AuthUser) => void;
@@ -53,11 +53,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     });
 
-    const loginSubmitHandler = useCallback(async (values: LoginFormValues) => {
+    const loginSubmitHandler = useCallback(async (values: LoginFormValues, redirectTo?: string) => {
         const result = await authService.login(values.identifier, values.password);
         setAuth(result);
         localStorage.setItem('auth', JSON.stringify(result));
-        navigate('/');
+        navigate(redirectTo || '/');
     }, [navigate]);
 
     const registerSubmitHandler = useCallback(async (values: RegisterData) => {

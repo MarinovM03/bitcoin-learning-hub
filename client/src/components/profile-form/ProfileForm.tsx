@@ -9,6 +9,7 @@ import { updateProfileSchema } from "../../validators/authSchemas";
 import PasswordField from "../common/PasswordField";
 import ChangePasswordModal from "../change-password-modal/ChangePasswordModal";
 import DeleteAccountModal from "../delete-account-modal/DeleteAccountModal";
+import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 
 const USERNAME_COOLDOWN_DAYS = 30;
 
@@ -18,8 +19,6 @@ const getUsernameStatus = (usernameChangedAt: string | null) => {
     if (daysSince >= USERNAME_COOLDOWN_DAYS) return { locked: false, daysLeft: 0 };
     return { locked: true, daysLeft: Math.ceil(USERNAME_COOLDOWN_DAYS - daysSince) };
 };
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 type ProfileValues = z.infer<typeof updateProfileSchema>;
 
@@ -107,9 +106,10 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         <div className="profile-card">
             <div className="profile-avatar-container">
                 <img
-                    src={profilePictureValue || defaultAvatar}
+                    src={profilePictureValue || DEFAULT_AVATAR}
                     alt="Profile"
                     className="profile-avatar"
+                    onError={handleAvatarError}
                 />
             </div>
 

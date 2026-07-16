@@ -1,14 +1,6 @@
-import { useEffect, useState } from "react";
+import { useFearGreed, getSentimentKey } from "../../hooks/queries/useMarketData";
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
-
-function getSentimentKey(value: number) {
-    if (value <= 25) return "extreme-fear";
-    if (value <= 45) return "fear";
-    if (value <= 55) return "neutral";
-    if (value <= 75) return "greed";
-    return "extreme-greed";
-}
 
 interface GaugeArcProps {
     value: number;
@@ -52,30 +44,10 @@ function GaugeArc({ value }: GaugeArcProps) {
     );
 }
 
-interface FearGreedData {
-    value: number;
-    label: string;
-}
-
 export default function FearGreedWidget() {
-    const [data, setData] = useState<FearGreedData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data, isPending } = useFearGreed();
 
-    useEffect(() => {
-        fetch("https://api.alternative.me/fng/")
-            .then(res => res.json())
-            .then(json => {
-                const entry = json.data[0];
-                setData({
-                    value: parseInt(entry.value, 10),
-                    label: entry.value_classification,
-                });
-            })
-            .catch(() => {})
-            .finally(() => setIsLoading(false));
-    }, []);
-
-    if (isLoading) {
+    if (isPending) {
         return (
             <div className="fg-widget">
                 <span className="fg-loading">Loading index...</span>

@@ -49,10 +49,13 @@ describe('Login form', () => {
         await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
         await waitFor(() => {
-            expect(loginSubmitHandler).toHaveBeenCalledWith({
-                identifier: 'martin@example.com',
-                password: 'supersecret1',
-            });
+            expect(loginSubmitHandler).toHaveBeenCalledWith(
+                {
+                    identifier: 'martin@example.com',
+                    password: 'supersecret1',
+                },
+                undefined,
+            );
         });
     });
 

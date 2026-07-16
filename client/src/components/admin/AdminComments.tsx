@@ -5,24 +5,10 @@ import * as adminService from '../../services/adminService';
 import type { AdminCommentsResponse, AdminCommentRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
+import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
+import { formatDateTime } from '../../utils/formatters';
 
 const PAGE_LIMIT = 20;
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-
-const formatDate = (iso: string) => {
-    if (!iso) return '';
-    try {
-        return new Date(iso).toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-        });
-    } catch {
-        return '';
-    }
-};
-
 export default function AdminComments() {
     const [data, setData] = useState<AdminCommentsResponse | null>(null);
     const [error, setError] = useState('');
@@ -93,13 +79,14 @@ export default function AdminComments() {
                             <li key={comment._id} className="admin-comment-card">
                                 <div className="admin-comment-head">
                                     <img
-                                        src={author?.profilePicture || defaultAvatar}
+                                        src={author?.profilePicture || DEFAULT_AVATAR}
                                         alt=""
                                         className="admin-comment-avatar"
+                                        onError={handleAvatarError}
                                     />
                                     <div className="admin-comment-meta">
                                         <span className="admin-comment-author">{author?.username || 'Deleted user'}</span>
-                                        <span className="admin-comment-time">{formatDate(comment.createdAt)}</span>
+                                        <span className="admin-comment-time">{formatDateTime(comment.createdAt)}</span>
                                     </div>
                                     {article && (
                                         <Link

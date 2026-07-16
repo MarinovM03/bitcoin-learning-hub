@@ -5,10 +5,9 @@ import type { AdminUsersResponse, AdminUserRow } from '../../services/adminServi
 import { useAuth } from '../../contexts/AuthContext';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
+import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 
 const PAGE_LIMIT = 20;
-
-const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 export default function AdminUsers() {
     const { userId: currentUserId } = useAuth();
@@ -115,9 +114,10 @@ export default function AdminUsers() {
                                     <td>
                                         <div className="admin-user-cell">
                                             <img
-                                                src={user.profilePicture || defaultAvatar}
+                                                src={user.profilePicture || DEFAULT_AVATAR}
                                                 alt=""
                                                 className="admin-user-avatar"
+                                                onError={handleAvatarError}
                                             />
                                             <span>{user.username}{isSelf && <span className="admin-self-tag"> (you)</span>}</span>
                                         </div>

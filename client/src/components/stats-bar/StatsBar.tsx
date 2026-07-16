@@ -1,6 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { API_BASE_URL } from "../../lib/apiConfig";
-import { queryKeys } from "../../lib/queryKeys";
+import { useBinanceTicker, useBtcGlobal } from "../../hooks/queries/useMarketData";
 
 function formatLargeNumber(value: number | null | undefined): string {
     if (value == null) return '—';
@@ -10,56 +8,9 @@ function formatLargeNumber(value: number | null | undefined): string {
     return `$${value.toLocaleString()}`;
 }
 
-interface BinanceStats {
-    price: number;
-    change24h: number;
-    volume: number;
-}
-
-interface GlobalStats {
-    dominance: number;
-    marketCap: number;
-}
-
-const fetchBinanceStats = async (): Promise<BinanceStats> => {
-    const res = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT");
-    if (!res.ok) throw new Error('Binance request failed');
-    const data = await res.json();
-    const price = parseFloat(data.lastPrice);
-    const change24h = parseFloat(data.priceChangePercent);
-    const volume = parseFloat(data.quoteVolume);
-    if (Number.isNaN(price) || Number.isNaN(change24h) || Number.isNaN(volume)) {
-        throw new Error('Binance returned malformed data');
-    }
-    return { price, change24h, volume };
-};
-
-const fetchGlobalStats = async (): Promise<GlobalStats> => {
-    const res = await fetch(`${API_BASE_URL}/proxy/btc-global`);
-    if (!res.ok) throw new Error('Market proxy request failed');
-    const data = await res.json();
-    const pct = data?.data?.market_cap_percentage?.btc;
-    const totalCap = data?.data?.total_market_cap?.usd;
-    if (pct == null || totalCap == null) {
-        throw new Error('Market proxy returned malformed data');
-    }
-    return { dominance: pct, marketCap: (totalCap * pct) / 100 };
-};
-
 export default function StatsBar() {
-    const { data: binance } = useQuery({
-        queryKey: queryKeys.market.binance,
-        queryFn: fetchBinanceStats,
-        refetchInterval: 5000,
-        staleTime: 4000,
-    });
-
-    const { data: global } = useQuery({
-        queryKey: queryKeys.market.global,
-        queryFn: fetchGlobalStats,
-        refetchInterval: 60_000,
-        staleTime: 55_000,
-    });
+    const { data: binance } = useBinanceTicker();
+    const { data: global } = useBtcGlobal();
 
     if (!binance) {
         return (
