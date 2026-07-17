@@ -151,6 +151,12 @@
     color: var(--btc-orange);
 }
 
+a.comment-author:hover {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .comment-time {
     font-size: 0.8rem;
     color: var(--text-secondary);

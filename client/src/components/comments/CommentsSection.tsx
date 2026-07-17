@@ -134,7 +134,13 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                                 />
                                 <div className="comment-body">
                                     <div className="comment-meta">
-                                        <span className="comment-author">{comment._ownerId?.username}</span>
+                                        {comment._ownerId?._id ? (
+                                            <Link to={`/users/${comment._ownerId._id}`} className="comment-author">
+                                                {comment._ownerId.username}
+                                            </Link>
+                                        ) : (
+                                            <span className="comment-author">{comment._ownerId?.username}</span>
+                                        )}
                                         {String(comment._ownerId?._id) === String(articleOwnerId) && (
                                             <span className="comment-author-badge">Author</span>
                                         )}

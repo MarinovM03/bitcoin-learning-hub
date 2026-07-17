@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { ComponentPropsWithRef, ReactNode } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import type { ComponentPropsWithRef, FocusEvent, KeyboardEvent, ReactNode } from 'react';
+import { Eye, EyeOff, TriangleAlert } from 'lucide-react';
 
 interface PasswordFieldProps extends ComponentPropsWithRef<'input'> {
     label: string;
@@ -8,8 +8,20 @@ interface PasswordFieldProps extends ComponentPropsWithRef<'input'> {
     labelAction?: ReactNode;
 }
 
-export default function PasswordField({ label, id, placeholder, error, labelAction, ...inputProps }: PasswordFieldProps) {
+export default function PasswordField({ label, id, placeholder, error, labelAction, onBlur, ...inputProps }: PasswordFieldProps) {
     const [visible, setVisible] = useState(false);
+    const [capsLockOn, setCapsLockOn] = useState(false);
+
+    const detectCapsLock = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (typeof e.getModifierState === 'function') {
+            setCapsLockOn(e.getModifierState('CapsLock'));
+        }
+    };
+
+    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+        setCapsLockOn(false);
+        onBlur?.(e);
+    };
 
     return (
         <div className="form-group">
@@ -26,7 +38,10 @@ export default function PasswordField({ label, id, placeholder, error, labelActi
                     id={id}
                     type={visible ? 'text' : 'password'}
                     placeholder={placeholder}
+                    onKeyDown={detectCapsLock}
+                    onKeyUp={detectCapsLock}
                     {...inputProps}
+                    onBlur={handleBlur}
                 />
                 <button
                     type="button"
@@ -40,6 +55,12 @@ export default function PasswordField({ label, id, placeholder, error, labelActi
                         : <Eye size={16} strokeWidth={2.25} />}
                 </button>
             </div>
+            {capsLockOn && (
+                <p className="caps-lock-warning" role="status">
+                    <TriangleAlert size={12} strokeWidth={2.5} />
+                    Caps Lock is on
+                </p>
+            )}
             {error && <p className="field-error">{error}</p>}
         </div>
     );

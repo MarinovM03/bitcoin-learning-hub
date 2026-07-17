@@ -34,6 +34,16 @@
     outline-offset: 1px;
 }
 
+.caps-lock-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.4rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f1c40f;
+}
+
 .label-row {
     display: flex;
     align-items: center;

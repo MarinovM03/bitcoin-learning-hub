@@ -10,8 +10,10 @@ import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticle
 import { TOOLS } from "../../utils/navTools";
 import { handleImgError } from "../../utils/imageHelpers";
 import { useJsonLd } from "../../hooks/useJsonLd";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Home() {
+    const { isAuthenticated } = useAuth();
     const { data: latestData, isPending: isLoading } = useArticles({ limit: 4, sort: 'latest' });
     const { data: trendingData, isPending: isTrendingLoading } = useTrendingArticles();
 
@@ -59,12 +61,25 @@ export default function Home() {
                             everything a beginner or enthusiast needs in one place.
                         </p>
                         <div className="hero-actions">
-                            <Link to="/articles" className="btn-hero-primary">
-                                Browse Articles →
-                            </Link>
-                            <Link to="/glossary" className="btn-hero-secondary">
-                                Explore Glossary
-                            </Link>
+                            {isAuthenticated ? (
+                                <>
+                                    <Link to="/articles/create" className="btn-hero-primary">
+                                        Write an Article →
+                                    </Link>
+                                    <Link to="/articles" className="btn-hero-secondary">
+                                        Browse Articles
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/articles" className="btn-hero-primary">
+                                        Browse Articles →
+                                    </Link>
+                                    <Link to="/glossary" className="btn-hero-secondary">
+                                        Explore Glossary
+                                    </Link>
+                                </>
+                            )}
                         </div>
                         <div className="hero-metrics">
                             <div className="hero-metric">
