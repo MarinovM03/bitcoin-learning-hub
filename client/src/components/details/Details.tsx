@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle } from "lucide-react";
@@ -14,6 +14,8 @@ import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 import QuizSection from "../quiz/QuizSection";
 import ReadingPanel from "../reading-panel/ReadingPanel";
+import ArticleToc from "../article-toc/ArticleToc";
+import { extractHeadings } from "../../utils/markdownToc";
 import { formatViews, formatDate } from '../../utils/formatters';
 import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
@@ -121,6 +123,8 @@ export default function Details() {
             { '@type': 'ListItem', position: 3, name: article.title },
         ],
     } : null);
+
+    const tocHeadings = useMemo(() => extractHeadings(article?.content), [article?.content]);
 
     const ownerId = article?._ownerId?._id;
     const ownerUsername = article?._ownerId?.username;
@@ -352,6 +356,8 @@ export default function Details() {
                     </div>
 
                     <div className="details-sidebar">
+                        <ArticleToc headings={tocHeadings} />
+
                         {isOwner && (
                             <div className="details-action-panel">
                                 <span className="details-action-panel-title">Actions</span>

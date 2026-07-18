@@ -1,6 +1,15 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeSanitize from 'rehype-sanitize';
+import rehypeSlug from 'rehype-slug';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+
+const sanitizeSchema = {
+    ...defaultSchema,
+    attributes: {
+        ...defaultSchema.attributes,
+        '*': [...(defaultSchema.attributes?.['*'] ?? []), 'id'],
+    },
+};
 
 interface MarkdownContentProps {
     content?: string;
@@ -13,7 +22,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
         <div className={`markdown-content ${className}`}>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeSanitize]}
+                rehypePlugins={[rehypeSlug, [rehypeSanitize, sanitizeSchema]]}
             >
                 {content}
             </ReactMarkdown>

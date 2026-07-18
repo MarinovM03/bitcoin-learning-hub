@@ -19,5 +19,8 @@ export const getAllForArticle = async (articleId: string): Promise<Comment[]> =>
 export const create = (articleId: string, text: string): Promise<Comment> =>
     request.post<Comment>(baseUrl, { articleId, text });
 
+export const update = (commentId: string, text: string): Promise<Comment> =>
+    request.put<Comment>(`${baseUrl}/${commentId}`, { text });
+
 export const remove = (commentId: string): Promise<DeleteResponse> =>
     request.del<DeleteResponse>(`${baseUrl}/${commentId}`);

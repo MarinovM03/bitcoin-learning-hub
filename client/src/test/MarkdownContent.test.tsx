@@ -13,6 +13,12 @@ describe('MarkdownContent', () => {
         expect(container.querySelector('h1')).not.toBeNull();
     });
 
+    it('gives headings prefixed anchor ids', () => {
+        const { container } = render(<MarkdownContent content={'## The Genesis Block'} />);
+        const heading = container.querySelector('h2');
+        expect(heading?.getAttribute('id')).toBe('user-content-the-genesis-block');
+    });
+
     it('strips <script> tags from user content', () => {
         const malicious = 'Hi there <script>window.__pwned = true</script> end.';
         const { container } = render(<MarkdownContent content={malicious} />);

@@ -6,4 +6,5 @@ export interface Comment {
     _ownerId: ArticleOwnerRef;
     text: string;
     createdAt: string;
+    updatedAt: string;
 }

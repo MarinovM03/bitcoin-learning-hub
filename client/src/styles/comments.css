@@ -204,3 +204,62 @@ a.comment-author:hover {
     border-radius: 4px;
     border: 1px solid rgba(247, 147, 26, 0.2);
 }
+.comment-edited-tag {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.comment-edit-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.comment-edit-btn + .comment-delete-btn {
+    margin-left: 0;
+}
+
+.comment-edit-btn:hover {
+    color: var(--btc-orange);
+    background-color: var(--btc-orange-dim);
+}
+
+.comment-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+}
+
+.comment-edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.comment-edit-cancel {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.comment-edit-cancel:hover {
+    border-color: white;
+    color: white;
+}

@@ -5,6 +5,7 @@ import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 import OnThisDay from "../on-this-day/OnThisDay";
+import TermOfTheDay from "../term-of-the-day/TermOfTheDay";
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 import { TOOLS } from "../../utils/navTools";
@@ -169,7 +170,10 @@ export default function Home() {
                 </div>
             </div>
 
-            <OnThisDay />
+            <div className="daily-row">
+                <OnThisDay />
+                <TermOfTheDay />
+            </div>
 
             <div className="latest-articles">
                 <div className="section-heading">

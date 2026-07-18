@@ -59,8 +59,10 @@
 @import "multisig-explainer.css";
 @import "sats-converter.css";
 @import "on-this-day.css";
+@import "term-of-the-day.css";
 @import "error-boundary.css";
 @import "markdown-content.css";
+@import "article-toc.css";
 @import "markdown-write-preview.css";
 @import "admin.css";
 @import "accessibility.css";

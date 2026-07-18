@@ -24,7 +24,7 @@ import {
 } from './validators/authSchemas.js';
 import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
-import { createCommentSchema } from './validators/commentSchemas.js';
+import { createCommentSchema, updateCommentSchema } from './validators/commentSchemas.js';
 import { likeArticleSchema } from './validators/likeSchemas.js';
 import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
 import { createPathSchema, updatePathSchema, submitQuizSchema } from './validators/pathSchemas.js';
@@ -108,6 +108,7 @@ router.delete('/glossary/:termId', requireAuth, validate({ params: termIdParam }
 // Comment routes
 router.get('/comments/:articleId', validate({ params: articleIdParam }), commentController.getAllForArticle);
 router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
+router.put('/comments/:commentId', requireAuth, validate({ params: commentIdParam, body: updateCommentSchema }), commentController.update);
 router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
 
 // Admin routes — requireAdmin verifies both the session and the role in one

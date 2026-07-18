@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
-import { X } from "lucide-react";
+import { X, PenLine } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
@@ -9,6 +9,15 @@ import { toast } from "../../lib/toast";
 import type { Comment } from "../../types";
 import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 import { timeAgo } from '../../utils/formatters';
+
+const EDIT_WINDOW_MS = 5 * 60 * 1000;
+const EDITED_EPSILON_MS = 1000;
+
+const isWithinEditWindow = (comment: Comment) =>
+    Date.now() - new Date(comment.createdAt).getTime() < EDIT_WINDOW_MS;
+
+const wasEdited = (comment: Comment) =>
+    new Date(comment.updatedAt).getTime() - new Date(comment.createdAt).getTime() > EDITED_EPSILON_MS;
 
 interface CommentsSectionProps {
     articleId: string;
@@ -24,6 +33,9 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editText, setEditText] = useState("");
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
 
     useEffect(() => {
         commentService.getAllForArticle(articleId)
@@ -48,6 +60,31 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
             setError(err instanceof Error ? err.message : "Failed to post comment.");
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const startEditing = (comment: Comment) => {
+        setEditingId(comment._id);
+        setEditText(comment.text);
+    };
+
+    const cancelEditing = () => {
+        setEditingId(null);
+        setEditText("");
+    };
+
+    const saveEdit = async () => {
+        if (!editingId || editText.trim().length < 2 || isSavingEdit) return;
+        setIsSavingEdit(true);
+        try {
+            const updated = await commentService.update(editingId, editText.trim());
+            setComments(state => state.map(c => (c._id === editingId ? updated : c)));
+            cancelEditing();
+            toast.success('Comment updated.');
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Couldn't update the comment. Try again.");
+        } finally {
+            setIsSavingEdit(false);
         }
     };
 
@@ -145,17 +182,62 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                                             <span className="comment-author-badge">Author</span>
                                         )}
                                         <span className="comment-time">{timeAgo(comment.createdAt)}</span>
+                                        {wasEdited(comment) && (
+                                            <span className="comment-edited-tag">(edited)</span>
+                                        )}
                                         {userId && String(comment._ownerId?._id) === String(userId) && (
-                                            <button
-                                                className="comment-delete-btn"
-                                                onClick={() => setDeleteTarget(comment._id)}
-                                                aria-label="Delete comment"
-                                            >
-                                                <X size={14} strokeWidth={2.25} />
-                                            </button>
+                                            <>
+                                                {isWithinEditWindow(comment) && editingId !== comment._id && (
+                                                    <button
+                                                        className="comment-edit-btn"
+                                                        onClick={() => startEditing(comment)}
+                                                        aria-label="Edit comment"
+                                                    >
+                                                        <PenLine size={13} strokeWidth={2.25} />
+                                                    </button>
+                                                )}
+                                                <button
+                                                    className="comment-delete-btn"
+                                                    onClick={() => setDeleteTarget(comment._id)}
+                                                    aria-label="Delete comment"
+                                                >
+                                                    <X size={14} strokeWidth={2.25} />
+                                                </button>
+                                            </>
                                         )}
                                     </div>
-                                    <p className="comment-text">{comment.text}</p>
+                                    {editingId === comment._id ? (
+                                        <div className="comment-edit-form">
+                                            <textarea
+                                                className="comment-textarea"
+                                                value={editText}
+                                                onChange={(e) => setEditText(e.target.value)}
+                                                rows={3}
+                                                maxLength={500}
+                                            />
+                                            <div className="comment-edit-actions">
+                                                <span className="comment-char-count">{editText.length}/500</span>
+                                                <button
+                                                    type="button"
+                                                    className="comment-edit-cancel"
+                                                    onClick={cancelEditing}
+                                                    disabled={isSavingEdit}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="comment-submit-btn"
+                                                    onClick={saveEdit}
+                                                    disabled={isSavingEdit || editText.trim().length < 2}
+                                                >
+                                                    {isSavingEdit ? 'Saving...' : 'Save'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="comment-text">{comment.text}</p>
+                                    )}
                                 </div>
                             </div>
                         ))

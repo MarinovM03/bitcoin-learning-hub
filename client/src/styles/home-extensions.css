@@ -250,3 +250,19 @@
     line-height: 1.7;
     margin: 0;
 }
+.daily-row {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.daily-row > * {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .daily-row {
+        grid-template-columns: 1fr;
+    }
+}

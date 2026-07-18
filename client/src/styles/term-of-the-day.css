@@ -1,0 +1,83 @@
+.totd-widget {
+    position: relative;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.4rem 1.5rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.totd-glow {
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, var(--btc-orange-dim), transparent 70%);
+    pointer-events: none;
+}
+
+.totd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.totd-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--btc-orange);
+}
+
+.totd-category {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+.totd-term {
+    font-size: 1.45rem;
+    color: white;
+    margin: 0;
+}
+
+.totd-definition {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.totd-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: auto;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--btc-orange);
+    transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.totd-link:hover {
+    color: white;
+    gap: 0.6rem;
+}
