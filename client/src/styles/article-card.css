@@ -17,7 +17,7 @@
 
 .catalog-card-img-wrap {
     position: relative;
-    height: 180px;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
 }
 

@@ -1,9 +1,21 @@
-import { Link } from "react-router";
-import { Zap, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { Link, useNavigate } from "react-router";
+import { Zap, ArrowLeft, Search } from "lucide-react";
 import { getRandomFact } from "../../utils/bitcoinFacts";
 import PageMeta from "../page-meta/PageMeta";
 
 export default function NotFound() {
+    const navigate = useNavigate();
+    const [query, setQuery] = useState("");
+
+    const onSearch = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const trimmed = query.trim();
+        if (trimmed.length < 2) return;
+        navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    };
+
     return (
         <section className="page-content">
             <PageMeta title="Page Not Found" description="The page you're looking for doesn't exist." noindex />
@@ -47,6 +59,21 @@ export default function NotFound() {
                         <span className="not-found-meta-value">Bitcoin Mainnet</span>
                     </div>
                 </div>
+
+                <form className="not-found-search" onSubmit={onSearch} role="search">
+                    <Search size={16} strokeWidth={2.25} className="not-found-search-icon" />
+                    <input
+                        type="search"
+                        className="not-found-search-input"
+                        placeholder="Search articles and glossary terms..."
+                        aria-label="Search the site"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                    />
+                    <button type="submit" className="not-found-search-btn" disabled={query.trim().length < 2}>
+                        Search
+                    </button>
+                </form>
 
                 <div className="not-found-actions">
                     <Link to="/" className="btn-hero-primary">

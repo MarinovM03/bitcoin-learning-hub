@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
-import { subscribeToasts, dismissToast, type ToastItem } from '../../lib/toast';
+import { subscribeToasts, dismissToast, pauseToast, resumeToast, type ToastItem } from '../../lib/toast';
 
 const ICONS = {
     success: CheckCircle2,
@@ -20,7 +20,15 @@ export default function Toaster() {
             {toasts.map((t) => {
                 const Icon = ICONS[t.variant];
                 return (
-                    <div key={t.id} className={`toast toast--${t.variant}`} role="status">
+                    <div
+                        key={t.id}
+                        className={`toast toast--${t.variant}`}
+                        role="status"
+                        onMouseEnter={() => pauseToast(t.id)}
+                        onMouseLeave={() => resumeToast(t.id)}
+                        onFocus={() => pauseToast(t.id)}
+                        onBlur={() => resumeToast(t.id)}
+                    >
                         <Icon size={18} strokeWidth={2.25} className="toast__icon" />
                         <span className="toast__message">{t.message}</span>
                         <button
