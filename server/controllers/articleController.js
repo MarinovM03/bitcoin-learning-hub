@@ -343,7 +343,7 @@ export const update = asyncHandler(async (req, res) => {
     const updatedArticle = await Article.findOneAndUpdate(
         { _id: articleId, _ownerId: req.user._id },
         updateData,
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedArticle) {

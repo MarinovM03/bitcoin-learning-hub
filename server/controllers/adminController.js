@@ -110,7 +110,7 @@ export const updateUserRole = asyncHandler(async (req, res) => {
     const updated = await User.findByIdAndUpdate(
         userId,
         { role },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     ).select('-password');
 
     if (!updated) throw new AppError(404, 'User not found');

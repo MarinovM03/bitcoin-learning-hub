@@ -40,7 +40,7 @@ export const update = asyncHandler(async (req, res) => {
             createdAt: { $gte: new Date(Date.now() - EDIT_WINDOW_MS) },
         },
         { text },
-        { new: true, runValidators: true },
+        { returnDocument: 'after', runValidators: true },
     ).populate('_ownerId', 'username profilePicture');
 
     if (!updated) {

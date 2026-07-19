@@ -155,7 +155,7 @@ export const update = asyncHandler(async (req, res) => {
     const updated = await LearningPath.findOneAndUpdate(
         { _id: pathId, _ownerId: req.user._id },
         updateData,
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     );
 
     if (!updated) throw new AppError(403, 'Forbidden');
