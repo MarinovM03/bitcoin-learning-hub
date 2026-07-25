@@ -89,6 +89,7 @@ export const search = asyncHandler(async (req, res) => {
         ? Promise.resolve([])
         : GlossaryTerm.find(
             {
+                status: 'published',
                 $or: [
                     { term: pattern },
                     { definition: pattern },

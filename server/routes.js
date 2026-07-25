@@ -128,6 +128,14 @@ router.patch('/admin/articles/:articleId/featured', validate({ params: articleId
 router.get('/admin/comments', adminController.adminListComments);
 router.delete('/admin/comments/:commentId', validate({ params: commentIdParam }), adminController.adminDeleteComment);
 
+// Moderation queue
+router.get('/admin/moderation/queue', adminController.getModerationQueue);
+router.post('/admin/articles/:articleId/approve', validate({ params: articleIdParam }), adminController.approveArticle);
+router.post('/admin/articles/:articleId/reject', validate({ params: articleIdParam }), adminController.rejectArticle);
+router.post('/admin/glossary/:termId/approve', validate({ params: termIdParam }), adminController.approveGlossaryTerm);
+router.delete('/admin/glossary/:termId', validate({ params: termIdParam }), adminController.adminDeleteGlossaryTerm);
+router.patch('/admin/users/:userId/trust', validate({ params: userIdParam }), adminController.updateUserTrust);
+
 // Search route
 router.get('/search', searchController.search);
 

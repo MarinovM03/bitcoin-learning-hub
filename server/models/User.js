@@ -55,6 +55,16 @@ const userSchema = new mongoose.Schema({
         default: 0,
         select: false,
     },
+    approvedArticles: {
+        type: Number,
+        default: 0,
+        select: false,
+    },
+    isTrusted: {
+        type: Boolean,
+        default: false,
+        select: false,
+    },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

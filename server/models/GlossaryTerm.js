@@ -29,6 +29,12 @@ const glossaryTermSchema = new mongoose.Schema({
         enum: ['Technology', 'Economics', 'Trading', 'Culture', 'Security'],
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['pending', 'published'],
+        default: 'pending',
+        index: true,
+    },
     _ownerId: {
         type: mongoose.Types.ObjectId,
         ref: 'User',

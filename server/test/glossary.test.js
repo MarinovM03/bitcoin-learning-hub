@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { app, registerAndToken, userFixtures, glossaryFixture } from './helpers.js';
+import { app, registerAndToken, userFixtures, glossaryFixture, promoteToAdmin } from './helpers.js';
 
 const createTerm = (token, overrides = {}) =>
     request(app())
@@ -14,14 +14,41 @@ describe('Glossary', () => {
         expect(res.status).toBe(401);
     });
 
-    it('creates a term and lists it', async () => {
+    it('holds a submitted term back from the public list until approved', async () => {
         const { token } = await registerAndToken();
         const created = await createTerm(token);
         expect(created.status).toBe(201);
+        expect(created.body.status).toBe('pending');
 
         const list = await request(app()).get('/glossary');
         expect(list.status).toBe(200);
+        expect(list.body).toHaveLength(0);
+    });
+
+    it('lists a term once an admin approves it', async () => {
+        const { token } = await registerAndToken();
+        const { body: term } = await createTerm(token);
+
+        const { token: adminToken, user: admin } = await registerAndToken(userFixtures.secondary);
+        await promoteToAdmin(admin._id);
+
+        const approved = await request(app())
+            .post(`/admin/glossary/${term._id}/approve`)
+            .set('Cookie', adminToken);
+        expect(approved.status).toBe(200);
+
+        const list = await request(app()).get('/glossary');
         expect(list.body).toHaveLength(1);
+        expect(list.body[0].term).toBe(glossaryFixture.term);
+    });
+
+    it('publishes an admin-authored term immediately', async () => {
+        const { token, user } = await registerAndToken();
+        await promoteToAdmin(user._id);
+
+        const created = await createTerm(token);
+        expect(created.body.status).toBe('published');
+        expect((await request(app()).get('/glossary')).body).toHaveLength(1);
     });
 
     it('rejects a duplicate term (case-insensitive)', async () => {

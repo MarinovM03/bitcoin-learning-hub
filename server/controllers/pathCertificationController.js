@@ -18,7 +18,7 @@ const loadPathWithQuizzes = async (pathId) => {
 };
 
 const collectQuizQuestions = (path) => {
-    const publishedArticles = (path.articles || []).filter(a => a && a.status !== 'draft');
+    const publishedArticles = (path.articles || []).filter(a => a && a.status === 'published');
     const questions = [];
     for (const article of publishedArticles) {
         const quiz = Array.isArray(article.quiz) ? article.quiz : [];

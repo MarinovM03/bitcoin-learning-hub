@@ -11,6 +11,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
 import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
+import { hasEarnedTrust } from '../utils/trust.js';
 
 export const getStats = asyncHandler(async (_req, res) => {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -24,10 +25,12 @@ export const getStats = asyncHandler(async (_req, res) => {
         totalArticles,
         publishedArticles,
         draftArticles,
+        pendingArticles,
         featuredArticles,
         totalComments,
         commentsLastWeek,
         totalGlossaryTerms,
+        pendingTerms,
         totalPaths,
         totalBookmarks,
         totalLikes,
@@ -38,10 +41,12 @@ export const getStats = asyncHandler(async (_req, res) => {
         Article.countDocuments(),
         Article.countDocuments({ status: 'published' }),
         Article.countDocuments({ status: 'draft' }),
+        Article.countDocuments({ status: 'pending' }),
         Article.countDocuments({ featured: true }),
         Comment.countDocuments(),
         Comment.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
         GlossaryTerm.countDocuments(),
+        GlossaryTerm.countDocuments({ status: 'pending' }),
         LearningPath.countDocuments(),
         Bookmark.countDocuments(),
         Like.countDocuments(),
@@ -53,10 +58,11 @@ export const getStats = asyncHandler(async (_req, res) => {
             total: totalArticles,
             published: publishedArticles,
             drafts: draftArticles,
+            pending: pendingArticles,
             featured: featuredArticles,
         },
         comments: { total: totalComments, lastWeek: commentsLastWeek },
-        glossary: { total: totalGlossaryTerms },
+        glossary: { total: totalGlossaryTerms, pending: pendingTerms },
         paths: { total: totalPaths },
         bookmarks: { total: totalBookmarks },
         likes: { total: totalLikes },
@@ -81,7 +87,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 
     const [users, total] = await Promise.all([
         User.find(filter)
-            .select('-password')
+            .select('-password +isTrusted +approvedArticles')
             .sort({ _id: -1 })
             .skip(skip)
             .limit(limitNum),
@@ -178,6 +184,121 @@ export const toggleFeaturedArticle = asyncHandler(async (req, res) => {
     article.featured = !article.featured;
     await article.save();
     res.json({ _id: article._id, featured: article.featured });
+});
+
+export const getModerationQueue = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 20 } = req.query;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = Math.min(parseInt(limit) || 20, 100);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [articles, articleTotal, terms, termTotal] = await Promise.all([
+        Article.find({ status: 'pending' })
+            .select('title category difficulty summary imageUrl readingTime createdAt _ownerId')
+            .sort({ createdAt: 1 })
+            .skip(skip)
+            .limit(limitNum)
+            .populate('_ownerId', 'username profilePicture'),
+        Article.countDocuments({ status: 'pending' }),
+        GlossaryTerm.find({ status: 'pending' })
+            .select('term definition category createdAt _ownerId')
+            .sort({ createdAt: 1 })
+            .limit(limitNum)
+            .populate('_ownerId', 'username'),
+        GlossaryTerm.countDocuments({ status: 'pending' }),
+    ]);
+
+    res.json({
+        articles,
+        terms,
+        articleTotal,
+        termTotal,
+        page: pageNum,
+        totalPages: Math.ceil(articleTotal / limitNum),
+    });
+});
+
+const creditApproval = async (ownerId) => {
+    const author = await User.findById(ownerId).select('+approvedArticles +isTrusted');
+    if (!author) return;
+
+    author.approvedArticles = (author.approvedArticles ?? 0) + 1;
+    if (!author.isTrusted && hasEarnedTrust(author.approvedArticles)) {
+        author.isTrusted = true;
+    }
+    await author.save();
+};
+
+export const approveArticle = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+
+    const article = await Article.findOneAndUpdate(
+        { _id: articleId, status: 'pending' },
+        { status: 'published', moderationNote: '' },
+        { returnDocument: 'after', runValidators: true },
+    );
+    if (!article) throw new AppError(404, 'No pending article found with that id.');
+
+    await creditApproval(article._ownerId);
+
+    res.json({ _id: article._id, status: article.status });
+});
+
+export const rejectArticle = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+    const note = typeof req.body?.note === 'string' ? req.body.note.trim().slice(0, 300) : '';
+
+    const article = await Article.findOneAndUpdate(
+        { _id: articleId, status: 'pending' },
+        { status: 'draft', moderationNote: note, featured: false },
+        { returnDocument: 'after', runValidators: true },
+    );
+    if (!article) throw new AppError(404, 'No pending article found with that id.');
+
+    res.json({ _id: article._id, status: article.status, moderationNote: article.moderationNote });
+});
+
+export const approveGlossaryTerm = asyncHandler(async (req, res) => {
+    const { termId } = req.params;
+
+    const term = await GlossaryTerm.findOneAndUpdate(
+        { _id: termId, status: 'pending' },
+        { status: 'published' },
+        { returnDocument: 'after', runValidators: true },
+    );
+    if (!term) throw new AppError(404, 'No pending term found with that id.');
+
+    res.json({ _id: term._id, status: term.status });
+});
+
+export const adminDeleteGlossaryTerm = asyncHandler(async (req, res) => {
+    const { termId } = req.params;
+    const deleted = await GlossaryTerm.findByIdAndDelete(termId);
+    if (!deleted) throw new AppError(404, 'Term not found');
+    res.json({ message: 'Term deleted.' });
+});
+
+export const updateUserTrust = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { isTrusted } = req.body;
+
+    if (typeof isTrusted !== 'boolean') {
+        throw new AppError(400, 'isTrusted must be true or false.');
+    }
+
+    const updated = await User.findByIdAndUpdate(
+        userId,
+        { isTrusted },
+        { returnDocument: 'after', runValidators: true },
+    ).select('username +isTrusted +approvedArticles');
+
+    if (!updated) throw new AppError(404, 'User not found');
+    res.json({
+        _id: updated._id,
+        username: updated.username,
+        isTrusted: updated.isTrusted,
+        approvedArticles: updated.approvedArticles,
+    });
 });
 
 export const adminListComments = asyncHandler(async (req, res) => {

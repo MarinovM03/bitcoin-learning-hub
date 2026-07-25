@@ -7,6 +7,7 @@ import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
+import { canPublishDirectly } from '../utils/trust.js';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
@@ -21,6 +22,11 @@ const normalizeSeriesInput = (seriesName, seriesPart) => {
         return { seriesName: '', seriesPart: null };
     }
     return { seriesName: name, seriesPart: partNum };
+};
+
+const resolveSubmissionStatus = (requestedStatus, author) => {
+    if (requestedStatus === 'draft') return 'draft';
+    return canPublishDirectly(author) ? 'published' : 'pending';
 };
 
 const findDuplicateSeriesPart = async (ownerId, series, excludeArticleId = null) => {
@@ -99,7 +105,7 @@ export const create = asyncHandler(async (req, res) => {
         summary,
         content,
         readingTime: calculateReadingTime(content),
-        status: status === 'draft' ? 'draft' : 'published',
+        status: resolveSubmissionStatus(status, req.authUser),
         quiz: Array.isArray(quiz) ? quiz : [],
         seriesName: series.seriesName,
         seriesPart: series.seriesPart,
@@ -124,7 +130,7 @@ export const getOne = asyncHandler(async (req, res) => {
     const ownerId = article._ownerId?._id ?? article._ownerId;
     const isOwner = req.user && String(req.user._id) === String(ownerId);
 
-    if (article.status === 'draft' && !isOwner) {
+    if (article.status !== 'published' && !isOwner) {
         throw new AppError(404, 'Article not found');
     }
 
@@ -162,7 +168,7 @@ export const checkQuizAnswer = asyncHandler(async (req, res) => {
     }
 
     const isOwner = req.user && String(req.user._id) === String(article._ownerId);
-    if (article.status === 'draft' && !isOwner) {
+    if (article.status !== 'published' && !isOwner) {
         throw new AppError(404, 'Article not found');
     }
 
@@ -318,15 +324,25 @@ export const update = asyncHandler(async (req, res) => {
         updateData.readingTime = calculateReadingTime(content);
     }
     if (difficulty) updateData.difficulty = difficulty;
-    if (status === 'draft' || status === 'published') updateData.status = status;
     if (Array.isArray(quiz)) updateData.quiz = quiz;
-    if (seriesName !== undefined || seriesPart !== undefined) {
-        const existing = await Article.findOne({ _id: articleId, _ownerId: req.user._id })
-            .select('seriesName seriesPart');
-        if (!existing) {
-            throw new AppError(403, 'Forbidden');
-        }
 
+    const existing = await Article.findOne({ _id: articleId, _ownerId: req.user._id })
+        .select('seriesName seriesPart status');
+    if (!existing) {
+        throw new AppError(403, 'Forbidden');
+    }
+
+    if (canPublishDirectly(req.authUser)) {
+        if (status === 'draft' || status === 'published') updateData.status = status;
+    } else if (status === 'draft') {
+        updateData.status = 'draft';
+    } else if (status === 'published' || existing.status !== 'draft') {
+        updateData.status = 'pending';
+        updateData.moderationNote = '';
+        updateData.featured = false;
+    }
+
+    if (seriesName !== undefined || seriesPart !== undefined) {
         const series = normalizeSeriesInput(
             seriesName !== undefined ? seriesName : existing.seriesName,
             seriesPart !== undefined ? seriesPart : existing.seriesPart,

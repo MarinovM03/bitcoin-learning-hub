@@ -79,7 +79,7 @@ export const getOne = asyncHandler(async (req, res) => {
 
     if (!path) throw new AppError(404, 'Path not found');
 
-    const articles = (path.articles || []).filter(a => a && a.status !== 'draft');
+    const articles = (path.articles || []).filter(a => a && a.status === 'published');
     const articleIds = articles.map(a => a._id);
     const progress = req.user
         ? await computeProgress(req.user._id, articleIds)

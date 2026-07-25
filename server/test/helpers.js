@@ -63,12 +63,20 @@ export const sessionCookie = (res) => {
     return entry ? entry.split(';')[0] : '';
 };
 
-export const registerAndToken = async (overrides = {}, { verified = true } = {}) => {
+export const trustUser = (userId) =>
+    User.updateOne({ _id: userId }, { isTrusted: true });
+
+export const registerAndToken = async (overrides = {}, { verified = true, trusted = true } = {}) => {
     const res = await register(overrides);
-    if (verified) {
-        await verifyUser(res.body._id);
-        res.body.emailVerified = true;
+
+    const flags = {};
+    if (verified) flags.emailVerified = true;
+    if (trusted) flags.isTrusted = true;
+    if (Object.keys(flags).length) {
+        await User.updateOne({ _id: res.body._id }, flags);
     }
+    res.body.emailVerified = verified;
+
     return { user: res.body, token: sessionCookie(res) };
 };
 

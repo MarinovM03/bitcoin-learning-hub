@@ -1,6 +1,7 @@
 import GlossaryTerm from '../models/GlossaryTerm.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { isAdmin } from '../utils/trust.js';
 
 const CASE_INSENSITIVE = { locale: 'en', strength: 2 };
 
@@ -13,7 +14,7 @@ const sanitizeExamples = (value) => {
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const terms = await GlossaryTerm.find()
+    const terms = await GlossaryTerm.find({ status: 'published' })
         .collation(CASE_INSENSITIVE)
         .sort({ term: 1 });
     res.json(terms);
@@ -25,18 +26,23 @@ export const getOne = asyncHandler(async (req, res) => {
         throw new AppError(404, 'Term not found');
     }
 
+    const isOwner = req.user && String(req.user._id) === String(term._ownerId);
+    if (term.status !== 'published' && !isOwner) {
+        throw new AppError(404, 'Term not found');
+    }
+
     const neighborProjection = { term: 1 };
     const [prev, next, related] = await Promise.all([
-        GlossaryTerm.findOne({ term: { $lt: term.term } }, neighborProjection)
+        GlossaryTerm.findOne({ term: { $lt: term.term }, status: 'published' }, neighborProjection)
             .collation(CASE_INSENSITIVE)
             .sort({ term: -1 })
             .lean(),
-        GlossaryTerm.findOne({ term: { $gt: term.term } }, neighborProjection)
+        GlossaryTerm.findOne({ term: { $gt: term.term }, status: 'published' }, neighborProjection)
             .collation(CASE_INSENSITIVE)
             .sort({ term: 1 })
             .lean(),
         GlossaryTerm.find(
-            { category: term.category, _id: { $ne: term._id } },
+            { category: term.category, _id: { $ne: term._id }, status: 'published' },
             { term: 1, definition: 1, category: 1 }
         )
             .collation(CASE_INSENSITIVE)
@@ -62,6 +68,7 @@ export const create = asyncHandler(async (req, res) => {
         category,
         extendedDefinition: extendedDefinition?.trim() || '',
         examples: sanitizeExamples(examples),
+        status: isAdmin(req.authUser) ? 'published' : 'pending',
         _ownerId: req.user._id,
     });
 
