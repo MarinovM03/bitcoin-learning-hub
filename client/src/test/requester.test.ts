@@ -29,16 +29,24 @@ describe('requester', () => {
         expect(init.body).toBe(JSON.stringify({ hello: 'world' }));
     });
 
-    it('attaches X-Authorization when an auth token is in localStorage', async () => {
-        localStorage.setItem('auth', JSON.stringify({ accessToken: 'token-abc' }));
-        const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(okJson({ ok: true }));
+    it('sends the session cookie with every request and never a token header', async () => {
+        localStorage.setItem('auth', JSON.stringify({ _id: 'u1', expiresAt: Date.now() + 60_000 }));
+        const fetchSpy = vi.spyOn(globalThis, 'fetch')
+            .mockResolvedValueOnce(okJson({ ok: true }))
+            .mockResolvedValueOnce(okJson({ ok: true }));
+
         await requester.get('/test');
-        const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
-        expect((init.headers as Record<string, string>)['X-Authorization']).toBe('token-abc');
+        await requester.post('/test', { hello: 'world' });
+
+        for (const call of fetchSpy.mock.calls) {
+            const [, init] = call as [string, RequestInit];
+            expect(init.credentials).toBe('include');
+            expect(Object.keys(init.headers ?? {})).not.toContain('X-Authorization');
+        }
     });
 
-    it('dispatches auth:unauthorized when a stored token gets a 401', async () => {
-        localStorage.setItem('auth', JSON.stringify({ accessToken: 'token-abc' }));
+    it('dispatches auth:unauthorized when a stored session gets a 401', async () => {
+        localStorage.setItem('auth', JSON.stringify({ _id: 'u1', expiresAt: Date.now() + 60_000 }));
         const listener = vi.fn();
         window.addEventListener('auth:unauthorized', listener);
         vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(okJson({ message: 'nope' }, 401));
@@ -48,7 +56,7 @@ describe('requester', () => {
         window.removeEventListener('auth:unauthorized', listener);
     });
 
-    it('does not dispatch auth:unauthorized on a 401 when no token is stored', async () => {
+    it('does not dispatch auth:unauthorized on a 401 when no session is stored', async () => {
         const listener = vi.fn();
         window.addEventListener('auth:unauthorized', listener);
         vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(okJson({ message: 'nope' }, 401));

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import * as authService from '../services/authService';
 import type { RegisterData } from '../services/authService';
 import type { AuthUser } from '../types';
-import { isTokenValid } from '../utils/tokenExpiry';
+import { isSessionValid } from '../utils/tokenExpiry';
 import { queryClient } from '../lib/queryClient';
 
 interface LoginFormValues {
@@ -24,6 +24,7 @@ interface AuthContextValue {
     userId: string | undefined;
     isAuthenticated: boolean;
     isAdmin: boolean;
+    isEmailVerified: boolean;
     profilePicture: string | undefined;
     usernameChangedAt: string | null;
 }
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (!serializedAuth) return {};
         try {
             const parsed = JSON.parse(serializedAuth) as AuthState;
-            if (!isTokenValid(parsed.accessToken)) {
+            if (!isSessionValid(parsed.expiresAt)) {
                 localStorage.removeItem('auth');
                 return {};
             }
@@ -98,8 +99,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         username: auth.username,
         email: auth.email,
         userId: auth._id,
-        isAuthenticated: !!auth.accessToken,
+        isAuthenticated: !!auth._id,
         isAdmin: auth.role === 'admin',
+        isEmailVerified: auth.emailVerified === true,
         profilePicture: auth.profilePicture,
         usernameChangedAt: auth.usernameChangedAt ?? null,
     }), [auth, loginSubmitHandler, registerSubmitHandler, logoutHandler, updateAuthState]);

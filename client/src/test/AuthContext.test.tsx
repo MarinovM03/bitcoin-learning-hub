@@ -14,14 +14,8 @@ vi.mock('../services/authService', () => ({
 
 import * as authService from '../services/authService';
 
-const makeToken = (payload: Record<string, unknown>) => {
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const body = btoa(JSON.stringify(payload));
-    return `${header}.${body}.signature-placeholder`;
-};
-
-const futureToken = () => makeToken({ exp: Math.floor(Date.now() / 1000) + 3600 });
-const pastToken = () => makeToken({ exp: Math.floor(Date.now() / 1000) - 3600 });
+const futureExpiry = () => Date.now() + 3_600_000;
+const pastExpiry = () => Date.now() - 3_600_000;
 
 const Consumer = () => {
     const { username, isAuthenticated, isAdmin, loginSubmitHandler, logoutHandler } = useAuth();
@@ -57,9 +51,10 @@ describe('AuthContext', () => {
         expect(screen.getByTestId('isAdmin').textContent).toBe('false');
     });
 
-    it('hydrates from a stored token with a future expiry', () => {
+    it('hydrates from a stored session with a future expiry', () => {
         localStorage.setItem('auth', JSON.stringify({
-            accessToken: futureToken(),
+            expiresAt: futureExpiry(),
+            _id: 'u1',
             username: 'martin',
             role: 'admin',
         }));
@@ -69,9 +64,10 @@ describe('AuthContext', () => {
         expect(screen.getByTestId('isAdmin').textContent).toBe('true');
     });
 
-    it('clears expired tokens on hydration', () => {
+    it('clears an expired session on hydration', () => {
         localStorage.setItem('auth', JSON.stringify({
-            accessToken: pastToken(),
+            expiresAt: pastExpiry(),
+            _id: 'u1',
             username: 'martin',
         }));
         renderWithProviders();
@@ -81,7 +77,7 @@ describe('AuthContext', () => {
 
     it('persists user on successful login', async () => {
         vi.mocked(authService.login).mockResolvedValueOnce({
-            accessToken: futureToken(),
+            expiresAt: futureExpiry(),
             _id: 'u1',
             username: 'martin',
             email: 'martin@example.com',
@@ -102,7 +98,8 @@ describe('AuthContext', () => {
 
     it('clears state and localStorage on logout', async () => {
         localStorage.setItem('auth', JSON.stringify({
-            accessToken: futureToken(),
+            expiresAt: futureExpiry(),
+            _id: 'u1',
             username: 'martin',
         }));
         renderWithProviders();
@@ -118,7 +115,8 @@ describe('AuthContext', () => {
 
     it('clears cached query data on logout', async () => {
         localStorage.setItem('auth', JSON.stringify({
-            accessToken: futureToken(),
+            expiresAt: futureExpiry(),
+            _id: 'u1',
             username: 'martin',
         }));
         queryClient.setQueryData(['bookmarks', 'list'], [{ _id: 'a1', title: 'Private bookmark' }]);
@@ -133,7 +131,8 @@ describe('AuthContext', () => {
 
     it('responds to auth:unauthorized events by clearing state', () => {
         localStorage.setItem('auth', JSON.stringify({
-            accessToken: futureToken(),
+            expiresAt: futureExpiry(),
+            _id: 'u1',
             username: 'martin',
         }));
         renderWithProviders();

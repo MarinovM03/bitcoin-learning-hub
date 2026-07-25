@@ -4,7 +4,7 @@ import { toast } from '../lib/toast';
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 async function request<T>(method: HttpMethod, url: string, data?: unknown): Promise<T> {
-    const options: RequestInit = {};
+    const options: RequestInit = { credentials: 'include' };
 
     if (method !== 'GET') {
         options.method = method;
@@ -17,18 +17,7 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
         }
     }
 
-    const serializedAuth = localStorage.getItem('auth');
-
-    if (serializedAuth) {
-        const auth = JSON.parse(serializedAuth) as { accessToken?: string };
-
-        if (auth.accessToken) {
-            options.headers = {
-                ...options.headers,
-                'X-Authorization': auth.accessToken,
-            };
-        }
-    }
+    const hadSession = localStorage.getItem('auth') !== null;
 
     const response = await fetch(url, options);
 
@@ -44,7 +33,7 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
     }
 
     if (!response.ok) {
-        if (response.status === 401 && serializedAuth) {
+        if (response.status === 401 && hadSession) {
             toast.info('Your session has expired. Please sign in again.');
             window.dispatchEvent(new Event('auth:unauthorized'));
         }

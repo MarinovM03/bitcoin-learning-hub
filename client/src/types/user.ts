@@ -7,8 +7,9 @@ export interface User {
     profilePicture?: string;
     usernameChangedAt: string | null;
     role?: UserRole;
+    emailVerified?: boolean;
 }
 
 export interface AuthUser extends User {
-    accessToken: string;
+    expiresAt: number;
 }

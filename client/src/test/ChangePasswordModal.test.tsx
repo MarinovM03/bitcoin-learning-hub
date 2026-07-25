@@ -55,7 +55,7 @@ describe('ChangePasswordModal', () => {
     });
 
     it('submits, updates auth state, and closes on success', async () => {
-        updateProfile.mockResolvedValueOnce({ username: 'martin', accessToken: 'fresh' });
+        updateProfile.mockResolvedValueOnce({ username: 'martin', expiresAt: Date.now() + 60_000 });
         const onClose = renderModal();
 
         await userEvent.type(screen.getByLabelText(/current password/i), 'oldpassword1');
