@@ -5,6 +5,7 @@
     "dev": "node --watch index.js",
     "lint": "eslint .",
     "backfill:verified": "node scripts/backfillEmailVerified.js",
+    "backfill:moderation": "node scripts/backfillModeration.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
