@@ -99,7 +99,7 @@ describe('GET /articles/:id', () => {
         const { body: created } = await createArticle(token);
         const res = await request(app())
             .get(`/articles/${created._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(200);
         expect(res.body._id).toBe(created._id);
         expect(res.body).toHaveProperty('hasRead');
@@ -112,12 +112,12 @@ describe('GET /articles/:id', () => {
 
         const asOwner = await request(app())
             .get(`/articles/${draft._id}`)
-            .set('x-authorization', ownerToken);
+            .set('Cookie', ownerToken);
         expect(asOwner.status).toBe(200);
 
         const asOther = await request(app())
             .get(`/articles/${draft._id}`)
-            .set('x-authorization', otherToken);
+            .set('Cookie', otherToken);
         expect(asOther.status).toBe(404);
     });
 
@@ -133,7 +133,7 @@ describe('PUT /articles/:id', () => {
         const { body: created } = await createArticle(token);
         const res = await request(app())
             .put(`/articles/${created._id}`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ title: 'Updated title', summary: 'New summary' });
         expect(res.status).toBe(200);
         expect(res.body.title).toBe('Updated title');
@@ -146,7 +146,7 @@ describe('PUT /articles/:id', () => {
         const { body: created } = await createArticle(ownerToken);
         const res = await request(app())
             .put(`/articles/${created._id}`)
-            .set('x-authorization', otherToken)
+            .set('Cookie', otherToken)
             .send({ title: 'Hijacked title' });
         expect(res.status).toBe(403);
     });
@@ -158,7 +158,7 @@ describe('DELETE /articles/:id', () => {
         const { body: created } = await createArticle(token);
         const res = await request(app())
             .delete(`/articles/${created._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(200);
         const gone = await request(app()).get(`/articles/${created._id}`);
         expect(gone.status).toBe(404);
@@ -170,7 +170,7 @@ describe('DELETE /articles/:id', () => {
         const { body: created } = await createArticle(ownerToken);
         const res = await request(app())
             .delete(`/articles/${created._id}`)
-            .set('x-authorization', otherToken);
+            .set('Cookie', otherToken);
         expect(res.status).toBe(403);
     });
 });
@@ -187,7 +187,7 @@ describe('GET /articles/my', () => {
         expect(r2.status).toBe(201);
         expect(r3.status).toBe(201);
 
-        const res = await request(app()).get('/articles/my').set('x-authorization', a);
+        const res = await request(app()).get('/articles/my').set('Cookie', a);
         expect(res.status).toBe(200);
         expect(res.body).toHaveLength(2);
     });
@@ -223,7 +223,7 @@ describe('Quiz payload visibility', () => {
         const { token: otherToken } = await registerAndToken(userFixtures.secondary);
         const otherRes = await request(app())
             .get(`/articles/${created._id}`)
-            .set('x-authorization', otherToken);
+            .set('Cookie', otherToken);
         expect(otherRes.status).toBe(200);
         for (const q of otherRes.body.quiz) {
             expect(q).not.toHaveProperty('correctIndex');
@@ -236,7 +236,7 @@ describe('Quiz payload visibility', () => {
 
         const res = await request(app())
             .get(`/articles/${created._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(200);
         expect(res.body.quiz[0].correctIndex).toBe(0);
         expect(res.body.quiz[1].correctIndex).toBe(1);
@@ -253,7 +253,7 @@ describe('Quiz payload visibility', () => {
             expect(article).not.toHaveProperty('quiz');
         }
 
-        const mineRes = await request(app()).get('/articles/my').set('x-authorization', token);
+        const mineRes = await request(app()).get('/articles/my').set('Cookie', token);
         expect(mineRes.status).toBe(200);
         for (const article of mineRes.body) {
             expect(article).not.toHaveProperty('content');
@@ -306,7 +306,7 @@ describe('POST /articles/:id/quiz/check', () => {
 
         const ownerRes = await request(app())
             .post(`/articles/${created._id}/quiz/check`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ questionIndex: 0, answerIndex: 0 });
         expect(ownerRes.status).toBe(200);
     });
@@ -330,15 +330,15 @@ describe('Article delete cascade', () => {
         const keepRes = await createArticle(ownerToken, { title: 'Article that stays' });
         const keeper = keepRes.body;
 
-        await request(app()).post('/comments').set('x-authorization', readerToken)
+        await request(app()).post('/comments').set('Cookie', readerToken)
             .send({ articleId: article._id, text: 'Nice write-up!' });
-        await request(app()).post('/likes').set('x-authorization', readerToken)
+        await request(app()).post('/likes').set('Cookie', readerToken)
             .send({ articleId: article._id });
-        await request(app()).post('/bookmarks').set('x-authorization', readerToken)
+        await request(app()).post('/bookmarks').set('Cookie', readerToken)
             .send({ articleId: article._id });
-        await request(app()).post(`/articles/${article._id}/read`).set('x-authorization', readerToken);
+        await request(app()).post(`/articles/${article._id}/read`).set('Cookie', readerToken);
 
-        const pathRes = await request(app()).post('/paths').set('x-authorization', ownerToken).send({
+        const pathRes = await request(app()).post('/paths').set('Cookie', ownerToken).send({
             title: 'Cascade path',
             description: 'Path containing the doomed article.',
             articles: [article._id, keeper._id],
@@ -347,7 +347,7 @@ describe('Article delete cascade', () => {
 
         const del = await request(app())
             .delete(`/articles/${article._id}`)
-            .set('x-authorization', ownerToken);
+            .set('Cookie', ownerToken);
         expect(del.status).toBe(200);
 
         const comments = await request(app()).get(`/comments/${article._id}`);
@@ -356,7 +356,7 @@ describe('Article delete cascade', () => {
         const likes = await request(app()).get(`/likes/${article._id}`);
         expect(likes.body.totalLikes).toBe(0);
 
-        const bookmarks = await request(app()).get('/bookmarks').set('x-authorization', readerToken);
+        const bookmarks = await request(app()).get('/bookmarks').set('Cookie', readerToken);
         expect(bookmarks.body).toHaveLength(0);
 
         const path = await request(app()).get(`/paths/${pathRes.body._id}`);
@@ -368,7 +368,7 @@ describe('Article delete cascade', () => {
 describe('Interaction existence checks', () => {
     it('rejects comments on missing articles', async () => {
         const { token } = await registerAndToken();
-        const res = await request(app()).post('/comments').set('x-authorization', token)
+        const res = await request(app()).post('/comments').set('Cookie', token)
             .send({ articleId: '64b000000000000000000000', text: 'Ghost comment' });
         expect(res.status).toBe(404);
     });
@@ -378,15 +378,15 @@ describe('Interaction existence checks', () => {
         const { token: otherToken } = await registerAndToken(userFixtures.secondary);
         const { body: draft } = await createArticle(ownerToken, { status: 'draft' });
 
-        const like = await request(app()).post('/likes').set('x-authorization', otherToken)
+        const like = await request(app()).post('/likes').set('Cookie', otherToken)
             .send({ articleId: draft._id });
         expect(like.status).toBe(404);
 
-        const bookmark = await request(app()).post('/bookmarks').set('x-authorization', otherToken)
+        const bookmark = await request(app()).post('/bookmarks').set('Cookie', otherToken)
             .send({ articleId: draft._id });
         expect(bookmark.status).toBe(404);
 
-        const ownBookmark = await request(app()).post('/bookmarks').set('x-authorization', ownerToken)
+        const ownBookmark = await request(app()).post('/bookmarks').set('Cookie', ownerToken)
             .send({ articleId: draft._id });
         expect(ownBookmark.status).toBe(201);
     });
@@ -402,7 +402,7 @@ describe('Series partial updates', () => {
 
         const res = await request(app())
             .put(`/articles/${created._id}`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ seriesPart: 3 });
         expect(res.status).toBe(200);
         expect(res.body.seriesName).toBe('Bitcoin Basics');

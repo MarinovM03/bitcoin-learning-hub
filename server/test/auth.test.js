@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { app, register, login, userFixtures, registerAndToken, promoteToAdmin } from './helpers.js';
+import { app, register, login, userFixtures, registerAndToken, promoteToAdmin, sessionCookie } from './helpers.js';
 
 describe('POST /users/register', () => {
     it('creates a user and returns an access token', async () => {
         const res = await register();
         expect(res.status).toBe(200);
-        expect(res.body.accessToken).toBeTypeOf('string');
+        expect(res.body).not.toHaveProperty('accessToken');
+        expect(sessionCookie(res)).toMatch(/^accessToken=.+/);
+        expect(res.headers['set-cookie'].join()).toMatch(/HttpOnly/i);
         expect(res.body.username).toBe(userFixtures.primary.username);
         expect(res.body.email).toBe(userFixtures.primary.email);
         expect(res.body).not.toHaveProperty('password');
@@ -50,7 +52,8 @@ describe('POST /users/login', () => {
         await register();
         const res = await login();
         expect(res.status).toBe(200);
-        expect(res.body.accessToken).toBeTypeOf('string');
+        expect(res.body).not.toHaveProperty('accessToken');
+        expect(sessionCookie(res)).toMatch(/^accessToken=.+/);
     });
 
     it('accepts the username as identifier', async () => {
@@ -92,7 +95,7 @@ describe('GET /users/profile', () => {
 
     it('returns the current user without password fields', async () => {
         const { token, user } = await registerAndToken();
-        const res = await request(app()).get('/users/profile').set('x-authorization', token);
+        const res = await request(app()).get('/users/profile').set('Cookie', token);
         expect(res.status).toBe(200);
         expect(res.body._id).toBe(user._id);
         expect(res.body).not.toHaveProperty('password');
@@ -105,7 +108,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ profilePicture: 'https://example.com/new.png' });
         expect(res.status).toBe(200);
         expect(res.body.profilePicture).toBe('https://example.com/new.png');
@@ -115,13 +118,13 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const first = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ username: 'renamedone' });
         expect(first.status).toBe(200);
 
         const second = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ username: 'renamedtwo' });
         expect(second.status).toBe(400);
     });
@@ -131,7 +134,7 @@ describe('PUT /users/profile', () => {
         await register(userFixtures.secondary);
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ username: userFixtures.secondary.username });
         expect(res.status).toBe(400);
     });
@@ -140,7 +143,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: 'new-pass-1234', confirmPassword: 'different-1234' });
         expect(res.status).toBe(400);
     });
@@ -149,7 +152,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: 'new-pass-1234', confirmPassword: 'new-pass-1234' });
         expect(res.status).toBe(400);
     });
@@ -158,7 +161,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 password: 'new-pass-1234',
                 confirmPassword: 'new-pass-1234',
@@ -171,7 +174,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 password: 'new-pass-1234',
                 confirmPassword: 'new-pass-1234',
@@ -187,7 +190,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ email: 'changed@example.com' });
         expect(res.status).toBe(400);
     });
@@ -196,7 +199,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ email: 'changed@example.com', currentPassword: userFixtures.primary.password });
         expect(res.status).toBe(200);
         expect(res.body.email).toBe('changed@example.com');
@@ -206,7 +209,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 username: 'freshname',
                 profilePicture: 'https://example.com/pic.png',
@@ -220,7 +223,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 username: userFixtures.primary.username,
                 email: userFixtures.primary.email,
@@ -240,7 +243,7 @@ describe('PUT /users/profile', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 password: userFixtures.primary.password,
                 confirmPassword: userFixtures.primary.password,
@@ -260,7 +263,7 @@ describe('DELETE /users/me', () => {
         const { token } = await registerAndToken();
         const res = await request(app())
             .delete('/users/me')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: 'not-the-password' });
         expect(res.status).toBe(400);
 
@@ -272,7 +275,7 @@ describe('DELETE /users/me', () => {
         const { token } = await registerAndToken();
         const { body: article } = await request(app())
             .post('/articles')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 title: 'Doomed article',
                 category: 'Basics',
@@ -283,7 +286,7 @@ describe('DELETE /users/me', () => {
 
         const res = await request(app())
             .delete('/users/me')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: userFixtures.primary.password });
         expect(res.status).toBe(200);
 
@@ -292,7 +295,7 @@ describe('DELETE /users/me', () => {
 
         const staleSession = await request(app())
             .get('/users/profile')
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(staleSession.status).toBe(401);
 
         const articleAfter = await request(app()).get(`/articles/${article._id}`);
@@ -305,7 +308,7 @@ describe('DELETE /users/me', () => {
 
         const res = await request(app())
             .delete('/users/me')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: userFixtures.primary.password });
         expect(res.status).toBe(400);
         expect(res.body.message).toMatch(/only admin/i);
@@ -319,7 +322,7 @@ describe('DELETE /users/me', () => {
 
         const res = await request(app())
             .delete('/users/me')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ password: userFixtures.primary.password });
         expect(res.status).toBe(200);
     });

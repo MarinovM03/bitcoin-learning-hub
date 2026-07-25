@@ -6,10 +6,10 @@ describe('Session revocation via tokenVersion', () => {
     it('rejects a token after the user logs out', async () => {
         const { token } = await registerAndToken();
 
-        await request(app()).get('/users/profile').set('x-authorization', token).expect(200);
-        await request(app()).post('/users/logout').set('x-authorization', token).expect(200);
+        await request(app()).get('/users/profile').set('Cookie', token).expect(200);
+        await request(app()).post('/users/logout').set('Cookie', token).expect(200);
 
-        const after = await request(app()).get('/users/profile').set('x-authorization', token);
+        const after = await request(app()).get('/users/profile').set('Cookie', token);
         expect(after.status).toBe(401);
     });
 
@@ -18,7 +18,7 @@ describe('Session revocation via tokenVersion', () => {
 
         await request(app())
             .put('/users/profile')
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({
                 password: 'rotated-password-1',
                 confirmPassword: 'rotated-password-1',
@@ -26,14 +26,14 @@ describe('Session revocation via tokenVersion', () => {
             })
             .expect(200);
 
-        const after = await request(app()).get('/users/profile').set('x-authorization', token);
+        const after = await request(app()).get('/users/profile').set('Cookie', token);
         expect(after.status).toBe(401);
     });
 
     it('rejects a syntactically valid but unsigned-by-us token', async () => {
         const res = await request(app())
             .get('/users/profile')
-            .set('x-authorization', 'this.is.not-a-real-token');
+            .set('Cookie', 'accessToken=this.is.not-a-real-token');
         expect(res.status).toBe(401);
     });
 
@@ -42,7 +42,7 @@ describe('Session revocation via tokenVersion', () => {
         const { default: User } = await import('../models/User.js');
         await User.deleteOne({ _id: user._id });
 
-        const res = await request(app()).get('/users/profile').set('x-authorization', token);
+        const res = await request(app()).get('/users/profile').set('Cookie', token);
         expect(res.status).toBe(401);
     });
 });

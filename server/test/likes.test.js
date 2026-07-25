@@ -3,7 +3,7 @@ import request from 'supertest';
 import { app, registerAndToken, createArticle, userFixtures } from './helpers.js';
 
 const toggle = (token, articleId) =>
-    request(app()).post('/likes').set('x-authorization', token).send({ articleId });
+    request(app()).post('/likes').set('Cookie', token).send({ articleId });
 
 describe('Likes', () => {
     it('requires authentication to toggle', async () => {
@@ -40,7 +40,7 @@ describe('Likes', () => {
 
         const authed = await request(app())
             .get(`/likes/${article._id}`)
-            .set('x-authorization', a);
+            .set('Cookie', a);
         expect(authed.status).toBe(200);
         expect(authed.body).toEqual({ totalLikes: 2, likedByMe: true });
     });

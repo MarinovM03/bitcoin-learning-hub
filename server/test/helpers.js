@@ -54,15 +54,28 @@ export const login = (overrides = {}) =>
         password: overrides.password ?? userFixtures.primary.password,
     });
 
-export const registerAndToken = async (overrides = {}) => {
+export const verifyUser = (userId) =>
+    User.updateOne({ _id: userId }, { emailVerified: true });
+
+export const sessionCookie = (res) => {
+    const jar = res.headers['set-cookie'] || [];
+    const entry = jar.find((cookie) => cookie.startsWith('accessToken='));
+    return entry ? entry.split(';')[0] : '';
+};
+
+export const registerAndToken = async (overrides = {}, { verified = true } = {}) => {
     const res = await register(overrides);
-    return { user: res.body, token: res.body.accessToken };
+    if (verified) {
+        await verifyUser(res.body._id);
+        res.body.emailVerified = true;
+    }
+    return { user: res.body, token: sessionCookie(res) };
 };
 
 export const createArticle = (token, overrides = {}) =>
     request(app())
         .post('/articles')
-        .set('x-authorization', token)
+        .set('Cookie', token)
         .send({ ...articleFixture, ...overrides });
 
 export const promoteToAdmin = (userId) =>

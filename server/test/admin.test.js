@@ -12,26 +12,26 @@ describe('Admin gating', () => {
 
     it('refuses non-admin users', async () => {
         const { token } = await registerAndToken();
-        const res = await request(app()).get('/admin/stats').set('x-authorization', token);
+        const res = await request(app()).get('/admin/stats').set('Cookie', token);
         expect(res.status).toBe(403);
     });
 
     it('allows freshly promoted admins on the next request', async () => {
         const { token, user } = await registerAndToken();
         await promoteToAdmin(user._id);
-        const res = await request(app()).get('/admin/stats').set('x-authorization', token);
+        const res = await request(app()).get('/admin/stats').set('Cookie', token);
         expect(res.status).toBe(200);
     });
 
     it('refuses admin access after role is revoked, even with the same token', async () => {
         const { token, user } = await registerAndToken();
         await promoteToAdmin(user._id);
-        await request(app()).get('/admin/stats').set('x-authorization', token).expect(200);
+        await request(app()).get('/admin/stats').set('Cookie', token).expect(200);
 
         const { default: User } = await import('../models/User.js');
         await User.updateOne({ _id: user._id }, { role: 'user' });
 
-        const after = await request(app()).get('/admin/stats').set('x-authorization', token);
+        const after = await request(app()).get('/admin/stats').set('Cookie', token);
         expect(after.status).toBe(403);
     });
 });
@@ -42,7 +42,7 @@ describe('Admin endpoints', () => {
         await promoteToAdmin(user._id);
         await createArticle(token);
 
-        const res = await request(app()).get('/admin/stats').set('x-authorization', token);
+        const res = await request(app()).get('/admin/stats').set('Cookie', token);
         expect(res.status).toBe(200);
         expect(res.body.users.total).toBe(1);
         expect(res.body.articles.total).toBe(1);
@@ -54,7 +54,7 @@ describe('Admin endpoints', () => {
         await registerAndToken(userFixtures.secondary);
         await registerAndToken(userFixtures.tertiary);
 
-        const res = await request(app()).get('/admin/users').set('x-authorization', token);
+        const res = await request(app()).get('/admin/users').set('Cookie', token);
         expect(res.status).toBe(200);
         expect(res.body.total).toBe(3);
     });
@@ -66,7 +66,7 @@ describe('Admin endpoints', () => {
 
         const res = await request(app())
             .patch(`/admin/users/${other._id}/role`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ role: 'admin' });
         expect(res.status).toBe(200);
         expect(res.body.role).toBe('admin');
@@ -78,7 +78,7 @@ describe('Admin endpoints', () => {
 
         const res = await request(app())
             .patch(`/admin/users/${user._id}/role`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ role: 'user' });
         expect(res.status).toBe(400);
     });
@@ -91,7 +91,7 @@ describe('Admin endpoints', () => {
 
         const res = await request(app())
             .delete(`/admin/users/${other._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(200);
 
         const list = await request(app()).get('/articles');
@@ -106,7 +106,7 @@ describe('Admin endpoints', () => {
 
         const res = await request(app())
             .delete(`/admin/articles/${article._id}`)
-            .set('x-authorization', adminToken);
+            .set('Cookie', adminToken);
         expect(res.status).toBe(200);
     });
 
@@ -117,7 +117,7 @@ describe('Admin endpoints', () => {
 
         const res = await request(app())
             .patch(`/admin/articles/${draft._id}/featured`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(400);
     });
 
@@ -128,12 +128,12 @@ describe('Admin endpoints', () => {
 
         const on = await request(app())
             .patch(`/admin/articles/${article._id}/featured`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(on.body.featured).toBe(true);
 
         const off = await request(app())
             .patch(`/admin/articles/${article._id}/featured`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(off.body.featured).toBe(false);
     });
 });

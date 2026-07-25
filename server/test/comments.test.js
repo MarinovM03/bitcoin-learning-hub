@@ -7,7 +7,7 @@ import Comment from '../models/Comment.js';
 const postComment = (token, articleId, text = 'Great post!') =>
     request(app())
         .post('/comments')
-        .set('x-authorization', token)
+        .set('Cookie', token)
         .send({ articleId, text });
 
 describe('Comments', () => {
@@ -40,7 +40,7 @@ describe('Comments', () => {
 
         const del = await request(app())
             .delete(`/comments/${comment._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(del.status).toBe(200);
 
         const list = await request(app()).get(`/comments/${article._id}`);
@@ -55,7 +55,7 @@ describe('Comments', () => {
 
         const res = await request(app())
             .delete(`/comments/${comment._id}`)
-            .set('x-authorization', otherToken);
+            .set('Cookie', otherToken);
         expect(res.status).toBe(403);
     });
 
@@ -73,7 +73,7 @@ describe('Comments', () => {
 
         const res = await request(app())
             .put(`/comments/${comment._id}`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ text: 'Edited text here' });
         expect(res.status).toBe(200);
         expect(res.body.text).toBe('Edited text here');
@@ -88,7 +88,7 @@ describe('Comments', () => {
 
         const res = await request(app())
             .put(`/comments/${comment._id}`)
-            .set('x-authorization', otherToken)
+            .set('Cookie', otherToken)
             .send({ text: 'Hijacked edit attempt' });
         expect(res.status).toBe(403);
     });
@@ -105,7 +105,7 @@ describe('Comments', () => {
 
         const res = await request(app())
             .put(`/comments/${comment._id}`)
-            .set('x-authorization', token)
+            .set('Cookie', token)
             .send({ text: 'Too late to edit this' });
         expect(res.status).toBe(400);
         expect(res.body.message).toMatch(/within 5 minutes/i);

@@ -35,7 +35,7 @@ describe('Auth middleware', () => {
     it('treats a malformed token as missing', async () => {
         const res = await request(app())
             .get('/users/profile')
-            .set('x-authorization', 'totally-malformed');
+            .set('Cookie', 'totally-malformed');
         expect(res.status).toBe(401);
     });
 
@@ -46,7 +46,7 @@ describe('Auth middleware', () => {
 
     it('attaches the user when the token is valid', async () => {
         const { token, user } = await registerAndToken();
-        const res = await request(app()).get('/users/profile').set('x-authorization', token);
+        const res = await request(app()).get('/users/profile').set('Cookie', token);
         expect(res.body._id).toBe(user._id);
     });
 });

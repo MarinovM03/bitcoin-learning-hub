@@ -5,7 +5,7 @@ import { app, registerAndToken, userFixtures, glossaryFixture } from './helpers.
 const createTerm = (token, overrides = {}) =>
     request(app())
         .post('/glossary')
-        .set('x-authorization', token)
+        .set('Cookie', token)
         .send({ ...glossaryFixture, ...overrides });
 
 describe('Glossary', () => {
@@ -42,7 +42,7 @@ describe('Glossary', () => {
         const { body: term } = await createTerm(token);
         const res = await request(app())
             .delete(`/glossary/${term._id}`)
-            .set('x-authorization', token);
+            .set('Cookie', token);
         expect(res.status).toBe(200);
     });
 
@@ -52,7 +52,7 @@ describe('Glossary', () => {
         const { body: term } = await createTerm(ownerToken);
         const res = await request(app())
             .delete(`/glossary/${term._id}`)
-            .set('x-authorization', otherToken);
+            .set('Cookie', otherToken);
         expect(res.status).toBe(403);
     });
 });

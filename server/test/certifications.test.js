@@ -25,7 +25,7 @@ const buildPathWithExam = async () => {
         quiz: quizB,
         seriesName: '',
     });
-    const pathRes = await request(app()).post('/paths').set('x-authorization', authorToken).send({
+    const pathRes = await request(app()).post('/paths').set('Cookie', authorToken).send({
         title: 'Certified Bitcoin Path',
         description: 'A path with a final exam for testing.',
         difficulty: 'Intermediate',
@@ -37,7 +37,7 @@ const buildPathWithExam = async () => {
 
 const readAll = async (token, articleIds) => {
     for (const id of articleIds) {
-        const res = await request(app()).post(`/articles/${id}/read`).set('x-authorization', token);
+        const res = await request(app()).post(`/articles/${id}/read`).set('Cookie', token);
         expect(res.status).toBe(200);
     }
 };
@@ -49,7 +49,7 @@ describe('Path certification exam', () => {
 
         const res = await request(app())
             .get(`/paths/${path._id}/quiz`)
-            .set('x-authorization', readerToken);
+            .set('Cookie', readerToken);
         expect(res.status).toBe(403);
     });
 
@@ -60,7 +60,7 @@ describe('Path certification exam', () => {
 
         const res = await request(app())
             .get(`/paths/${path._id}/quiz`)
-            .set('x-authorization', readerToken);
+            .set('Cookie', readerToken);
         expect(res.status).toBe(200);
         expect(res.body.totalQuestions).toBe(4);
         for (const q of res.body.questions) {
@@ -75,7 +75,7 @@ describe('Path certification exam', () => {
 
         const submit = await request(app())
             .post(`/paths/${path._id}/quiz`)
-            .set('x-authorization', readerToken)
+            .set('Cookie', readerToken)
             .send({ answers: correctAnswers });
         expect(submit.status).toBe(200);
         expect(submit.body.passed).toBe(true);
@@ -84,12 +84,12 @@ describe('Path certification exam', () => {
 
         const del = await request(app())
             .delete(`/paths/${path._id}`)
-            .set('x-authorization', authorToken);
+            .set('Cookie', authorToken);
         expect(del.status).toBe(200);
 
         const certs = await request(app())
             .get('/users/me/certifications')
-            .set('x-authorization', readerToken);
+            .set('Cookie', readerToken);
         expect(certs.status).toBe(200);
         expect(certs.body).toHaveLength(1);
         expect(certs.body[0].pathId).toBeNull();
@@ -104,7 +104,7 @@ describe('Path certification exam', () => {
 
         const submit = await request(app())
             .post(`/paths/${path._id}/quiz`)
-            .set('x-authorization', readerToken)
+            .set('Cookie', readerToken)
             .send({ answers: [0, 0, 0, 0] });
         expect(submit.status).toBe(200);
         expect(submit.body.passed).toBe(false);
@@ -119,7 +119,7 @@ describe('Admin user deletion cascade', () => {
         await readAll(readerToken, articleIds);
         await request(app())
             .post(`/paths/${path._id}/quiz`)
-            .set('x-authorization', readerToken)
+            .set('Cookie', readerToken)
             .send({ answers: correctAnswers });
 
         const { user: adminUser, token: adminToken } = await registerAndToken(userFixtures.secondary);
@@ -127,7 +127,7 @@ describe('Admin user deletion cascade', () => {
 
         const del = await request(app())
             .delete(`/admin/users/${reader._id}`)
-            .set('x-authorization', adminToken);
+            .set('Cookie', adminToken);
         expect(del.status).toBe(200);
 
         expect(await User.findById(reader._id)).toBeNull();

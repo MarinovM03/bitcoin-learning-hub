@@ -100,7 +100,7 @@ describe('POST /users/reset-password', () => {
 
         const staleSession = await request(app())
             .get('/users/profile')
-            .set('x-authorization', oldJwt);
+            .set('Cookie', oldJwt);
         expect(staleSession.status).toBe(401);
 
         const reuse = await request(app())

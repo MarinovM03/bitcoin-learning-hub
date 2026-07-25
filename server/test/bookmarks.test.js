@@ -3,7 +3,7 @@ import request from 'supertest';
 import { app, registerAndToken, createArticle } from './helpers.js';
 
 const toggle = (token, articleId) =>
-    request(app()).post('/bookmarks').set('x-authorization', token).send({ articleId });
+    request(app()).post('/bookmarks').set('Cookie', token).send({ articleId });
 
 describe('Bookmarks', () => {
     it('requires authentication', async () => {
@@ -29,7 +29,7 @@ describe('Bookmarks', () => {
         const { body: article } = await createArticle(token);
         await toggle(token, article._id);
 
-        const list = await request(app()).get('/bookmarks').set('x-authorization', token);
+        const list = await request(app()).get('/bookmarks').set('Cookie', token);
         expect(list.status).toBe(200);
         expect(list.body).toHaveLength(1);
         expect(list.body[0]._id).toBe(article._id);
