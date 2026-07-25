@@ -7,6 +7,7 @@ import LearningPath from '../models/LearningPath.js';
 import ReadArticle from '../models/ReadArticle.js';
 import PathCertification from '../models/PathCertification.js';
 import PasswordResetToken from '../models/PasswordResetToken.js';
+import EmailVerificationToken from '../models/EmailVerificationToken.js';
 import { cascadeArticleDelete } from './cascadeArticles.js';
 
 export const cascadeUserDelete = async (userId) => {
@@ -23,6 +24,7 @@ export const cascadeUserDelete = async (userId) => {
         ReadArticle.deleteMany({ _ownerId: userId }),
         PathCertification.deleteMany({ _ownerId: userId }),
         PasswordResetToken.deleteMany({ _ownerId: userId }),
+        EmailVerificationToken.deleteMany({ _ownerId: userId }),
     ]);
     await cascadeArticleDelete(ownedArticleIds);
 };

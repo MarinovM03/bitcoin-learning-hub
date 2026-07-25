@@ -51,6 +51,10 @@ export const forgotPasswordSchema = z.object({
     email: emailRule,
 });
 
+export const verifyEmailSchema = z.object({
+    token: z.string().trim().min(1, 'Confirmation token is required'),
+});
+
 export const resetPasswordSchema = z.object({
     token: z.string().trim().min(1, 'Reset token is required'),
     password: passwordRule,
