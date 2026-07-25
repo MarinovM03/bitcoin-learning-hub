@@ -14,6 +14,7 @@ import ScrollToTop from "./components/scroll-to-top/ScrollToTop";
 import ScrollReset from "./components/scroll-reset/ScrollReset";
 import Toaster from "./components/toaster/Toaster";
 import Spinner from "./components/spinner/Spinner";
+import EmailVerificationNotice from "./components/email-verification-notice/EmailVerificationNotice";
 
 const Catalog = lazy(() => import("./components/catalog/Catalog"));
 const Details = lazy(() => import("./components/details/Details"));
@@ -45,6 +46,7 @@ const CertificationDetails = lazy(() => import("./components/certification-detai
 const Admin = lazy(() => import("./components/admin/Admin"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword"));
+const VerifyEmail = lazy(() => import("./components/verify-email/VerifyEmail"));
 
 function App() {
     return (
@@ -61,6 +63,7 @@ function App() {
             <main className="main-area" id="main-content" tabIndex={-1}>
                 <ScrollReset />
                 <ScrollToTop />
+                <EmailVerificationNotice />
 
                 <Suspense fallback={<Spinner />}>
                     <Routes>
@@ -78,6 +81,7 @@ function App() {
                         <Route path="/address" element={<AddressDemystifier />} />
                         <Route path="/multisig" element={<MultisigExplainer />} />
                         <Route path="/converter" element={<SatsConverter />} />
+                        <Route path="/verify-email" element={<VerifyEmail />} />
 
                         <Route element={<AuthGuard />}>
                             <Route path="/articles/create" element={<Create />} />

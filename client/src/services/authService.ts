@@ -44,6 +44,12 @@ export const resetPassword = (
 ): Promise<AuthMessageResponse> =>
     request.post<AuthMessageResponse>(`${baseUrl}/reset-password`, { token, password, confirmPassword });
 
+export const verifyEmail = (token: string): Promise<AuthUser> =>
+    request.post<AuthUser>(`${baseUrl}/verify-email`, { token });
+
+export const resendVerification = (): Promise<AuthMessageResponse> =>
+    request.post<AuthMessageResponse>(`${baseUrl}/resend-verification`);
+
 export const updateProfile = (data: ProfileUpdateData): Promise<AuthUser> =>
     request.put<AuthUser>(`${baseUrl}/profile`, data);
 

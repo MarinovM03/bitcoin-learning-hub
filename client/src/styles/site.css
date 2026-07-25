@@ -65,6 +65,7 @@
 @import "article-toc.css";
 @import "markdown-write-preview.css";
 @import "admin.css";
+@import "verification-notice.css";
 @import "accessibility.css";
 
 :root {
