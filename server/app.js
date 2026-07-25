@@ -5,6 +5,8 @@ import rateLimit from 'express-rate-limit';
 import router from './routes.js';
 import { authMiddleware } from './middlewares/authMiddleware.js';
 import { mongoSanitize } from './middlewares/mongoSanitize.js';
+import { parseCookies } from './middlewares/cookies.js';
+import { verifyOrigin } from './middlewares/verifyOrigin.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
 export const createApp = ({ disableRateLimit = false } = {}) => {
@@ -27,8 +29,11 @@ export const createApp = ({ disableRateLimit = false } = {}) => {
                 callback(null, false);
             }
         },
+        credentials: true,
     }));
     app.use(mongoSanitize);
+    app.use(parseCookies);
+    app.use(verifyOrigin(allowedOrigins));
     app.use(authMiddleware);
 
     if (!disableRateLimit) {
@@ -44,6 +49,8 @@ export const createApp = ({ disableRateLimit = false } = {}) => {
         app.use('/users/register', authLimiter);
         app.use('/users/forgot-password', authLimiter);
         app.use('/users/reset-password', authLimiter);
+        app.use('/users/verify-email', authLimiter);
+        app.use('/users/resend-verification', authLimiter);
 
         const writeLimiter = rateLimit({
             windowMs: 15 * 60 * 1000,
