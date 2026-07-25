@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireAuth } from './middlewares/requireAuth.js';
 import { requireAdmin } from './middlewares/requireAdmin.js';
+import { requireVerified } from './middlewares/requireVerified.js';
 import { validate } from './middlewares/validate.js';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
@@ -21,6 +22,7 @@ import {
     forgotPasswordSchema,
     resetPasswordSchema,
     deleteAccountSchema,
+    verifyEmailSchema,
 } from './validators/authSchemas.js';
 import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
@@ -57,8 +59,8 @@ router.get('/articles/:articleId', validate({ params: articleIdParam }), article
 router.post('/articles/:articleId/quiz/check', validate({ params: articleIdParam, body: checkQuizAnswerSchema }), articleController.checkQuizAnswer);
 router.post('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markRead);
 router.delete('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markUnread);
-router.post('/articles', requireAuth, validate({ body: createArticleSchema }), articleController.create);
-router.put('/articles/:articleId', requireAuth, validate({ params: articleIdParam, body: updateArticleSchema }), articleController.update);
+router.post('/articles', requireAuth, requireVerified, validate({ body: createArticleSchema }), articleController.create);
+router.put('/articles/:articleId', requireAuth, requireVerified, validate({ params: articleIdParam, body: updateArticleSchema }), articleController.update);
 router.delete('/articles/:articleId', requireAuth, validate({ params: articleIdParam }), articleController.remove);
 
 // Learning path routes
@@ -67,8 +69,8 @@ router.get('/paths', learningPathController.getAll);
 router.get('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam }), pathCertificationController.getQuiz);
 router.post('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam, body: submitQuizSchema }), pathCertificationController.submitQuiz);
 router.get('/paths/:pathId', validate({ params: pathIdParam }), learningPathController.getOne);
-router.post('/paths', requireAuth, validate({ body: createPathSchema }), learningPathController.create);
-router.put('/paths/:pathId', requireAuth, validate({ params: pathIdParam, body: updatePathSchema }), learningPathController.update);
+router.post('/paths', requireAuth, requireVerified, validate({ body: createPathSchema }), learningPathController.create);
+router.put('/paths/:pathId', requireAuth, requireVerified, validate({ params: pathIdParam, body: updatePathSchema }), learningPathController.update);
 router.delete('/paths/:pathId', requireAuth, validate({ params: pathIdParam }), learningPathController.remove);
 
 // Reading history
@@ -87,6 +89,8 @@ router.post('/users/login', validate({ body: loginSchema }), authController.logi
 router.post('/users/logout', authController.logout);
 router.post('/users/forgot-password', validate({ body: forgotPasswordSchema }), authController.forgotPassword);
 router.post('/users/reset-password', validate({ body: resetPasswordSchema }), authController.resetPassword);
+router.post('/users/verify-email', validate({ body: verifyEmailSchema }), authController.verifyEmail);
+router.post('/users/resend-verification', requireAuth, authController.resendVerification);
 router.get('/users/profile', requireAuth, authController.getProfile);
 router.put('/users/profile', requireAuth, validate({ body: updateProfileSchema }), authController.updateProfile);
 router.get('/users/:userId/public', validate({ params: userIdParam }), articleController.getPublicProfile);
@@ -102,13 +106,13 @@ router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 // Glossary routes
 router.get('/glossary', glossaryController.getAll);
 router.get('/glossary/:termId', validate({ params: termIdParam }), glossaryController.getOne);
-router.post('/glossary', requireAuth, validate({ body: createGlossarySchema }), glossaryController.create);
+router.post('/glossary', requireAuth, requireVerified, validate({ body: createGlossarySchema }), glossaryController.create);
 router.delete('/glossary/:termId', requireAuth, validate({ params: termIdParam }), glossaryController.remove);
 
 // Comment routes
 router.get('/comments/:articleId', validate({ params: articleIdParam }), commentController.getAllForArticle);
-router.post('/comments', requireAuth, validate({ body: createCommentSchema }), commentController.create);
-router.put('/comments/:commentId', requireAuth, validate({ params: commentIdParam, body: updateCommentSchema }), commentController.update);
+router.post('/comments', requireAuth, requireVerified, validate({ body: createCommentSchema }), commentController.create);
+router.put('/comments/:commentId', requireAuth, requireVerified, validate({ params: commentIdParam, body: updateCommentSchema }), commentController.update);
 router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdParam }), commentController.remove);
 
 // Admin routes — requireAdmin verifies both the session and the role in one
