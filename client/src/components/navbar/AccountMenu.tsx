@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { ChevronDown, User, FileText, Bookmark, Route, Award, LogOut, ShieldCheck } from "lucide-react";
+import { ChevronDown, User, FileText, Bookmark, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 
@@ -80,14 +80,6 @@ export default function AccountMenu() {
                     <Link to="/my-articles" className="account-menu-item" role="menuitem" onClick={close}>
                         <FileText size={16} strokeWidth={2} />
                         <span>My Articles</span>
-                    </Link>
-                    <Link to="/my-paths" className="account-menu-item" role="menuitem" onClick={close}>
-                        <Route size={16} strokeWidth={2} />
-                        <span>My Paths</span>
-                    </Link>
-                    <Link to="/certifications" className="account-menu-item" role="menuitem" onClick={close}>
-                        <Award size={16} strokeWidth={2} />
-                        <span>Certifications</span>
                     </Link>
                     <Link to="/bookmarks" className="account-menu-item" role="menuitem" onClick={close}>
                         <Bookmark size={16} strokeWidth={2} />

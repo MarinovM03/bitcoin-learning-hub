@@ -64,8 +64,8 @@ export default function DeleteAccountModal({ onClose }: DeleteAccountModalProps)
                 </div>
                 <h3 className="cpm-title" id="delete-account-title">Delete Account?</h3>
                 <p className="cpm-hint">
-                    This permanently removes your account together with every article, path,
-                    comment, like, bookmark, and certification you have. It cannot be undone.
+                    This permanently removes your account together with every article, comment,
+                    like, bookmark, and glossary term you have. It cannot be undone.
                 </p>
 
                 <form className="cpm-form" onSubmit={handleSubmit(onSubmit)} noValidate>

@@ -18,7 +18,6 @@ export const useMarkRead = () => {
         mutationFn: (articleId: string) => articleService.markRead(articleId),
         onSuccess: (_data, articleId) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.detail(articleId) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.paths.all });
         },
     });
 };
@@ -29,7 +28,6 @@ export const useMarkUnread = () => {
         mutationFn: (articleId: string) => articleService.markUnread(articleId),
         onSuccess: (_data, articleId) => {
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.detail(articleId) });
-            queryClient.invalidateQueries({ queryKey: queryKeys.paths.all });
         },
     });
 };

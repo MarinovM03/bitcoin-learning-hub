@@ -5,12 +5,10 @@ import { requireVerified } from './middlewares/requireVerified.js';
 import { validate } from './middlewares/validate.js';
 import * as articleController from './controllers/articleController.js';
 import * as authController from './controllers/authController.js';
-import * as learningPathController from './controllers/learningPathController.js';
 import * as likeController from './controllers/likeController.js';
 import * as glossaryController from './controllers/glossaryController.js';
 import * as commentController from './controllers/commentController.js';
 import * as bookmarkController from './controllers/bookmarkController.js';
-import * as pathCertificationController from './controllers/pathCertificationController.js';
 import * as adminController from './controllers/adminController.js';
 import * as searchController from './controllers/searchController.js';
 import * as reportController from './controllers/reportController.js';
@@ -30,14 +28,11 @@ import { createGlossarySchema } from './validators/glossarySchemas.js';
 import { createCommentSchema, updateCommentSchema } from './validators/commentSchemas.js';
 import { likeArticleSchema } from './validators/likeSchemas.js';
 import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
-import { createPathSchema, updatePathSchema, submitQuizSchema } from './validators/pathSchemas.js';
 import { createReportSchema, resolveReportSchema } from './validators/reportSchemas.js';
 import {
     articleIdParam,
-    pathIdParam,
     termIdParam,
     commentIdParam,
-    certIdParam,
     userIdParam,
     reportIdParam,
 } from './validators/shared.js';
@@ -66,25 +61,11 @@ router.post('/articles', requireAuth, requireVerified, validate({ body: createAr
 router.put('/articles/:articleId', requireAuth, requireVerified, validate({ params: articleIdParam, body: updateArticleSchema }), articleController.update);
 router.delete('/articles/:articleId', requireAuth, validate({ params: articleIdParam }), articleController.remove);
 
-// Learning path routes
-router.get('/paths/my', requireAuth, learningPathController.getMyPaths);
-router.get('/paths', learningPathController.getAll);
-router.get('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam }), pathCertificationController.getQuiz);
-router.post('/paths/:pathId/quiz', requireAuth, validate({ params: pathIdParam, body: submitQuizSchema }), pathCertificationController.submitQuiz);
-router.get('/paths/:pathId', validate({ params: pathIdParam }), learningPathController.getOne);
-router.post('/paths', requireAuth, requireVerified, validate({ body: createPathSchema }), learningPathController.create);
-router.put('/paths/:pathId', requireAuth, requireVerified, validate({ params: pathIdParam, body: updatePathSchema }), learningPathController.update);
-router.delete('/paths/:pathId', requireAuth, validate({ params: pathIdParam }), learningPathController.remove);
-
 // Reading history
 router.delete('/users/me/read-history', requireAuth, articleController.resetReadHistory);
 
 // Account deletion
 router.delete('/users/me', requireAuth, validate({ body: deleteAccountSchema }), authController.deleteAccount);
-
-// Path certification routes
-router.get('/users/me/certifications', requireAuth, pathCertificationController.getMyCertifications);
-router.get('/certifications/:certId', requireAuth, validate({ params: certIdParam }), pathCertificationController.getOneCertification);
 
 // Auth routes
 router.post('/users/register', validate({ body: registerSchema }), authController.register);

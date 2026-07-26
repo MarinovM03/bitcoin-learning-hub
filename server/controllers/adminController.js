@@ -3,7 +3,6 @@ import User from '../models/User.js';
 import Article from '../models/Article.js';
 import Comment from '../models/Comment.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
-import LearningPath from '../models/LearningPath.js';
 import Bookmark from '../models/Bookmark.js';
 import Like from '../models/Like.js';
 import { AppError } from '../utils/AppError.js';
@@ -32,7 +31,6 @@ export const getStats = asyncHandler(async (_req, res) => {
         commentsLastWeek,
         totalGlossaryTerms,
         pendingTerms,
-        totalPaths,
         totalBookmarks,
         totalLikes,
     ] = await Promise.all([
@@ -48,7 +46,6 @@ export const getStats = asyncHandler(async (_req, res) => {
         Comment.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
         GlossaryTerm.countDocuments(),
         GlossaryTerm.countDocuments({ status: 'pending' }),
-        LearningPath.countDocuments(),
         Bookmark.countDocuments(),
         Like.countDocuments(),
     ]);
@@ -64,7 +61,6 @@ export const getStats = asyncHandler(async (_req, res) => {
         },
         comments: { total: totalComments, lastWeek: commentsLastWeek },
         glossary: { total: totalGlossaryTerms, pending: pendingTerms },
-        paths: { total: totalPaths },
         bookmarks: { total: totalBookmarks },
         likes: { total: totalLikes },
     });

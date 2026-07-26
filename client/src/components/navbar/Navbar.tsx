@@ -18,7 +18,6 @@ interface NavLinkItem {
 const NAV_LINKS: NavLinkItem[] = [
     { to: "/", label: "Home", end: true },
     { to: "/articles", label: "Articles" },
-    { to: "/paths", label: "Paths" },
     { to: "/glossary", label: "Glossary" },
 ];
 

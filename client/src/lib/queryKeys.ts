@@ -13,12 +13,6 @@ export const queryKeys = {
         list: ['glossary', 'list'],
         detail: (id?: string) => ['glossary', 'detail', id],
     },
-    paths: {
-        all: ['paths'],
-        list: (filters: unknown) => ['paths', 'list', filters],
-        mine: ['paths', 'mine'],
-        detail: (id?: string) => ['paths', 'detail', id],
-    },
     bookmarks: {
         all: ['bookmarks'],
         list: ['bookmarks', 'list'],
@@ -28,11 +22,6 @@ export const queryKeys = {
     },
     comments: {
         forArticle: (articleId?: string) => ['comments', articleId],
-    },
-    certifications: {
-        all: ['certifications'],
-        mine: ['certifications', 'mine'],
-        detail: (id?: string) => ['certifications', 'detail', id],
     },
     publicProfile: (userId?: string) => ['users', userId, 'public'],
     market: {

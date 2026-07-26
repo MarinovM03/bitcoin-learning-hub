@@ -8,7 +8,6 @@ export interface AdminStats {
     articles: { total: number; published: number; drafts: number; pending: number; featured: number };
     comments: { total: number; lastWeek: number };
     glossary: { total: number; pending: number };
-    paths: { total: number };
     bookmarks: { total: number };
     likes: { total: number };
 }

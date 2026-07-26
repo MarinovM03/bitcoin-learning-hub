@@ -335,8 +335,8 @@ export default function Details() {
                                 </button>
                                 <span className="btn-mark-read-hint">
                                     {hasRead
-                                        ? 'Counts toward learning path progress.'
-                                        : 'Track your progress through learning paths.'}
+                                        ? 'Saved to your reading history.'
+                                        : 'Keep track of what you have already read.'}
                                 </span>
                             </div>
                         )}

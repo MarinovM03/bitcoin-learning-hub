@@ -323,12 +323,10 @@ describe('POST /articles/:id/quiz/check', () => {
 });
 
 describe('Article delete cascade', () => {
-    it('removes interactions and path references when an article is deleted', async () => {
+    it('removes every interaction when an article is deleted', async () => {
         const { token: ownerToken } = await registerAndToken();
         const { token: readerToken } = await registerAndToken(userFixtures.secondary);
         const { body: article } = await createArticle(ownerToken);
-        const keepRes = await createArticle(ownerToken, { title: 'Article that stays' });
-        const keeper = keepRes.body;
 
         await request(app()).post('/comments').set('Cookie', readerToken)
             .send({ articleId: article._id, text: 'Nice write-up!' });
@@ -337,13 +335,6 @@ describe('Article delete cascade', () => {
         await request(app()).post('/bookmarks').set('Cookie', readerToken)
             .send({ articleId: article._id });
         await request(app()).post(`/articles/${article._id}/read`).set('Cookie', readerToken);
-
-        const pathRes = await request(app()).post('/paths').set('Cookie', ownerToken).send({
-            title: 'Cascade path',
-            description: 'Path containing the doomed article.',
-            articles: [article._id, keeper._id],
-        });
-        expect(pathRes.status).toBe(201);
 
         const del = await request(app())
             .delete(`/articles/${article._id}`)
@@ -358,10 +349,6 @@ describe('Article delete cascade', () => {
 
         const bookmarks = await request(app()).get('/bookmarks').set('Cookie', readerToken);
         expect(bookmarks.body).toHaveLength(0);
-
-        const path = await request(app()).get(`/paths/${pathRes.body._id}`);
-        expect(path.status).toBe(200);
-        expect(path.body.articles.map(a => a._id)).toEqual([keeper._id]);
     });
 });
 

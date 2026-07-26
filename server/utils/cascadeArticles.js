@@ -2,7 +2,6 @@ import Comment from '../models/Comment.js';
 import Like from '../models/Like.js';
 import Bookmark from '../models/Bookmark.js';
 import ReadArticle from '../models/ReadArticle.js';
-import LearningPath from '../models/LearningPath.js';
 import Report from '../models/Report.js';
 
 export const cascadeArticleDelete = async (articleIds) => {
@@ -17,10 +16,6 @@ export const cascadeArticleDelete = async (articleIds) => {
         Like.deleteMany({ articleId: { $in: ids } }),
         Bookmark.deleteMany({ articleId: { $in: ids } }),
         ReadArticle.deleteMany({ articleId: { $in: ids } }),
-        LearningPath.updateMany(
-            { articles: { $in: ids } },
-            { $pull: { articles: { $in: ids } } },
-        ),
         Report.deleteMany({
             $or: [
                 { targetType: 'article', targetId: { $in: ids } },

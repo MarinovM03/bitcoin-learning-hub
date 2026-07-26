@@ -35,14 +35,6 @@ const AddressDemystifier = lazy(() => import("./components/address-demystifier/A
 const MultisigExplainer = lazy(() => import("./components/multisig-explainer/MultisigExplainer"));
 const SatsConverter = lazy(() => import("./components/sats-converter/SatsConverter"));
 const SearchPage = lazy(() => import("./components/search-page/SearchPage"));
-const Paths = lazy(() => import("./components/paths/Paths"));
-const PathDetails = lazy(() => import("./components/path-details/PathDetails"));
-const CreatePath = lazy(() => import("./components/create-path/CreatePath"));
-const EditPath = lazy(() => import("./components/edit-path/EditPath"));
-const MyPaths = lazy(() => import("./components/my-paths/MyPaths"));
-const PathQuiz = lazy(() => import("./components/path-quiz/PathQuiz"));
-const Certifications = lazy(() => import("./components/certifications/Certifications"));
-const CertificationDetails = lazy(() => import("./components/certification-details/CertificationDetails"));
 const Admin = lazy(() => import("./components/admin/Admin"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword"));
@@ -70,8 +62,6 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/articles" element={<Catalog />} />
                         <Route path="/articles/:articleId/details" element={<Details />} />
-                        <Route path="/paths" element={<Paths />} />
-                        <Route path="/paths/:pathId" element={<PathDetails />} />
                         <Route path="/users/:userId" element={<AuthorProfile />} />
                         <Route path="/glossary" element={<Glossary />} />
                         <Route path="/glossary/:termId" element={<GlossaryDetails />} />
@@ -86,15 +76,9 @@ function App() {
                         <Route element={<AuthGuard />}>
                             <Route path="/articles/create" element={<Create />} />
                             <Route path="/articles/:articleId/edit" element={<Edit />} />
-                            <Route path="/paths/create" element={<CreatePath />} />
-                            <Route path="/paths/:pathId/edit" element={<EditPath />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/bookmarks" element={<Bookmarks />} />
                             <Route path="/my-articles" element={<MyArticles />} />
-                            <Route path="/my-paths" element={<MyPaths />} />
-                            <Route path="/paths/:pathId/quiz" element={<PathQuiz />} />
-                            <Route path="/certifications" element={<Certifications />} />
-                            <Route path="/certifications/:certId" element={<CertificationDetails />} />
                         </Route>
 
                         <Route element={<GuestGuard />}>

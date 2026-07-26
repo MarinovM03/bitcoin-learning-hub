@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { BookOpen, Library, GraduationCap, TrendingUp, Heart } from "lucide-react";
+import { BookOpen, Library, TrendingUp, Heart } from "lucide-react";
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
@@ -22,7 +22,7 @@ export default function Home() {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'Bitcoin Learning Hub',
-        description: 'Community-driven Bitcoin education — articles, glossary, learning paths, certifications, and live market tools.',
+        description: 'Community-driven Bitcoin education — in-depth articles, an A–Z glossary, and live market and on-chain tools.',
         url: window.location.origin,
         potentialAction: {
             '@type': 'SearchAction',
@@ -38,7 +38,7 @@ export default function Home() {
 
     return (
         <section id="home-page" className="page-content">
-            <PageMeta description="Learn Bitcoin from the ground up — articles, glossary, learning paths, live market data, halving countdown, and interactive tools." />
+            <PageMeta description="Learn Bitcoin from the ground up — articles, glossary, live market data, halving countdown, and interactive tools." />
 
             <div className="hero-section">
                 <div className="hero-dot-grid" />
@@ -117,16 +117,6 @@ export default function Home() {
                                     <div className="hero-feature-text">
                                         <span className="hero-feature-name">Articles</span>
                                         <span className="hero-feature-desc">Deep-dive Bitcoin education</span>
-                                    </div>
-                                    <span className="hero-feature-arrow">→</span>
-                                </Link>
-                                <Link to="/paths" className="hero-feature-item">
-                                    <span className="hero-feature-icon">
-                                        <GraduationCap size={22} strokeWidth={1.8} />
-                                    </span>
-                                    <div className="hero-feature-text">
-                                        <span className="hero-feature-name">Learning Paths</span>
-                                        <span className="hero-feature-desc">Guided, structured tracks</span>
                                     </div>
                                     <span className="hero-feature-arrow">→</span>
                                 </Link>

@@ -8,7 +8,6 @@ const STAT_CARDS = (data: AdminStatsData) => [
     { label: 'Articles', value: data.articles.total, sub: `${data.articles.published} published · ${data.articles.drafts} drafts · ${data.articles.featured} featured` },
     { label: 'Comments', value: data.comments.total, sub: `${data.comments.lastWeek} new this week` },
     { label: 'Glossary Terms', value: data.glossary.total, sub: 'Across all categories' },
-    { label: 'Learning Paths', value: data.paths.total, sub: 'Curated journeys' },
     { label: 'Bookmarks', value: data.bookmarks.total, sub: 'Total saves' },
     { label: 'Likes', value: data.likes.total, sub: 'Lifetime likes' },
 ];

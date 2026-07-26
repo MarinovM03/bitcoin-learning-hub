@@ -67,7 +67,7 @@ export default function Profile() {
                 <ConfirmModal
                     title="Reset reading history?"
                     message="This will clear every article you've marked as read."
-                    subMessage="Learning paths will show all articles as unread and the Final Exam gates will lock again until you re-mark them. This cannot be undone."
+                    subMessage="Every article will show as unread again. This cannot be undone."
                     confirmLabel={isResetting ? 'Clearing…' : 'Reset History'}
                     onConfirm={handleResetReadHistory}
                     onCancel={() => !isResetting && setShowResetModal(false)}

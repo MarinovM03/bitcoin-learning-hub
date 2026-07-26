@@ -1,6 +1,6 @@
 const SITE_NAME = 'Bitcoin Learning Hub';
 const DEFAULT_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1024px-Bitcoin.svg.png';
-const DEFAULT_DESCRIPTION = 'Learn Bitcoin fundamentals, technology, and economics through articles, glossary terms, learning paths, and live market tools.';
+const DEFAULT_DESCRIPTION = 'Learn Bitcoin fundamentals, technology, and economics through articles, glossary terms, and live market tools.';
 
 interface PageMetaProps {
     title?: string;

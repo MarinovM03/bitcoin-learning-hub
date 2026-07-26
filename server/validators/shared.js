@@ -20,9 +20,7 @@ export const optionalHttpUrl = z
     .optional();
 
 export const articleIdParam = z.object({ articleId: objectId });
-export const pathIdParam = z.object({ pathId: objectId });
 export const termIdParam = z.object({ termId: objectId });
 export const commentIdParam = z.object({ commentId: objectId });
-export const certIdParam = z.object({ certId: objectId });
 export const userIdParam = z.object({ userId: objectId });
 export const reportIdParam = z.object({ reportId: objectId });
