@@ -1,6 +1,6 @@
 # 🪙 Bitcoin Learning Hub
 
-A full-stack Single Page Application (SPA) built with **ReactJS + TypeScript** and **Node.js/Express**. Bitcoin Learning Hub is an educational platform where users can read and contribute articles about Bitcoin, follow structured learning paths and earn certifications, explore a community-driven glossary of cryptocurrency terms, use live on-chain and market tools, and engage in article discussions through a comments system.
+A full-stack Single Page Application (SPA) built with **ReactJS + TypeScript** and **Node.js/Express**. Bitcoin Learning Hub is an educational platform where users can read and contribute articles about Bitcoin, follow multi-part article series, explore a community-driven glossary of cryptocurrency terms, use live on-chain and market tools, and engage in article discussions through a comments system.
 
 ---
 
@@ -23,7 +23,6 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Article Details** — Full article view with reading progress bar, drop-cap typography, reading time, view counter, like count, related articles sidebar, and a comments section.
 - **Author Profiles** — Public profile pages showing an author's published articles and total likes received.
 - **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
-- **Learning Paths** — Curated multi-article learning tracks organized by skill level, with progress tracking and a certifying quiz at the end of each path.
 - **Global Search** — `Ctrl+K` / `⌘ K` search overlay with arrow-key navigation, plus a dedicated search page covering articles and glossary terms with shareable URL filters by category, difficulty, and reading time.
 - **Article Quizzes** — "Test Your Knowledge" quizzes at the end of articles, graded by the server with instant per-question feedback and a final score breakdown.
 - **Authentication** — Login by email or username, and Register with full validation. Show/hide password toggles on every password field, a full `Forgot password?` email flow with single-use expiring reset links, and clear feedback when a session expires mid-request.
@@ -32,15 +31,11 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
 - **Article Drafts** — Save works-in-progress as drafts. Drafts are private and never appear in the public catalog.
 - **My Articles Page** — Dedicated page with a full grid view of all published articles and drafts, with edit and delete actions.
-- **Create Learning Paths** — Build multi-article learning tracks with ordered lessons and a final quiz.
-- **My Paths Page** — Manage your published paths and drafts with edit and delete actions.
-- **Path Quiz Mode** — Take the end-of-path quiz to earn a certification, with scored feedback per question.
-- **Certifications** — Personal dashboard of every path certification you have earned, viewable on a dedicated details page.
 - **Like Articles** — Toggle a like on any article you did not author. One like per user per article.
 - **Bookmark Articles** — Save articles to a personal bookmarks list for later reading.
 - **Post Comments** — Join the discussion on any article with a 500-character limit and live character counter.
 - **Contribute Glossary Terms** — Add new terms with a definition and category.
-- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, My Articles, My Paths, and Certifications pages.
+- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, and My Articles pages.
 
 ### Bitcoin Tools
 - **Sats / BTC / USD Converter** — Three linked inputs that convert between satoshis, BTC, and USD live against the current BTC spot price, with common preset amounts.
@@ -64,8 +59,8 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 - **Stats Overview** — At-a-glance count of published articles, saved drafts, and total likes received.
 
 ### Admin Area
-- **Stats Dashboard** — Totals and last-7-days deltas for users, articles, comments, glossary terms, paths, bookmarks, and likes.
-- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, paths, reading history, and certifications).
+- **Stats Dashboard** — Totals and last-7-days deltas for users, articles, comments, glossary terms, bookmarks, and likes.
+- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, reading history, and reports).
 - **Article Moderation** — Paginated list with search, hard-delete for any article, and a one-click toggle to feature an article on the home page.
 - **Comment Moderation** — Paginated feed of every comment with article context and one-click removal.
 
@@ -146,11 +141,6 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/articles/:id/edit` | Edit Article | Owner only |
 | `/glossary` | Bitcoin Glossary | Public |
 | `/glossary/:id` | Glossary Term Details | Public |
-| `/paths` | Learning Paths Catalog | Public |
-| `/paths/:id` | Learning Path Details | Public |
-| `/paths/create` | Create Learning Path | Authenticated |
-| `/paths/:id/edit` | Edit Learning Path | Owner only |
-| `/paths/:id/quiz` | Take Path Quiz | Authenticated |
 | `/search` | Global Search Results | Public |
 | `/converter` | Sats / BTC / USD Converter | Public |
 | `/dca` | DCA Calculator | Public |
@@ -160,9 +150,6 @@ Bitcoin Learning Hub provides a structured, dark-themed interface for learning a
 | `/users/:id` | Public Author Profile | Public |
 | `/profile` | User Profile & Settings | Authenticated |
 | `/my-articles` | My Articles Manager | Authenticated |
-| `/my-paths` | My Paths Manager | Authenticated |
-| `/certifications` | Earned Certifications | Authenticated |
-| `/certifications/:id` | Certification Details | Authenticated |
 | `/bookmarks` | Saved Bookmarks | Authenticated |
 | `/admin` | Admin Dashboard (Stats, Users, Articles, Comments) | Admin only |
 | `/health` | Health Probe (server only) | Public |

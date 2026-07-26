@@ -1,7 +1,7 @@
 {
     "name": "Bitcoin Learning Hub",
     "short_name": "BTC Hub",
-    "description": "Learn Bitcoin from the ground up — articles, glossary, learning paths, certifications, and live market tools.",
+    "description": "Learn Bitcoin from the ground up — articles, glossary, and live market and on-chain tools.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#0f0f0f",
