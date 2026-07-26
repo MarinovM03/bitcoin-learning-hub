@@ -2,6 +2,7 @@ import { FileText, Pencil, Eye, Heart, Clock, TrendingUp } from "lucide-react";
 
 interface MyArticlesRailProps {
     publishedCount: number;
+    pendingCount: number;
     draftCount: number;
     totalViews: number;
     totalLikes: number;
@@ -14,6 +15,7 @@ interface MyArticlesRailProps {
 
 export default function MyArticlesRail({
     publishedCount,
+    pendingCount,
     draftCount,
     totalViews,
     totalLikes,
@@ -25,6 +27,7 @@ export default function MyArticlesRail({
 }: MyArticlesRailProps) {
     const stats = [
         { Icon: FileText, label: 'Published', value: publishedCount },
+        { Icon: Clock,    label: 'In review',  value: pendingCount },
         { Icon: Pencil,   label: 'Drafts',    value: draftCount },
         { Icon: Eye,      label: 'Views',     value: totalViews },
         { Icon: Heart,    label: 'Likes',     value: totalLikes },

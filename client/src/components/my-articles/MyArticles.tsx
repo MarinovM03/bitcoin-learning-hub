@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { PenLine } from "lucide-react";
+import { PenLine, Clock, MessageSquareWarning } from "lucide-react";
 import * as likeService from "../../services/likeService";
 import ConfirmModal from "../common/ConfirmModal";
 import Spinner from "../spinner/Spinner";
@@ -56,8 +56,13 @@ export default function MyArticles() {
     };
 
     const publishedArticles = myArticles.filter(a => a.status === 'published');
+    const pendingArticles = myArticles.filter(a => a.status === 'pending');
     const draftArticles = myArticles.filter(a => a.status === 'draft');
-    const tabArticles = activeTab === 'published' ? publishedArticles : draftArticles;
+    const tabArticles = activeTab === 'published'
+        ? publishedArticles
+        : activeTab === 'pending'
+            ? pendingArticles
+            : draftArticles;
 
     const availableCategories = useMemo(() => {
         const set = new Set<string>(tabArticles.map(a => a.category).filter(Boolean));
@@ -126,6 +131,13 @@ export default function MyArticles() {
                             <span className="my-articles-page-tab-count">{publishedArticles.length}</span>
                         </button>
                         <button
+                            className={`my-articles-page-tab ${activeTab === 'pending' ? 'my-articles-page-tab--active' : ''}`}
+                            onClick={() => setActiveTab('pending')}
+                        >
+                            In review
+                            <span className="my-articles-page-tab-count">{pendingArticles.length}</span>
+                        </button>
+                        <button
                             className={`my-articles-page-tab ${activeTab === 'draft' ? 'my-articles-page-tab--active' : ''}`}
                             onClick={() => setActiveTab('draft')}
                         >
@@ -147,6 +159,8 @@ export default function MyArticles() {
                                                 Write Your First Article
                                             </Link>
                                         </>
+                                    ) : activeTab === 'pending' ? (
+                                        <p>Nothing waiting on a moderator right now.</p>
                                     ) : (
                                         <>
                                             <p>You have no saved drafts.</p>
@@ -172,10 +186,32 @@ export default function MyArticles() {
                                             {activeTab === 'draft' && (
                                                 <span className="my-articles-page-card-draft-badge">Draft</span>
                                             )}
+                                            {activeTab === 'pending' && (
+                                                <span className="my-articles-page-card-review-badge">
+                                                    <Clock size={11} strokeWidth={2.5} />
+                                                    In review
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="my-articles-page-card-body">
                                             <h3 className="my-articles-page-card-title">{article.title}</h3>
                                             <p className="my-articles-page-card-summary">{article.summary}</p>
+
+                                            {activeTab === 'pending' && (
+                                                <p className="my-articles-page-card-notice">
+                                                    Waiting on a moderator. It stays private until it's approved.
+                                                </p>
+                                            )}
+
+                                            {activeTab === 'draft' && article.moderationNote && (
+                                                <p className="my-articles-page-card-feedback">
+                                                    <MessageSquareWarning size={13} strokeWidth={2.25} />
+                                                    <span>
+                                                        <strong>Sent back:</strong> {article.moderationNote}
+                                                    </span>
+                                                </p>
+                                            )}
+
                                             <div className="my-articles-page-card-footer">
                                                 {activeTab === 'published' && (
                                                     <Link
@@ -207,6 +243,7 @@ export default function MyArticles() {
                 </div>
                 <MyArticlesRail
                     publishedCount={publishedArticles.length}
+                    pendingCount={pendingArticles.length}
                     draftCount={draftArticles.length}
                     totalViews={totalViews}
                     totalLikes={totalLikes}

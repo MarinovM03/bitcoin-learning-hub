@@ -11,7 +11,7 @@ export type ArticleCategory =
 
 export type ArticleDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 
-export type ArticleStatus = 'draft' | 'published';
+export type ArticleStatus = 'draft' | 'pending' | 'published';
 
 export interface QuizQuestion {
     question: string;
@@ -42,6 +42,7 @@ export interface Article {
     readingTime: number;
     views: number;
     status: ArticleStatus;
+    moderationNote?: string;
     seriesName: string;
     seriesPart: number | null;
     quiz?: QuizQuestion[];

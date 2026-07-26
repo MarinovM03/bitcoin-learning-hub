@@ -11,6 +11,7 @@ import QuizBuilder from '../quiz-builder/QuizBuilder';
 import PageMeta from '../page-meta/PageMeta';
 import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
 import { createArticleSchema } from '../../validators/articleSchemas';
+import { toast } from '../../lib/toast';
 import type { QuizFormQuestion, ArticleStatus, ArticleCategory } from '../../types';
 
 export default function Edit() {
@@ -127,7 +128,12 @@ export default function Edit() {
         }
 
         try {
-            await articleService.edit(articleId, { ...values, status, quiz });
+            const saved = await articleService.edit(articleId, { ...values, status, quiz });
+            if (saved.status === 'pending') {
+                toast.info('Sent for review. It goes live once a moderator approves it.');
+                navigate('/my-articles');
+                return;
+            }
             navigate(status === 'draft' ? '/my-articles' : `/articles/${articleId}/details`);
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
