@@ -13,6 +13,7 @@ import * as bookmarkController from './controllers/bookmarkController.js';
 import * as pathCertificationController from './controllers/pathCertificationController.js';
 import * as adminController from './controllers/adminController.js';
 import * as searchController from './controllers/searchController.js';
+import * as reportController from './controllers/reportController.js';
 import * as marketController from './controllers/marketController.js';
 import mongoose from 'mongoose';
 import {
@@ -30,6 +31,7 @@ import { createCommentSchema, updateCommentSchema } from './validators/commentSc
 import { likeArticleSchema } from './validators/likeSchemas.js';
 import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
 import { createPathSchema, updatePathSchema, submitQuizSchema } from './validators/pathSchemas.js';
+import { createReportSchema, resolveReportSchema } from './validators/reportSchemas.js';
 import {
     articleIdParam,
     pathIdParam,
@@ -37,6 +39,7 @@ import {
     commentIdParam,
     certIdParam,
     userIdParam,
+    reportIdParam,
 } from './validators/shared.js';
 
 const router = Router();
@@ -136,6 +139,11 @@ router.post('/admin/articles/:articleId/reject', validate({ params: articleIdPar
 router.post('/admin/glossary/:termId/approve', validate({ params: termIdParam }), adminController.approveGlossaryTerm);
 router.delete('/admin/glossary/:termId', validate({ params: termIdParam }), adminController.adminDeleteGlossaryTerm);
 router.patch('/admin/users/:userId/trust', validate({ params: userIdParam }), adminController.updateUserTrust);
+router.get('/admin/reports', adminController.adminListReports);
+router.patch('/admin/reports/:reportId', validate({ params: reportIdParam, body: resolveReportSchema }), adminController.resolveReport);
+
+// Report routes
+router.post('/reports', requireAuth, validate({ body: createReportSchema }), reportController.create);
 
 // Search route
 router.get('/search', searchController.search);

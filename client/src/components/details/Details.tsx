@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle } from "lucide-react";
+import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle, Flag } from "lucide-react";
 import { useArticle, useRelatedArticles, useArticleSeries } from '../../hooks/queries/useArticles';
 import { useLikeSummary } from '../../hooks/queries/useLikes';
 import { useMyBookmarks } from '../../hooks/queries/useBookmarks';
@@ -12,6 +12,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import ArticleDetailsSkeleton from "../article-details-skeleton/ArticleDetailsSkeleton";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
+import ReportModal from "../report-modal/ReportModal";
 import QuizSection from "../quiz/QuizSection";
 import ReadingPanel from "../reading-panel/ReadingPanel";
 import ArticleToc from "../article-toc/ArticleToc";
@@ -47,6 +48,7 @@ export default function Details() {
     const isTogglingRead = markReadMutation.isPending || markUnreadMutation.isPending;
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
     const [readProgress, setReadProgress] = useState(0);
     const [copied, setCopied] = useState(false);
 
@@ -223,6 +225,15 @@ export default function Details() {
                 />
             )}
 
+            {showReportModal && articleId && (
+                <ReportModal
+                    targetType="article"
+                    targetId={articleId}
+                    targetLabel={article.title}
+                    onClose={() => setShowReportModal(false)}
+                />
+            )}
+
             <div className="details-page">
                 <div className="details-hero">
                     <img
@@ -339,6 +350,10 @@ export default function Details() {
                                 >
                                     <Heart size={16} strokeWidth={2} fill={hasLiked ? "currentColor" : "none"} />
                                     {hasLiked ? 'Liked' : 'Like this article'}
+                                </button>
+                                <button className="btn-report" onClick={() => setShowReportModal(true)}>
+                                    <Flag size={14} strokeWidth={2} />
+                                    Report
                                 </button>
                             </div>
                         )}

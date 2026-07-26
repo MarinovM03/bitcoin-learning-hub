@@ -1,4 +1,5 @@
 import GlossaryTerm from '../models/GlossaryTerm.js';
+import Report from '../models/Report.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { isAdmin } from '../utils/trust.js';
@@ -88,6 +89,8 @@ export const remove = asyncHandler(async (req, res) => {
         if (!exists) throw new AppError(404, 'Term not found');
         throw new AppError(403, 'Forbidden');
     }
+
+    await Report.deleteMany({ targetType: 'glossary', targetId: termId });
 
     res.json({ message: 'Term deleted successfully' });
 });

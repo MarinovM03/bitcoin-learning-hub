@@ -25,3 +25,4 @@ export const termIdParam = z.object({ termId: objectId });
 export const commentIdParam = z.object({ commentId: objectId });
 export const certIdParam = z.object({ certId: objectId });
 export const userIdParam = z.object({ userId: objectId });
+export const reportIdParam = z.object({ reportId: objectId });

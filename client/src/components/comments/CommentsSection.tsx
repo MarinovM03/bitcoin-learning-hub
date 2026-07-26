@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
-import { X, PenLine } from "lucide-react";
+import { X, PenLine, Flag } from "lucide-react";
 import * as commentService from "../../services/commentService";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
+import ReportModal from "../report-modal/ReportModal";
 import { toast } from "../../lib/toast";
 import type { Comment } from "../../types";
 import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
@@ -26,6 +27,7 @@ interface CommentsSectionProps {
 
 export default function CommentsSection({ articleId, articleOwnerId }: CommentsSectionProps) {
     const { isAuthenticated, userId, profilePicture } = useAuth();
+    const [reportTarget, setReportTarget] = useState<Comment | null>(null);
 
     const [comments, setComments] = useState<Comment[]>([]);
     const [text, setText] = useState("");
@@ -111,6 +113,15 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                     confirmLabel="Delete Comment"
                     onConfirm={confirmDelete}
                     onCancel={() => setDeleteTarget(null)}
+                />
+            )}
+
+            {reportTarget && (
+                <ReportModal
+                    targetType="comment"
+                    targetId={reportTarget._id}
+                    targetLabel={`"${reportTarget.text.slice(0, 100)}${reportTarget.text.length > 100 ? '…' : ''}"`}
+                    onClose={() => setReportTarget(null)}
                 />
             )}
 
@@ -204,6 +215,16 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                                                     <X size={14} strokeWidth={2.25} />
                                                 </button>
                                             </>
+                                        )}
+                                        {isAuthenticated && userId && String(comment._ownerId?._id) !== String(userId) && (
+                                            <button
+                                                className="comment-report-btn"
+                                                onClick={() => setReportTarget(comment)}
+                                                aria-label="Report comment"
+                                                title="Report this comment"
+                                            >
+                                                <Flag size={12} strokeWidth={2.25} />
+                                            </button>
                                         )}
                                     </div>
                                     {editingId === comment._id ? (

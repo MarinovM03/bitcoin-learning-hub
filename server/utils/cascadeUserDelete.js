@@ -8,10 +8,15 @@ import ReadArticle from '../models/ReadArticle.js';
 import PathCertification from '../models/PathCertification.js';
 import PasswordResetToken from '../models/PasswordResetToken.js';
 import EmailVerificationToken from '../models/EmailVerificationToken.js';
+import Report from '../models/Report.js';
 import { cascadeArticleDelete } from './cascadeArticles.js';
 
 export const cascadeUserDelete = async (userId) => {
-    const ownedArticles = await Article.find({ _ownerId: userId }).select('_id');
+    const [ownedArticles, ownedComments, ownedTerms] = await Promise.all([
+        Article.find({ _ownerId: userId }).select('_id').lean(),
+        Comment.find({ _ownerId: userId }).select('_id').lean(),
+        GlossaryTerm.find({ _ownerId: userId }).select('_id').lean(),
+    ]);
     const ownedArticleIds = ownedArticles.map((a) => a._id);
 
     await Promise.all([
@@ -25,6 +30,14 @@ export const cascadeUserDelete = async (userId) => {
         PathCertification.deleteMany({ _ownerId: userId }),
         PasswordResetToken.deleteMany({ _ownerId: userId }),
         EmailVerificationToken.deleteMany({ _ownerId: userId }),
+        Report.deleteMany({
+            $or: [
+                { _reporterId: userId },
+                { targetType: 'article', targetId: { $in: ownedArticleIds } },
+                { targetType: 'comment', targetId: { $in: ownedComments.map((c) => c._id) } },
+                { targetType: 'glossary', targetId: { $in: ownedTerms.map((t) => t._id) } },
+            ],
+        }),
     ]);
     await cascadeArticleDelete(ownedArticleIds);
 };

@@ -11,6 +11,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
 import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
+import Report from '../models/Report.js';
 import { hasEarnedTrust } from '../utils/trust.js';
 
 export const getStats = asyncHandler(async (_req, res) => {
@@ -285,6 +286,7 @@ export const adminDeleteGlossaryTerm = asyncHandler(async (req, res) => {
     const { termId } = req.params;
     const deleted = await GlossaryTerm.findByIdAndDelete(termId);
     if (!deleted) throw new AppError(404, 'Term not found');
+    await Report.deleteMany({ targetType: 'glossary', targetId: termId });
     res.json({ message: 'Term deleted.' });
 });
 
@@ -311,6 +313,71 @@ export const updateUserTrust = asyncHandler(async (req, res) => {
     });
 });
 
+const snapshotTargets = async (reports) => {
+    const idsByType = { article: [], comment: [], glossary: [] };
+    for (const report of reports) {
+        idsByType[report.targetType]?.push(report.targetId);
+    }
+
+    const [articles, comments, terms] = await Promise.all([
+        Article.find({ _id: { $in: idsByType.article } }).select('title status').lean(),
+        Comment.find({ _id: { $in: idsByType.comment } }).select('text articleId').lean(),
+        GlossaryTerm.find({ _id: { $in: idsByType.glossary } }).select('term status').lean(),
+    ]);
+
+    const lookup = new Map();
+    for (const a of articles) lookup.set(`article:${a._id}`, { label: a.title, status: a.status });
+    for (const c of comments) lookup.set(`comment:${c._id}`, { label: c.text, articleId: c.articleId });
+    for (const t of terms) lookup.set(`glossary:${t._id}`, { label: t.term, status: t.status });
+
+    return reports.map((report) => ({
+        ...report,
+        target: lookup.get(`${report.targetType}:${report.targetId}`) ?? null,
+    }));
+};
+
+export const adminListReports = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 20, status = 'open' } = req.query;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = Math.min(parseInt(limit) || 20, 100);
+    const skip = (pageNum - 1) * limitNum;
+
+    const filter = ['open', 'resolved', 'dismissed'].includes(status) ? { status } : { status: 'open' };
+
+    const [reports, total, openTotal] = await Promise.all([
+        Report.find(filter)
+            .sort({ createdAt: 1 })
+            .skip(skip)
+            .limit(limitNum)
+            .populate('_reporterId', 'username')
+            .lean(),
+        Report.countDocuments(filter),
+        Report.countDocuments({ status: 'open' }),
+    ]);
+
+    res.json({
+        reports: await snapshotTargets(reports),
+        total,
+        openTotal,
+        page: pageNum,
+        totalPages: Math.ceil(total / limitNum),
+    });
+});
+
+export const resolveReport = asyncHandler(async (req, res) => {
+    const { reportId } = req.params;
+    const { status } = req.body;
+
+    const updated = await Report.findByIdAndUpdate(
+        reportId,
+        { status },
+        { returnDocument: 'after', runValidators: true },
+    );
+    if (!updated) throw new AppError(404, 'Report not found');
+
+    res.json({ _id: updated._id, status: updated.status });
+});
+
 export const adminListComments = asyncHandler(async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const pageNum = parseInt(page) || 1;
@@ -334,5 +401,6 @@ export const adminDeleteComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
     const deleted = await Comment.findByIdAndDelete(commentId);
     if (!deleted) throw new AppError(404, 'Comment not found');
+    await Report.deleteMany({ targetType: 'comment', targetId: commentId });
     res.json({ message: 'Comment deleted.' });
 });

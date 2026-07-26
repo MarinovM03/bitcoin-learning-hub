@@ -176,3 +176,37 @@ export const deleteGlossaryTerm = (termId: string): Promise<{ message: string }>
 
 export const updateUserTrust = (userId: string, isTrusted: boolean): Promise<AdminUserRow> =>
     request.patch<AdminUserRow>(`${baseUrl}/users/${userId}/trust`, { isTrusted });
+
+export type ReportStatus = 'open' | 'resolved' | 'dismissed';
+
+export interface AdminReportRow {
+    _id: string;
+    targetType: 'article' | 'comment' | 'glossary';
+    targetId: string;
+    reason: string;
+    note: string;
+    status: ReportStatus;
+    createdAt: string;
+    _reporterId: { _id: string; username: string } | null;
+    target: { label: string; status?: string; articleId?: string } | null;
+}
+
+export interface AdminReportsResponse {
+    reports: AdminReportRow[];
+    total: number;
+    openTotal: number;
+    page: number;
+    totalPages: number;
+}
+
+export const getReports = (params: { page?: number; limit?: number; status?: ReportStatus } = {}): Promise<AdminReportsResponse> => {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    if (params.status) query.set('status', params.status);
+    const qs = query.toString();
+    return request.get<AdminReportsResponse>(`${baseUrl}/reports${qs ? `?${qs}` : ''}`);
+};
+
+export const resolveReport = (reportId: string, status: 'resolved' | 'dismissed'): Promise<{ _id: string; status: ReportStatus }> =>
+    request.patch<{ _id: string; status: ReportStatus }>(`${baseUrl}/reports/${reportId}`, { status });

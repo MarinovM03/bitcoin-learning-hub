@@ -1,7 +1,12 @@
 import Comment from '../models/Comment.js';
+import Report from '../models/Report.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { requireAccessibleArticle } from '../utils/articleAccess.js';
+import { isAdmin } from '../utils/trust.js';
+
+export const COMMENT_WINDOW_MS = 60 * 60 * 1000;
+export const COMMENT_LIMIT_PER_WINDOW = 15;
 
 export const getAllForArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
@@ -15,6 +20,17 @@ export const create = asyncHandler(async (req, res) => {
     const { articleId, text } = req.body;
 
     await requireAccessibleArticle(articleId, req.user._id);
+
+    if (!isAdmin(req.authUser)) {
+        const since = new Date(Date.now() - COMMENT_WINDOW_MS);
+        const recent = await Comment.countDocuments({
+            _ownerId: req.user._id,
+            createdAt: { $gte: since },
+        });
+        if (recent >= COMMENT_LIMIT_PER_WINDOW) {
+            throw new AppError(429, "You've posted a lot of comments in a short time. Take a break and try again shortly.");
+        }
+    }
 
     const comment = await Comment.create({
         articleId,
@@ -68,6 +84,8 @@ export const remove = asyncHandler(async (req, res) => {
         if (!exists) throw new AppError(404, 'Comment not found');
         throw new AppError(403, 'Forbidden');
     }
+
+    await Report.deleteMany({ targetType: 'comment', targetId: commentId });
 
     res.json({ message: 'Comment deleted successfully' });
 });
