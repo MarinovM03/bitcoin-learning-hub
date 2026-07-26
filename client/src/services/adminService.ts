@@ -5,9 +5,9 @@ const baseUrl = `${API_BASE_URL}/admin`;
 
 export interface AdminStats {
     users: { total: number; admins: number; lastWeek: number };
-    articles: { total: number; published: number; drafts: number; featured: number };
+    articles: { total: number; published: number; drafts: number; pending: number; featured: number };
     comments: { total: number; lastWeek: number };
-    glossary: { total: number };
+    glossary: { total: number; pending: number };
     paths: { total: number };
     bookmarks: { total: number };
     likes: { total: number };
@@ -19,6 +19,8 @@ export interface AdminUserRow {
     email: string;
     profilePicture?: string;
     role: 'user' | 'admin';
+    isTrusted?: boolean;
+    approvedArticles?: number;
 }
 
 export interface AdminUsersResponse {
@@ -32,7 +34,7 @@ export interface AdminArticleRow {
     _id: string;
     title: string;
     category: string;
-    status: 'draft' | 'published';
+    status: 'draft' | 'pending' | 'published';
     featured: boolean;
     views: number;
     createdAt: string;
@@ -104,3 +106,73 @@ export const getComments = (params: { page?: number; limit?: number } = {}): Pro
 
 export const deleteComment = (commentId: string): Promise<{ message: string }> =>
     request.del<{ message: string }>(`${baseUrl}/comments/${commentId}`);
+
+export interface ModerationAuthor {
+    _id: string;
+    username: string;
+    profilePicture?: string;
+}
+
+export interface ModerationArticle {
+    _id: string;
+    title: string;
+    category: string;
+    difficulty: string;
+    summary: string;
+    imageUrl: string;
+    readingTime: number;
+    createdAt: string;
+    _ownerId: ModerationAuthor | null;
+}
+
+export interface ModerationTerm {
+    _id: string;
+    term: string;
+    definition: string;
+    category: string;
+    createdAt: string;
+    _ownerId: ModerationAuthor | null;
+}
+
+export interface ModerationQueueResponse {
+    articles: ModerationArticle[];
+    terms: ModerationTerm[];
+    articleTotal: number;
+    termTotal: number;
+    page: number;
+    totalPages: number;
+}
+
+export interface ArticlePreview extends ModerationArticle {
+    content: string;
+    status: 'draft' | 'pending' | 'published';
+    quiz?: { question: string; options: string[]; correctIndex: number }[];
+    seriesName?: string;
+    seriesPart?: number | null;
+}
+
+export const getModerationQueue = (params: { page?: number; limit?: number } = {}): Promise<ModerationQueueResponse> => {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return request.get<ModerationQueueResponse>(`${baseUrl}/moderation/queue${qs ? `?${qs}` : ''}`);
+};
+
+export const getArticlePreview = (articleId: string): Promise<ArticlePreview> =>
+    request.get<ArticlePreview>(`${baseUrl}/articles/${articleId}/preview`);
+
+export const approveArticle = (articleId: string): Promise<{ _id: string; status: string }> =>
+    request.post<{ _id: string; status: string }>(`${baseUrl}/articles/${articleId}/approve`);
+
+export const rejectArticle = (articleId: string, note: string): Promise<{ _id: string; status: string; moderationNote: string }> =>
+    request.post<{ _id: string; status: string; moderationNote: string }>(`${baseUrl}/articles/${articleId}/reject`, { note });
+
+export const approveGlossaryTerm = (termId: string): Promise<{ _id: string; status: string }> =>
+    request.post<{ _id: string; status: string }>(`${baseUrl}/glossary/${termId}/approve`);
+
+export const deleteGlossaryTerm = (termId: string): Promise<{ message: string }> =>
+    request.del<{ message: string }>(`${baseUrl}/glossary/${termId}`);
+
+export const updateUserTrust = (userId: string, isTrusted: boolean): Promise<AdminUserRow> =>
+    request.patch<AdminUserRow>(`${baseUrl}/users/${userId}/trust`, { isTrusted });

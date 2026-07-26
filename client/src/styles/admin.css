@@ -427,3 +427,175 @@
     padding: 2rem 1rem;
     font-style: italic;
 }
+
+/* Moderation queue */
+.admin-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    background-color: var(--btc-orange);
+    color: var(--dark-bg);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.admin-queue-section {
+    margin-bottom: 2rem;
+}
+
+.admin-queue-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.admin-queue-heading svg {
+    color: var(--btc-orange);
+}
+
+.admin-queue-count {
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    background-color: var(--dark-bg);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.admin-queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.admin-queue-card {
+    padding: 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+}
+
+.admin-queue-main {
+    display: flex;
+    gap: 0.9rem;
+}
+
+.admin-queue-thumb {
+    flex-shrink: 0;
+    width: 96px;
+    height: 64px;
+    border-radius: 6px;
+    object-fit: cover;
+    background-color: var(--dark-bg);
+}
+
+.admin-queue-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-queue-title {
+    margin: 0 0 0.3rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.admin-queue-summary {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.admin-queue-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.admin-queue-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.admin-queue-author {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.admin-queue-dot {
+    color: var(--text-muted);
+}
+
+.admin-queue-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.admin-row-btn--approve:hover:not(:disabled) {
+    background-color: rgba(46, 204, 113, 0.12);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.admin-queue-preview {
+    margin-top: 0.9rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--dark-bg);
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+.admin-reject-note {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.85rem;
+    resize: vertical;
+}
+
+.admin-reject-note:focus {
+    outline: none;
+    border-color: var(--btc-orange);
+}
+
+@media (max-width: 600px) {
+    .admin-queue-main {
+        flex-direction: column;
+    }
+
+    .admin-queue-thumb {
+        width: 100%;
+        height: 120px;
+    }
+}

@@ -11,6 +11,7 @@ interface ConfirmModalProps {
     confirmLabel?: string;
     onConfirm: () => void;
     onCancel: () => void;
+    children?: ReactNode;
 }
 
 export default function ConfirmModal({
@@ -21,6 +22,7 @@ export default function ConfirmModal({
     confirmLabel = "Delete",
     onConfirm,
     onCancel,
+    children,
 }: ConfirmModalProps) {
     const trapRef = useFocusTrap<HTMLDivElement>(true, onCancel);
     const backdropHandlers = useBackdropClose(onCancel);
@@ -41,6 +43,7 @@ export default function ConfirmModal({
                 <h3 className="modal-title" id="confirm-modal-title">{title}</h3>
                 <p className="modal-message">{message}</p>
                 {subMessage && <p className="modal-sub-message">{subMessage}</p>}
+                {children}
                 <div className="modal-actions">
                     <button className="modal-btn modal-btn--cancel" onClick={onCancel}>
                         Cancel

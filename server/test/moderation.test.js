@@ -191,6 +191,32 @@ describe('the moderation queue', () => {
         expect(queue.body.articles[0]._ownerId.username).toBe(userFixtures.primary.username);
     });
 
+    it('serves the full body of a pending article to a reviewer', async () => {
+        const adminToken = await adminSession();
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token, { content: 'The body a reviewer must be able to read.' });
+
+        const anonymous = await request(app()).get(`/articles/${article._id}`);
+        expect(anonymous.status).toBe(404);
+
+        const preview = await request(app())
+            .get(`/admin/articles/${article._id}/preview`)
+            .set('Cookie', adminToken);
+        expect(preview.status).toBe(200);
+        expect(preview.body.content).toBe('The body a reviewer must be able to read.');
+        expect(preview.body.status).toBe('pending');
+    });
+
+    it('keeps the preview endpoint closed to non-admins', async () => {
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token);
+
+        const res = await request(app())
+            .get(`/admin/articles/${article._id}/preview`)
+            .set('Cookie', token);
+        expect(res.status).toBe(403);
+    });
+
     it('refuses to approve an article that is not pending', async () => {
         const adminToken = await adminSession();
         const { token } = await registerAndToken();

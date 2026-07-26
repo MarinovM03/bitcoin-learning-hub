@@ -130,6 +130,7 @@ router.delete('/admin/comments/:commentId', validate({ params: commentIdParam })
 
 // Moderation queue
 router.get('/admin/moderation/queue', adminController.getModerationQueue);
+router.get('/admin/articles/:articleId/preview', validate({ params: articleIdParam }), adminController.getArticlePreview);
 router.post('/admin/articles/:articleId/approve', validate({ params: articleIdParam }), adminController.approveArticle);
 router.post('/admin/articles/:articleId/reject', validate({ params: articleIdParam }), adminController.rejectArticle);
 router.post('/admin/glossary/:termId/approve', validate({ params: termIdParam }), adminController.approveGlossaryTerm);

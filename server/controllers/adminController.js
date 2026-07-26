@@ -218,6 +218,16 @@ export const getModerationQueue = asyncHandler(async (req, res) => {
     });
 });
 
+export const getArticlePreview = asyncHandler(async (req, res) => {
+    const { articleId } = req.params;
+
+    const article = await Article.findById(articleId)
+        .populate('_ownerId', 'username profilePicture');
+    if (!article) throw new AppError(404, 'Article not found');
+
+    res.json(article);
+});
+
 const creditApproval = async (ownerId) => {
     const author = await User.findById(ownerId).select('+approvedArticles +isTrusted');
     if (!author) return;
