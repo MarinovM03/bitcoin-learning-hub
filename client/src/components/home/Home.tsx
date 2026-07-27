@@ -31,6 +31,15 @@ export default function Home() {
         },
     });
 
+    useJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'Bitcoin Learning Hub',
+        url: window.location.origin,
+        logo: `${window.location.origin}/icon-512.png`,
+        description: 'Independent Bitcoin education — in-depth articles, an A–Z glossary, and live market and on-chain tools.',
+    });
+
     const latestArticles = latestData?.articles ?? [];
     const trendingArticles = Array.isArray(trendingData) ? trendingData : [];
 

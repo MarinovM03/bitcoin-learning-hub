@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import GlossaryDetailsSkeleton from "../glossary-details-skeleton/GlossaryDetailsSkeleton";
 import ConfirmModal from "../common/ConfirmModal";
 import PageMeta from "../page-meta/PageMeta";
+import { useJsonLd } from "../../hooks/useJsonLd";
 import { useGlossaryTerm } from "../../hooks/queries/useGlossary";
 import { useDeleteGlossaryTerm } from "../../hooks/mutations/useGlossaryMutations";
 
@@ -24,6 +25,19 @@ export default function GlossaryDetails() {
     const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const error = deleteError || queryError?.message || "";
+
+    useJsonLd(term ? {
+        '@context': 'https://schema.org',
+        '@type': 'DefinedTerm',
+        name: term.term,
+        description: term.definition,
+        inDefinedTermSet: {
+            '@type': 'DefinedTermSet',
+            name: 'Bitcoin Learning Hub Glossary',
+            url: `${window.location.origin}/glossary`,
+        },
+        url: `${window.location.origin}${window.location.pathname}`,
+    } : null);
 
     useEffect(() => {
         return () => {
@@ -85,12 +99,13 @@ export default function GlossaryDetails() {
     const readingMinutes = wordCount > 0 ? Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE)) : 0;
     const monogram = term.term.trim().charAt(0).toUpperCase();
 
+
+
     return (
         <section className="page-content">
             <PageMeta
                 title={term.term}
                 description={term.definition}
-                type="article"
             />
             {showDeleteModal && (
                 <ConfirmModal

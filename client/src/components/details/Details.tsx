@@ -205,6 +205,10 @@ export default function Details() {
                 description={article.summary}
                 image={article.imageUrl}
                 type="article"
+                publishedTime={article.createdAt}
+                modifiedTime={article.updatedAt}
+                author={ownerUsername}
+                section={article.category}
             />
             <div className="read-progress-bar" style={{ '--progress': `${readProgress}%` } as CSSProperties} />
 
