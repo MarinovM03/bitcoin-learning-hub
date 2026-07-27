@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { defineConfig, loadEnv } from 'vite';
 import type { Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -33,13 +35,43 @@ const cspPlugin = (apiOrigin: string): Plugin => ({
     },
 });
 
+const absoluteOgImagePlugin = (siteUrl: string): Plugin => ({
+    name: 'resolve-og-image-url',
+    apply: 'build',
+    transformIndexHtml(html) {
+        return html.replace(/__SITE_URL__/g, siteUrl.replace(/\/$/, ''));
+    },
+});
+
+const robotsPlugin = (sitemapUrl: string): Plugin => ({
+    name: 'resolve-robots-sitemap-url',
+    apply: 'build',
+    writeBundle(options) {
+        const outDir = options.dir ?? resolve(process.cwd(), 'dist');
+        const robotsPath = resolve(outDir, 'robots.txt');
+        if (!existsSync(robotsPath)) return;
+
+        const contents = readFileSync(robotsPath, 'utf8');
+        const resolved = sitemapUrl
+            ? contents.replace(/__SITEMAP_URL__/g, sitemapUrl)
+            : contents.replace(/^Sitemap: __SITEMAP_URL__.*$/m, '').trimEnd() + '\n';
+
+        if (!sitemapUrl) {
+            console.warn('[build] VITE_API_URL is not set — robots.txt will ship without a Sitemap line.');
+        }
+        writeFileSync(robotsPath, resolved);
+    },
+});
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', 'VITE_');
     const apiOrigin = env.VITE_API_URL?.match(/^https?:\/\/[^/]+/)?.[0] ?? '';
+    const siteUrl = env.VITE_SITE_URL?.trim() ?? '';
+    const sitemapUrl = apiOrigin ? `${apiOrigin}/sitemap.xml` : '';
 
     return {
-        plugins: [react(), cspPlugin(apiOrigin)],
+        plugins: [react(), cspPlugin(apiOrigin), absoluteOgImagePlugin(siteUrl), robotsPlugin(sitemapUrl)],
         build: {
             rollupOptions: {
                 output: {

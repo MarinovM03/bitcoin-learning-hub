@@ -13,6 +13,7 @@ import * as adminController from './controllers/adminController.js';
 import * as searchController from './controllers/searchController.js';
 import * as reportController from './controllers/reportController.js';
 import * as marketController from './controllers/marketController.js';
+import * as sitemapController from './controllers/sitemapController.js';
 import mongoose from 'mongoose';
 import {
     registerSchema,
@@ -125,6 +126,9 @@ router.patch('/admin/reports/:reportId', validate({ params: reportIdParam, body:
 
 // Report routes
 router.post('/reports', requireAuth, validate({ body: createReportSchema }), reportController.create);
+
+// Sitemap
+router.get('/sitemap.xml', sitemapController.getSitemap);
 
 // Search route
 router.get('/search', searchController.search);

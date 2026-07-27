@@ -1,3 +1,15 @@
 User-agent: *
 Allow: /
+
+# Private or per-user pages — no value in the index
 Disallow: /admin
+Disallow: /profile
+Disallow: /bookmarks
+Disallow: /my-articles
+Disallow: /articles/create
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /search
+
+Sitemap: __SITEMAP_URL__
