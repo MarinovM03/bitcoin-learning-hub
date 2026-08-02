@@ -77,8 +77,6 @@ export default defineConfig(({ mode }) => {
                 output: {
                     manualChunks: {
                         'react-vendor': ['react', 'react-dom', 'react-router'],
-                        recharts: ['recharts'],
-                        markdown: ['react-markdown', 'remark-gfm', 'rehype-sanitize'],
                     },
                 },
             },
