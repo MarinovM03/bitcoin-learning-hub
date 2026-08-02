@@ -74,6 +74,23 @@ describe('origin checks on state-changing requests', () => {
         expect(res.status).toBe(201);
     });
 
+    it('rejects a write the browser itself labels cross-site', async () => {
+        const { token } = await registerAndToken();
+
+        const res = await createArticle(token).set('Sec-Fetch-Site', 'cross-site');
+        expect(res.status).toBe(403);
+    });
+
+    it('falls back to the referer when no origin header is present', async () => {
+        const { token } = await registerAndToken();
+
+        const foreign = await createArticle(token).set('Referer', `${FOREIGN_ORIGIN}/attack.html`);
+        expect(foreign.status).toBe(403);
+
+        const own = await createArticle(token).set('Referer', `${ALLOWED_ORIGIN}/articles/create`);
+        expect(own.status).toBe(201);
+    });
+
     it('leaves reads untouched', async () => {
         const { token } = await registerAndToken();
 
