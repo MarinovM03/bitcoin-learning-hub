@@ -15,6 +15,8 @@ const bookmarkSchema = new mongoose.Schema({
 
 bookmarkSchema.index({ articleId: 1, _ownerId: 1 }, { unique: true });
 
+bookmarkSchema.index({ _ownerId: 1, createdAt: -1 });
+
 const Bookmark = mongoose.model('Bookmark', bookmarkSchema);
 
 export default Bookmark;

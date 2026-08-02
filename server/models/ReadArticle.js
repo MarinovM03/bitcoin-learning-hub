@@ -15,6 +15,8 @@ const readArticleSchema = new mongoose.Schema({
 
 readArticleSchema.index({ _ownerId: 1, articleId: 1 }, { unique: true });
 
+readArticleSchema.index({ articleId: 1 });
+
 const ReadArticle = mongoose.model('ReadArticle', readArticleSchema);
 
 export default ReadArticle;
