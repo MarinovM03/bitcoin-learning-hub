@@ -1,5 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import User from '../models/User.js';
+import { isSessionRevoked } from '../utils/sessionRevocation.js';
 
 export const requireAdmin = async (req, _res, next) => {
     if (!req.user) {
@@ -7,10 +8,10 @@ export const requireAdmin = async (req, _res, next) => {
     }
 
     try {
-        const user = await User.findById(req.user._id).select('role +tokenVersion').lean();
+        const user = await User.findById(req.user._id).select('role +tokenVersion +revokedSessions').lean();
         const currentVersion = user?.tokenVersion ?? 0;
         const tokenVersion = req.user.tokenVersion ?? 0;
-        if (!user || currentVersion !== tokenVersion) {
+        if (!user || currentVersion !== tokenVersion || isSessionRevoked(user, req.user.sid)) {
             return next(new AppError(401, 'Authentication required.'));
         }
         if (user.role !== 'admin') {

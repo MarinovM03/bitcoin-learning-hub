@@ -55,6 +55,15 @@ const userSchema = new mongoose.Schema({
         default: 0,
         select: false,
     },
+    revokedSessions: {
+        type: [{
+            _id: false,
+            sid: { type: String, required: true },
+            expiresAt: { type: Date, required: true },
+        }],
+        default: [],
+        select: false,
+    },
     approvedArticles: {
         type: Number,
         default: 0,

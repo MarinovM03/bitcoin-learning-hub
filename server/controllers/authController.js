@@ -9,6 +9,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/authEmails.js';
 import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
 import { setSessionCookie, clearSessionCookie, sessionExpiresAt } from '../utils/authCookies.js';
+import { revokeSession } from '../utils/sessionRevocation.js';
 
 const SECRET = process.env.JWT_SECRET;
 const USERNAME_COOLDOWN_DAYS = 30;
@@ -92,6 +93,7 @@ const generateToken = (user) => {
             usernameChangedAt: user.usernameChangedAt,
             role: user.role,
             tokenVersion: user.tokenVersion ?? 0,
+            sid: crypto.randomUUID(),
         },
         SECRET,
         { expiresIn: '2d' }
@@ -317,7 +319,7 @@ export const deleteAccount = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (req, res) => {
     if (req.user?._id) {
-        await User.updateOne({ _id: req.user._id }, { $inc: { tokenVersion: 1 } });
+        await revokeSession(req.user);
     }
     clearSessionCookie(res);
     res.json({ message: 'Logged out successfully' });
