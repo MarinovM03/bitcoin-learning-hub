@@ -196,7 +196,24 @@
 }
 
 .glossary-search {
-    max-width: 100%;
+    width: 100%;
+    padding: 9px 16px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.glossary-search::placeholder {
+    color: var(--text-muted);
+}
+
+.glossary-search:focus {
+    border-color: var(--btc-orange);
 }
 
 .glossary-filter-tabs {

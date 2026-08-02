@@ -72,7 +72,7 @@ export default function Glossary() {
                     <div className="glossary-controls">
                         <input
                             type="text"
-                            className="search-input glossary-search"
+                            className="glossary-search"
                             placeholder="Search terms..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
