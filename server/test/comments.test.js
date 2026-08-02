@@ -3,6 +3,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { app, registerAndToken, createArticle, userFixtures, promoteToAdmin } from './helpers.js';
 import Comment from '../models/Comment.js';
+import Article from '../models/Article.js';
 import { COMMENT_LIMIT_PER_WINDOW } from '../controllers/commentController.js';
 
 const postComment = (token, articleId, text = 'Great post!') =>
@@ -139,5 +140,44 @@ describe('comment flood protection', () => {
             const res = await postComment(token, article.body._id, `Moderator note number ${i} here.`);
             expect(res.status).toBe(201);
         }
+    });
+});
+
+describe('comment threads on unpublished articles', () => {
+    it('hides the thread once an article leaves publication', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+        await postComment(token, article._id, 'A comment made while it was live.');
+
+        await Article.updateOne({ _id: article._id }, { status: 'draft' });
+
+        const res = await request(app()).get(`/comments/${article._id}`);
+        expect(res.status).toBe(404);
+    });
+
+    it('hides the thread from a reader who is not the author', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+        await postComment(token, article._id, 'A comment made while it was live.');
+        await Article.updateOne({ _id: article._id }, { status: 'pending' });
+
+        const { token: outsider } = await registerAndToken(userFixtures.secondary);
+        const res = await request(app())
+            .get(`/comments/${article._id}`)
+            .set('Cookie', outsider);
+        expect(res.status).toBe(404);
+    });
+
+    it('still shows the author their own thread', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+        await postComment(token, article._id, 'A comment made while it was live.');
+        await Article.updateOne({ _id: article._id }, { status: 'pending' });
+
+        const res = await request(app())
+            .get(`/comments/${article._id}`)
+            .set('Cookie', token);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(1);
     });
 });

@@ -3,6 +3,7 @@ import request from 'supertest';
 import {
     app, registerAndToken, userFixtures, articleFixture, createArticle,
 } from './helpers.js';
+import Comment from '../models/Comment.js';
 
 describe('POST /articles', () => {
     it('requires authentication', async () => {
@@ -341,8 +342,7 @@ describe('Article delete cascade', () => {
             .set('Cookie', ownerToken);
         expect(del.status).toBe(200);
 
-        const comments = await request(app()).get(`/comments/${article._id}`);
-        expect(comments.body).toHaveLength(0);
+        expect(await Comment.countDocuments({ articleId: article._id })).toBe(0);
 
         const likes = await request(app()).get(`/likes/${article._id}`);
         expect(likes.body.totalLikes).toBe(0);

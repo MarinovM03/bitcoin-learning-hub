@@ -6,7 +6,9 @@ import mongoose from 'mongoose';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { clampSearchTerm } from '../utils/searchTerm.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
+import { isArticleVisibleTo } from '../utils/articleAccess.js';
 import { canPublishDirectly } from '../utils/trust.js';
 
 const calculateReadingTime = (content) => {
@@ -48,7 +50,7 @@ export const getAll = asyncHandler(async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     const sort = typeof req.query.sort === 'string' ? req.query.sort : '';
-    const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+    const search = clampSearchTerm(req.query.search);
     const category = typeof req.query.category === 'string' ? req.query.category : '';
     const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty : '';
 
@@ -123,16 +125,12 @@ export const getOne = asyncHandler(async (req, res) => {
     }
 
     const article = await Article.findById(articleId).populate('_ownerId', 'username profilePicture');
-    if (!article) {
+    if (!isArticleVisibleTo(article, req.user?._id)) {
         throw new AppError(404, 'Article not found');
     }
 
     const ownerId = article._ownerId?._id ?? article._ownerId;
     const isOwner = req.user && String(req.user._id) === String(ownerId);
-
-    if (article.status !== 'published' && !isOwner) {
-        throw new AppError(404, 'Article not found');
-    }
 
     if (!isOwner && !hasViewedRecently(req, articleId)) {
         article.views = (article.views || 0) + 1;
@@ -163,12 +161,7 @@ export const checkQuizAnswer = asyncHandler(async (req, res) => {
     const { questionIndex, answerIndex } = req.body;
 
     const article = await Article.findById(articleId).select('status quiz _ownerId');
-    if (!article) {
-        throw new AppError(404, 'Article not found');
-    }
-
-    const isOwner = req.user && String(req.user._id) === String(article._ownerId);
-    if (article.status !== 'published' && !isOwner) {
+    if (!isArticleVisibleTo(article, req.user?._id)) {
         throw new AppError(404, 'Article not found');
     }
 
@@ -226,7 +219,7 @@ export const getRelated = asyncHandler(async (req, res) => {
     }
 
     const article = await Article.findById(articleId);
-    if (!article) {
+    if (!isArticleVisibleTo(article, req.user?._id)) {
         throw new AppError(404, 'Article not found');
     }
 
@@ -264,8 +257,11 @@ export const getSeries = asyncHandler(async (req, res) => {
         throw new AppError(404, 'Article not found');
     }
 
-    const current = await Article.findById(articleId).select('seriesName _ownerId');
-    if (!current || !current.seriesName) {
+    const current = await Article.findById(articleId).select('seriesName _ownerId status');
+    if (!isArticleVisibleTo(current, req.user?._id)) {
+        throw new AppError(404, 'Article not found');
+    }
+    if (!current.seriesName) {
         return res.json({ seriesName: '', parts: [] });
     }
 

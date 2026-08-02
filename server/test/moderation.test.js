@@ -226,3 +226,84 @@ describe('the moderation queue', () => {
         expect(res.status).toBe(404);
     });
 });
+
+describe('the write surface of a pending article', () => {
+    const pendingArticle = async () => {
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token);
+        expect(article.status).toBe('pending');
+        return article;
+    };
+
+    it('refuses comments from a reader who is not the author', async () => {
+        const article = await pendingArticle();
+        const { token: outsider } = await registerAndToken(userFixtures.secondary);
+
+        const res = await request(app())
+            .post('/comments')
+            .set('Cookie', outsider)
+            .send({ articleId: article._id, text: 'Seeding social proof early.' });
+        expect(res.status).toBe(404);
+    });
+
+    it('refuses likes from a reader who is not the author', async () => {
+        const article = await pendingArticle();
+        const { token: outsider } = await registerAndToken(userFixtures.secondary);
+
+        const res = await request(app())
+            .post('/likes')
+            .set('Cookie', outsider)
+            .send({ articleId: article._id });
+        expect(res.status).toBe(404);
+    });
+
+    it('refuses bookmarks from a reader who is not the author', async () => {
+        const article = await pendingArticle();
+        const { token: outsider } = await registerAndToken(userFixtures.secondary);
+
+        const res = await request(app())
+            .post('/bookmarks')
+            .set('Cookie', outsider)
+            .send({ articleId: article._id });
+        expect(res.status).toBe(404);
+    });
+
+    it('still lets the author bookmark their own submission', async () => {
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token);
+
+        const res = await request(app())
+            .post('/bookmarks')
+            .set('Cookie', token)
+            .send({ articleId: article._id });
+        expect(res.status).toBe(201);
+    });
+});
+
+describe('unpublished articles as an existence oracle', () => {
+    it('gives nothing away through the related and series endpoints', async () => {
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token, { seriesName: 'Deep dives', seriesPart: 1 });
+
+        const related = await request(app()).get(`/articles/${article._id}/related`);
+        expect(related.status).toBe(404);
+
+        const series = await request(app()).get(`/articles/${article._id}/series`);
+        expect(series.status).toBe(404);
+    });
+
+    it('still serves both endpoints to the author', async () => {
+        const { token } = await newAuthor();
+        const { body: article } = await createArticle(token, { seriesName: 'Deep dives', seriesPart: 1 });
+
+        const related = await request(app())
+            .get(`/articles/${article._id}/related`)
+            .set('Cookie', token);
+        expect(related.status).toBe(200);
+
+        const series = await request(app())
+            .get(`/articles/${article._id}/series`)
+            .set('Cookie', token);
+        expect(series.status).toBe(200);
+    });
+});

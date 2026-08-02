@@ -10,6 +10,9 @@ export const COMMENT_LIMIT_PER_WINDOW = 15;
 
 export const getAllForArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
+
+    await requireAccessibleArticle(articleId, req.user?._id);
+
     const comments = await Comment.find({ articleId })
         .populate('_ownerId', 'username profilePicture')
         .sort({ createdAt: -1 });
