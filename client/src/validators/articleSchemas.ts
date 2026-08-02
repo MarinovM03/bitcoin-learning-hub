@@ -29,4 +29,3 @@ export const createArticleSchema = z.object({
     seriesPart: z.union([z.number().int().min(1).max(99), z.string(), z.null()]).optional(),
 });
 
-export const updateArticleSchema = createArticleSchema.partial();

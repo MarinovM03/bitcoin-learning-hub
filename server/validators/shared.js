@@ -11,14 +11,6 @@ export const httpUrl = z
     .max(2048, 'URL is too long')
     .regex(/^https?:\/\//, 'URL must start with http:// or https://');
 
-export const optionalHttpUrl = z
-    .string()
-    .trim()
-    .max(2048, 'URL is too long')
-    .regex(/^https?:\/\//, 'URL must start with http:// or https://')
-    .or(z.literal(''))
-    .optional();
-
 export const articleIdParam = z.object({ articleId: objectId });
 export const termIdParam = z.object({ termId: objectId });
 export const commentIdParam = z.object({ commentId: objectId });

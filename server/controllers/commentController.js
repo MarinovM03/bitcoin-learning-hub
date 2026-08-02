@@ -5,7 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { requireAccessibleArticle } from '../utils/articleAccess.js';
 import { isAdmin } from '../utils/trust.js';
 
-export const COMMENT_WINDOW_MS = 60 * 60 * 1000;
+const COMMENT_WINDOW_MS = 60 * 60 * 1000;
 export const COMMENT_LIMIT_PER_WINDOW = 15;
 
 export const getAllForArticle = asyncHandler(async (req, res) => {

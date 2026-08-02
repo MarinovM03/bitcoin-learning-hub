@@ -21,18 +21,11 @@ export const FEE_TIERS: readonly FeeTier[] = [
     { label: 'No Rush',  key: 'no-rush',  min: 0,   color: '#555555', description: '<5 sat/vB — could be stuck' },
 ];
 
-export function getFeeColor(feeRate: number): string {
+function getFeeColor(feeRate: number): string {
     for (const tier of FEE_TIERS) {
         if (feeRate >= tier.min) return tier.color;
     }
     return FEE_TIERS[FEE_TIERS.length - 1]!.color;
-}
-
-export function getFeeLabel(feeRate: number): string {
-    for (const tier of FEE_TIERS) {
-        if (feeRate >= tier.min) return tier.label;
-    }
-    return FEE_TIERS[FEE_TIERS.length - 1]!.label;
 }
 
 export interface MempoolTx {

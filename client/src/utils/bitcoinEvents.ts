@@ -10,7 +10,7 @@ export type BitcoinEventWithDate = BitcoinEvent & {
     mode: 'today' | 'upcoming';
 };
 
-export const BITCOIN_EVENTS: Record<string, BitcoinEvent> = {
+const BITCOIN_EVENTS: Record<string, BitcoinEvent> = {
     '01-03': {
         year: 2009,
         title: 'Genesis Block Mined',

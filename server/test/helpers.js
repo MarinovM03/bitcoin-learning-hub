@@ -54,17 +54,11 @@ export const login = (overrides = {}) =>
         password: overrides.password ?? userFixtures.primary.password,
     });
 
-export const verifyUser = (userId) =>
-    User.updateOne({ _id: userId }, { emailVerified: true });
-
 export const sessionCookie = (res) => {
     const jar = res.headers['set-cookie'] || [];
     const entry = jar.find((cookie) => cookie.startsWith('accessToken='));
     return entry ? entry.split(';')[0] : '';
 };
-
-export const trustUser = (userId) =>
-    User.updateOne({ _id: userId }, { isTrusted: true });
 
 export const registerAndToken = async (overrides = {}, { verified = true, trusted = true } = {}) => {
     const res = await register(overrides);

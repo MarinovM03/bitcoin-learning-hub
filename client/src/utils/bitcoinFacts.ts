@@ -1,4 +1,4 @@
-export const BITCOIN_FACTS: readonly string[] = [
+const BITCOIN_FACTS: readonly string[] = [
     "Bitcoin's genesis block was mined on January 3, 2009 by Satoshi Nakamoto.",
     "There will only ever be 21 million Bitcoin in existence.",
     "The first real-world Bitcoin transaction bought 2 pizzas for 10,000 BTC in 2010.",
