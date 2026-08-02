@@ -62,17 +62,22 @@ export interface AdminCommentsResponse {
     totalPages: number;
 }
 
+type QueryParams = Record<string, string | number | undefined>;
+
+const withQuery = (url: string, params: QueryParams): string => {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+        if (value !== undefined && value !== '') query.set(key, String(value));
+    }
+    const qs = query.toString();
+    return qs ? `${url}?${qs}` : url;
+};
+
 export const getStats = (): Promise<AdminStats> =>
     request.get<AdminStats>(`${baseUrl}/stats`);
 
-export const getUsers = (params: { search?: string; page?: number; limit?: number } = {}): Promise<AdminUsersResponse> => {
-    const query = new URLSearchParams();
-    if (params.search) query.set('search', params.search);
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    const qs = query.toString();
-    return request.get<AdminUsersResponse>(`${baseUrl}/users${qs ? `?${qs}` : ''}`);
-};
+export const getUsers = (params: { search?: string; page?: number; limit?: number } = {}): Promise<AdminUsersResponse> =>
+    request.get<AdminUsersResponse>(withQuery(`${baseUrl}/users`, params));
 
 export const updateUserRole = (userId: string, role: 'user' | 'admin'): Promise<AdminUserRow> =>
     request.patch<AdminUserRow>(`${baseUrl}/users/${userId}/role`, { role });
@@ -80,14 +85,8 @@ export const updateUserRole = (userId: string, role: 'user' | 'admin'): Promise<
 export const deleteUser = (userId: string): Promise<{ message: string }> =>
     request.del<{ message: string }>(`${baseUrl}/users/${userId}`);
 
-export const getArticles = (params: { search?: string; page?: number; limit?: number } = {}): Promise<AdminArticlesResponse> => {
-    const query = new URLSearchParams();
-    if (params.search) query.set('search', params.search);
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    const qs = query.toString();
-    return request.get<AdminArticlesResponse>(`${baseUrl}/articles${qs ? `?${qs}` : ''}`);
-};
+export const getArticles = (params: { search?: string; page?: number; limit?: number } = {}): Promise<AdminArticlesResponse> =>
+    request.get<AdminArticlesResponse>(withQuery(`${baseUrl}/articles`, params));
 
 export const deleteArticle = (articleId: string): Promise<{ message: string }> =>
     request.del<{ message: string }>(`${baseUrl}/articles/${articleId}`);
@@ -95,13 +94,8 @@ export const deleteArticle = (articleId: string): Promise<{ message: string }> =
 export const toggleFeatured = (articleId: string): Promise<{ _id: string; featured: boolean }> =>
     request.patch<{ _id: string; featured: boolean }>(`${baseUrl}/articles/${articleId}/featured`);
 
-export const getComments = (params: { page?: number; limit?: number } = {}): Promise<AdminCommentsResponse> => {
-    const query = new URLSearchParams();
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    const qs = query.toString();
-    return request.get<AdminCommentsResponse>(`${baseUrl}/comments${qs ? `?${qs}` : ''}`);
-};
+export const getComments = (params: { page?: number; limit?: number } = {}): Promise<AdminCommentsResponse> =>
+    request.get<AdminCommentsResponse>(withQuery(`${baseUrl}/comments`, params));
 
 export const deleteComment = (commentId: string): Promise<{ message: string }> =>
     request.del<{ message: string }>(`${baseUrl}/comments/${commentId}`);
@@ -150,13 +144,8 @@ export interface ArticlePreview extends ModerationArticle {
     seriesPart?: number | null;
 }
 
-export const getModerationQueue = (params: { page?: number; limit?: number } = {}): Promise<ModerationQueueResponse> => {
-    const query = new URLSearchParams();
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    const qs = query.toString();
-    return request.get<ModerationQueueResponse>(`${baseUrl}/moderation/queue${qs ? `?${qs}` : ''}`);
-};
+export const getModerationQueue = (params: { page?: number; limit?: number } = {}): Promise<ModerationQueueResponse> =>
+    request.get<ModerationQueueResponse>(withQuery(`${baseUrl}/moderation/queue`, params));
 
 export const getArticlePreview = (articleId: string): Promise<ArticlePreview> =>
     request.get<ArticlePreview>(`${baseUrl}/articles/${articleId}/preview`);
@@ -198,14 +187,8 @@ export interface AdminReportsResponse {
     totalPages: number;
 }
 
-export const getReports = (params: { page?: number; limit?: number; status?: ReportStatus } = {}): Promise<AdminReportsResponse> => {
-    const query = new URLSearchParams();
-    if (params.page) query.set('page', String(params.page));
-    if (params.limit) query.set('limit', String(params.limit));
-    if (params.status) query.set('status', params.status);
-    const qs = query.toString();
-    return request.get<AdminReportsResponse>(`${baseUrl}/reports${qs ? `?${qs}` : ''}`);
-};
+export const getReports = (params: { page?: number; limit?: number; status?: ReportStatus } = {}): Promise<AdminReportsResponse> =>
+    request.get<AdminReportsResponse>(withQuery(`${baseUrl}/reports`, params));
 
 export const resolveReport = (reportId: string, status: 'resolved' | 'dismissed'): Promise<{ _id: string; status: ReportStatus }> =>
     request.patch<{ _id: string; status: ReportStatus }>(`${baseUrl}/reports/${reportId}`, { status });
