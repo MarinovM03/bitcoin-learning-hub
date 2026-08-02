@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { app, registerAndToken, createArticle } from './helpers.js';
+import { MAX_SEARCH_LENGTH } from '../utils/searchTerm.js';
 
 describe('GET /search', () => {
     it('returns empty results for very short queries', async () => {
@@ -38,5 +39,21 @@ describe('GET /search', () => {
         const res = await request(app()).get('/search?q=Bitcoin&category=Mining');
         expect(res.body.articles).toHaveLength(1);
         expect(res.body.articles[0].category).toBe('Mining');
+    });
+});
+
+describe('search input limits', () => {
+    it('truncates an oversized term instead of building a huge regex', async () => {
+        const { token } = await registerAndToken();
+        await createArticle(token, { title: 'A'.repeat(60) });
+
+        const oversized = 'A'.repeat(MAX_SEARCH_LENGTH * 40);
+
+        const search = await request(app()).get(`/search?q=${oversized}`);
+        expect(search.status).toBe(200);
+        expect(search.body.query).toHaveLength(MAX_SEARCH_LENGTH);
+
+        const catalog = await request(app()).get(`/articles?search=${oversized}`);
+        expect(catalog.status).toBe(200);
     });
 });

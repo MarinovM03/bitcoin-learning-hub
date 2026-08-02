@@ -2,6 +2,7 @@ import Article from '../models/Article.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { clampSearchTerm } from '../utils/searchTerm.js';
 
 const ALLOWED_CATEGORIES = new Set([
     'Basics', 'Technology', 'Economics', 'Security', 'History', 'Trading', 'Mining', 'Regulation', 'Culture',
@@ -42,7 +43,7 @@ const extractSnippet = (text, query, maxLen = 180) => {
 };
 
 export const search = asyncHandler(async (req, res) => {
-    const rawQuery = (req.query.q || '').toString().trim();
+    const rawQuery = clampSearchTerm(req.query.q);
     const limit = Math.min(parseInt(req.query.limit || '10', 10) || 10, 25);
 
     const rawCategory = (req.query.category || '').toString();

@@ -8,6 +8,7 @@ import Like from '../models/Like.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { clampSearchTerm } from '../utils/searchTerm.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
 import { cascadeUserDelete } from '../utils/cascadeUserDelete.js';
 import Report from '../models/Report.js';
@@ -73,7 +74,7 @@ export const getUsers = asyncHandler(async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    const trimmed = String(search).trim();
+    const trimmed = clampSearchTerm(search);
     if (trimmed) {
         const safe = escapeRegex(trimmed);
         filter.$or = [
@@ -144,7 +145,7 @@ export const adminListArticles = asyncHandler(async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    const trimmed = String(search).trim();
+    const trimmed = clampSearchTerm(search);
     if (trimmed) {
         const safe = escapeRegex(trimmed);
         filter.title = { $regex: safe, $options: 'i' };
