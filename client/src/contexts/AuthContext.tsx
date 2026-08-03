@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         await authService.logout().catch(() => {});
         setAuth({});
         localStorage.removeItem('auth');
-        queryClient.clear();
+        queryClient.resetQueries();
         navigate('/');
     }, [navigate]);
 
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const onUnauthorized = () => {
             setAuth({});
             localStorage.removeItem('auth');
-            queryClient.clear();
+            queryClient.resetQueries();
         };
         window.addEventListener('auth:unauthorized', onUnauthorized);
         return () => window.removeEventListener('auth:unauthorized', onUnauthorized);
