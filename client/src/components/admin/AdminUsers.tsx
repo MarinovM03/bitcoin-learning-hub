@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, Trash2, ShieldCheck, ShieldOff } from 'lucide-react';
+import { Search, Trash2, ShieldCheck, ShieldOff, BadgeCheck, BadgeX } from 'lucide-react';
 import * as adminService from '../../services/adminService';
 import type { AdminUsersResponse, AdminUserRow } from '../../services/adminService';
 import { useAuth } from '../../contexts/AuthContext';
@@ -45,6 +45,18 @@ export default function AdminUsers() {
         }
     };
 
+    const handleToggleTrust = async (user: AdminUserRow) => {
+        setPendingId(user._id);
+        try {
+            await adminService.updateUserTrust(user._id, !user.isTrusted);
+            reload();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong');
+        } finally {
+            setPendingId(null);
+        }
+    };
+
     const handleDelete = async () => {
         if (!deleteTarget) return;
         setPendingId(deleteTarget._id);
@@ -65,7 +77,7 @@ export default function AdminUsers() {
                 <ConfirmModal
                     title="Delete User?"
                     message={`Delete "${deleteTarget.username}" (${deleteTarget.email}).`}
-                    subMessage="This will also permanently delete all their articles, paths, comments, bookmarks, likes, and glossary terms. This cannot be undone."
+                    subMessage="This will also permanently delete all their articles, comments, bookmarks, likes, and glossary terms. This cannot be undone."
                     confirmLabel="Delete User"
                     onConfirm={handleDelete}
                     onCancel={() => setDeleteTarget(null)}
@@ -102,6 +114,7 @@ export default function AdminUsers() {
                             <th>User</th>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Publishing</th>
                             <th className="admin-table-actions-col">Actions</th>
                         </tr>
                     </thead>
@@ -109,6 +122,8 @@ export default function AdminUsers() {
                         {data.users.map(user => {
                             const isSelf = String(user._id) === String(currentUserId);
                             const isPending = pendingId === user._id;
+                            const isAdmin = user.role === 'admin';
+                            const publishesDirectly = isAdmin || Boolean(user.isTrusted);
                             return (
                                 <tr key={user._id}>
                                     <td>
@@ -129,7 +144,33 @@ export default function AdminUsers() {
                                         </span>
                                     </td>
                                     <td>
+                                        <div className="admin-trust-cell">
+                                            <span className={`admin-trust-badge admin-trust-badge--${publishesDirectly ? 'direct' : 'review'}`}>
+                                                {publishesDirectly ? 'Direct' : 'Review'}
+                                            </span>
+                                            {!publishesDirectly && (
+                                                <span className="admin-trust-count">
+                                                    {user.approvedArticles ?? 0} approved
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td>
                                         <div className="admin-row-actions">
+                                            <button
+                                                type="button"
+                                                className="admin-row-btn"
+                                                onClick={() => handleToggleTrust(user)}
+                                                disabled={isPending || isAdmin}
+                                                title={isAdmin
+                                                    ? 'Admins always publish without review'
+                                                    : (user.isTrusted
+                                                        ? 'Send this author\'s future submissions back to the review queue'
+                                                        : 'Let this author publish without review')}
+                                            >
+                                                {user.isTrusted ? <BadgeX size={14} strokeWidth={2.25} /> : <BadgeCheck size={14} strokeWidth={2.25} />}
+                                                {user.isTrusted ? 'Untrust' : 'Trust'}
+                                            </button>
                                             <button
                                                 type="button"
                                                 className="admin-row-btn"
