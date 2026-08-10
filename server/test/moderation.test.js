@@ -9,7 +9,7 @@ import {
 } from './helpers.js';
 import Article from '../models/Article.js';
 import User from '../models/User.js';
-import { TRUST_THRESHOLD } from '../utils/trust.js';
+import { trustThreshold } from '../utils/trust.js';
 
 const adminSession = async (fixture = userFixtures.tertiary) => {
     const { token, user } = await registerAndToken(fixture);
@@ -103,11 +103,11 @@ describe('trusted authors', () => {
 });
 
 describe('earning publishing rights', () => {
-    it(`promotes an author after ${TRUST_THRESHOLD} approvals and not before`, async () => {
+    it(`promotes an author after ${trustThreshold()} approvals and not before`, async () => {
         const adminToken = await adminSession();
         const { token, user } = await newAuthor();
 
-        for (let i = 1; i <= TRUST_THRESHOLD; i++) {
+        for (let i = 1; i <= trustThreshold(); i++) {
             const { body: article } = await createArticle(token, { title: `Submission number ${i}` });
             expect(article.status).toBe('pending');
 
@@ -115,7 +115,7 @@ describe('earning publishing rights', () => {
 
             const stored = await User.findById(user._id).select('+isTrusted +approvedArticles');
             expect(stored.approvedArticles).toBe(i);
-            expect(stored.isTrusted).toBe(i >= TRUST_THRESHOLD);
+            expect(stored.isTrusted).toBe(i >= trustThreshold());
         }
 
         const afterTrust = await createArticle(token, { title: 'First unreviewed submission' });
@@ -305,5 +305,35 @@ describe('unpublished articles as an existence oracle', () => {
             .get(`/articles/${article._id}/series`)
             .set('Cookie', token);
         expect(series.status).toBe(200);
+    });
+});
+
+describe('the approval threshold', () => {
+    it('honours an override and falls back when it is unusable', async () => {
+        const original = process.env.TRUST_THRESHOLD;
+        try {
+            process.env.TRUST_THRESHOLD = '2';
+            expect(trustThreshold()).toBe(2);
+
+            const adminToken = await adminSession();
+            const { token, user } = await newAuthor();
+
+            for (let i = 1; i <= 2; i++) {
+                const { body } = await createArticle(token, { title: `Submission number ${i}` });
+                await approve(adminToken, body._id);
+            }
+
+            const stored = await User.findById(user._id).select('+isTrusted +approvedArticles');
+            expect(stored.approvedArticles).toBe(2);
+            expect(stored.isTrusted).toBe(true);
+
+            for (const bad of ['0', '-3', 'many', '']) {
+                process.env.TRUST_THRESHOLD = bad;
+                expect(trustThreshold()).toBe(5);
+            }
+        } finally {
+            if (original === undefined) delete process.env.TRUST_THRESHOLD;
+            else process.env.TRUST_THRESHOLD = original;
+        }
     });
 });
