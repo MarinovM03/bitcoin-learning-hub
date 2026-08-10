@@ -14,6 +14,7 @@ import * as searchController from './controllers/searchController.js';
 import * as reportController from './controllers/reportController.js';
 import * as marketController from './controllers/marketController.js';
 import * as sitemapController from './controllers/sitemapController.js';
+import * as rssController from './controllers/rssController.js';
 import mongoose from 'mongoose';
 import {
     registerSchema,
@@ -129,6 +130,9 @@ router.post('/reports', requireAuth, validate({ body: createReportSchema }), rep
 
 // Sitemap
 router.get('/sitemap.xml', sitemapController.getSitemap);
+
+// RSS feed
+router.get('/rss.xml', rssController.getRssFeed);
 
 // Search route
 router.get('/search', searchController.search);

@@ -2,6 +2,7 @@ import Article from '../models/Article.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { clientBaseUrl } from '../utils/authEmails.js';
+import { escapeXml } from '../utils/escapeXml.js';
 
 const CACHE_TTL_MS = 60 * 60 * 1000;
 let cache = { xml: null, generatedAt: 0 };
@@ -21,14 +22,7 @@ const STATIC_ROUTES = [
     { path: '/converter', changefreq: 'monthly', priority: '0.6' },
 ];
 
-const escapeXml = (value) => String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-
-const urlEntry = ({ loc, lastmod, changefreq, priority }) => [
+const urlEntry =({ loc, lastmod, changefreq, priority }) => [
     '  <url>',
     `    <loc>${escapeXml(loc)}</loc>`,
     lastmod ? `    <lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : null,
