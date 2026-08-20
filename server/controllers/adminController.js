@@ -230,7 +230,10 @@ const creditApproval = async (ownerId) => {
     const author = await User.findById(ownerId).select('+approvedArticles +isTrusted');
     if (!author) return;
 
-    author.approvedArticles = (author.approvedArticles ?? 0) + 1;
+    author.approvedArticles = await Article.countDocuments({
+        _ownerId: ownerId,
+        status: 'published',
+    });
     if (!author.isTrusted && hasEarnedTrust(author.approvedArticles)) {
         author.isTrusted = true;
     }

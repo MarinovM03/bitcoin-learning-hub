@@ -122,6 +122,29 @@ describe('earning publishing rights', () => {
         expect(afterTrust.body.status).toBe('published');
     });
 
+    it('does not credit the same article twice when it is edited and re-approved', async () => {
+        const adminToken = await adminSession();
+        const { token, user } = await newAuthor();
+        const { body: article } = await createArticle(token);
+
+        for (let round = 0; round < trustThreshold() + 2; round++) {
+            await approve(adminToken, article._id);
+
+            const stored = await User.findById(user._id).select('+isTrusted +approvedArticles');
+            expect(stored.approvedArticles).toBe(1);
+            expect(stored.isTrusted).toBe(false);
+
+            const edited = await request(app())
+                .put(`/articles/${article._id}`)
+                .set('Cookie', token)
+                .send({ content: `Revision number ${round} of the same article.` });
+            expect(edited.body.status).toBe('pending');
+        }
+
+        const stillReviewed = await createArticle(token, { title: 'Another submission entirely' });
+        expect(stillReviewed.body.status).toBe('pending');
+    });
+
     it('does not advance the counter when a submission is rejected', async () => {
         const adminToken = await adminSession();
         const { token, user } = await newAuthor();
