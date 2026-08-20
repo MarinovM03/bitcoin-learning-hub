@@ -14,25 +14,27 @@ describe('Likes', () => {
     });
 
     it('toggles a like on and off and reports total count', async () => {
-        const { token } = await registerAndToken();
-        const { body: article } = await createArticle(token);
+        const { token: author } = await registerAndToken();
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        const { body: article } = await createArticle(author);
 
-        const liked = await toggle(token, article._id);
+        const liked = await toggle(reader, article._id);
         expect(liked.status).toBe(201);
         expect(liked.body).toEqual({ liked: true, totalLikes: 1 });
 
-        const unliked = await toggle(token, article._id);
+        const unliked = await toggle(reader, article._id);
         expect(unliked.status).toBe(200);
         expect(unliked.body).toEqual({ liked: false, totalLikes: 0 });
     });
 
     it('counts likes from multiple users', async () => {
-        const { token: a } = await registerAndToken();
+        const { token: author } = await registerAndToken();
         const { token: b } = await registerAndToken(userFixtures.secondary);
-        const { body: article } = await createArticle(a);
+        const { token: c } = await registerAndToken(userFixtures.tertiary);
+        const { body: article } = await createArticle(author);
 
-        await toggle(a, article._id);
         await toggle(b, article._id);
+        await toggle(c, article._id);
 
         const summary = await request(app()).get(`/likes/${article._id}`);
         expect(summary.status).toBe(200);
@@ -40,8 +42,31 @@ describe('Likes', () => {
 
         const authed = await request(app())
             .get(`/likes/${article._id}`)
-            .set('Cookie', a);
+            .set('Cookie', b);
         expect(authed.status).toBe(200);
         expect(authed.body).toEqual({ totalLikes: 2, likedByMe: true });
+    });
+
+    it('refuses to let an author like their own article', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+
+        const res = await toggle(token, article._id);
+        expect(res.status).toBe(403);
+        expect(res.body.message).toMatch(/your own article/i);
+
+        const summary = await request(app()).get(`/likes/${article._id}`);
+        expect(summary.body.totalLikes).toBe(0);
+    });
+
+    it('keeps a self-like out of the trending ranking', async () => {
+        const { token: author } = await registerAndToken();
+        const { body: mine } = await createArticle(author, { title: 'Self promoted piece' });
+
+        await toggle(author, mine._id);
+
+        const trending = await request(app()).get('/articles/trending');
+        expect(trending.status).toBe(200);
+        expect(trending.body).toHaveLength(0);
     });
 });

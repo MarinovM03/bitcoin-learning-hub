@@ -1,4 +1,5 @@
 import Like from '../models/Like.js';
+import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { requireAccessibleArticle } from '../utils/articleAccess.js';
 
@@ -6,7 +7,11 @@ export const toggleLike = asyncHandler(async (req, res) => {
     const { articleId } = req.body;
     const _ownerId = req.user._id;
 
-    await requireAccessibleArticle(articleId, _ownerId);
+    const article = await requireAccessibleArticle(articleId, _ownerId);
+
+    if (String(article._ownerId) === String(_ownerId)) {
+        throw new AppError(403, 'You cannot like your own article.');
+    }
 
     const existing = await Like.findOneAndDelete({ articleId, _ownerId });
 
