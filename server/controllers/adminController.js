@@ -201,6 +201,7 @@ export const getModerationQueue = asyncHandler(async (req, res) => {
         GlossaryTerm.find({ status: 'pending' })
             .select('term definition category createdAt _ownerId')
             .sort({ createdAt: 1 })
+            .skip(skip)
             .limit(limitNum)
             .populate('_ownerId', 'username'),
         GlossaryTerm.countDocuments({ status: 'pending' }),
@@ -212,7 +213,10 @@ export const getModerationQueue = asyncHandler(async (req, res) => {
         articleTotal,
         termTotal,
         page: pageNum,
-        totalPages: Math.ceil(articleTotal / limitNum),
+        totalPages: Math.max(
+            Math.ceil(articleTotal / limitNum),
+            Math.ceil(termTotal / limitNum),
+        ),
     });
 });
 

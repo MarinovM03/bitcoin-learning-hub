@@ -214,6 +214,42 @@ describe('the moderation queue', () => {
         expect(queue.body.articles[0]._ownerId.username).toBe(userFixtures.primary.username);
     });
 
+    it('reaches pending glossary terms beyond the first page', async () => {
+        const adminToken = await adminSession();
+        const { token } = await registerAndToken();
+
+        for (const term of ['Alpha', 'Bravo', 'Charlie']) {
+            const res = await request(app())
+                .post('/glossary')
+                .set('Cookie', token)
+                .send({
+                    term,
+                    definition: `A placeholder definition written for ${term}.`,
+                    category: 'Technology',
+                });
+            expect(res.status).toBe(201);
+            expect(res.body.status).toBe('pending');
+        }
+
+        const first = await request(app())
+            .get('/admin/moderation/queue?page=1&limit=2')
+            .set('Cookie', adminToken);
+        expect(first.status).toBe(200);
+        expect(first.body.termTotal).toBe(3);
+        expect(first.body.totalPages).toBe(2);
+
+        const second = await request(app())
+            .get('/admin/moderation/queue?page=2&limit=2')
+            .set('Cookie', adminToken);
+        expect(second.status).toBe(200);
+
+        const pageOne = first.body.terms.map((t) => t.term);
+        const pageTwo = second.body.terms.map((t) => t.term);
+        expect(pageOne).toHaveLength(2);
+        expect(pageTwo).toHaveLength(1);
+        expect([...pageOne, ...pageTwo].sort()).toEqual(['Alpha', 'Bravo', 'Charlie']);
+    });
+
     it('serves the full body of a pending article to a reviewer', async () => {
         const adminToken = await adminSession();
         const { token } = await newAuthor();
