@@ -30,8 +30,8 @@ export const getMyBookmarks = asyncHandler(async (req, res) => {
         .sort({ createdAt: -1 });
 
     const articles = bookmarks
-        .filter(b => b.articleId)
-        .map(b => b.articleId);
+        .map(b => b.articleId)
+        .filter(article => article?.status === 'published');
 
     res.json(articles);
 });
