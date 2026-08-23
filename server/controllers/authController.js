@@ -310,8 +310,8 @@ export const deleteAccount = asyncHandler(async (req, res) => {
         }
     }
 
-    await User.deleteOne({ _id: user._id });
     await cascadeUserDelete(user._id);
+    await User.deleteOne({ _id: user._id });
 
     clearSessionCookie(res);
     res.json({ message: 'Your account and all your content have been deleted.' });

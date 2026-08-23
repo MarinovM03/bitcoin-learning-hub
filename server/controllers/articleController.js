@@ -372,16 +372,17 @@ export const remove = asyncHandler(async (req, res) => {
         throw new AppError(404, 'Article not found');
     }
 
-    const deletedArticle = await Article.findOneAndDelete({
+    const article = await Article.findOne({
         _id: articleId,
         _ownerId: req.user._id
-    });
+    }).select('_id');
 
-    if (!deletedArticle) {
+    if (!article) {
         throw new AppError(403, 'Forbidden');
     }
 
     await cascadeArticleDelete(articleId);
+    await Article.deleteOne({ _id: articleId });
 
     res.json({ message: 'Article deleted successfully' });
 });
