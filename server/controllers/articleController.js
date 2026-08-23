@@ -393,7 +393,6 @@ export const getTrending = asyncHandler(async (req, res) => {
         { $match: { createdAt: { $gte: sevenDaysAgo } } },
         { $group: { _id: '$articleId', likeCount: { $sum: 1 } } },
         { $sort: { likeCount: -1 } },
-        { $limit: 3 },
         {
             $lookup: {
                 from: 'articles',
@@ -404,6 +403,7 @@ export const getTrending = asyncHandler(async (req, res) => {
         },
         { $unwind: '$article' },
         { $match: { 'article.status': 'published' } },
+        { $limit: 3 },
         {
             $project: {
                 _id: '$article._id',

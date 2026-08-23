@@ -411,3 +411,53 @@ describe('List pagination clamps', () => {
         expect(negative.body.page).toBe(1);
     });
 });
+
+describe('GET /articles/trending', () => {
+    const reader = (n) => registerAndToken({
+        username: `reader${n}`,
+        email: `reader${n}@example.com`,
+        password: `readersecret${n}`,
+        confirmPassword: `readersecret${n}`,
+    });
+
+    it('fills all three slots when a top-liked article is no longer published', async () => {
+        const { token: author } = await registerAndToken();
+
+        const titles = ['Most liked of all', 'Runner up piece', 'Third place piece', 'Fourth place piece'];
+        const articles = [];
+        for (const title of titles) {
+            const { body } = await createArticle(author, { title });
+            articles.push(body);
+        }
+
+        const readers = [];
+        for (let n = 1; n <= 4; n++) {
+            readers.push((await reader(n)).token);
+        }
+
+        const likeCounts = [4, 3, 2, 1];
+        for (let i = 0; i < articles.length; i++) {
+            for (let r = 0; r < likeCounts[i]; r++) {
+                const res = await request(app())
+                    .post('/likes')
+                    .set('Cookie', readers[r])
+                    .send({ articleId: articles[i]._id });
+                expect(res.status).toBe(201);
+            }
+        }
+
+        const full = await request(app()).get('/articles/trending');
+        expect(full.body.map((a) => a.title)).toEqual(titles.slice(0, 3));
+
+        const unpublished = await request(app())
+            .put(`/articles/${articles[0]._id}`)
+            .set('Cookie', author)
+            .send({ status: 'draft' });
+        expect(unpublished.body.status).toBe('draft');
+
+        const backfilled = await request(app()).get('/articles/trending');
+        expect(backfilled.status).toBe(200);
+        expect(backfilled.body).toHaveLength(3);
+        expect(backfilled.body.map((a) => a.title)).toEqual(titles.slice(1));
+    });
+});
