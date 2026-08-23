@@ -8,6 +8,7 @@ import ToolsDropdown from "./ToolsDropdown";
 import { TOOLS } from "../../utils/navTools";
 import SearchOverlay from "../search-overlay/SearchOverlay";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 interface NavLinkItem {
     to: string;
@@ -31,6 +32,7 @@ export default function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const location = useLocation();
     const mobileTrapRef = useFocusTrap<HTMLDivElement>(isMobileOpen);
+    useScrollLock(isMobileOpen);
 
     useEffect(() => {
         setIsMobileOpen(false);
@@ -47,15 +49,6 @@ export default function Navbar() {
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
     }, []);
-
-    useEffect(() => {
-        if (!isMobileOpen) return;
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.body.style.overflow = originalOverflow;
-        };
-    }, [isMobileOpen]);
 
     useEffect(() => {
         if (!isMobileOpen) return;

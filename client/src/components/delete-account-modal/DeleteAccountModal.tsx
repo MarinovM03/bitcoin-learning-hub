@@ -8,6 +8,7 @@ import * as authService from "../../services/authService";
 import PasswordField from "../common/PasswordField";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { useBackdropClose } from "../../hooks/useBackdropClose";
+import { useScrollLock } from "../../hooks/useScrollLock";
 import { toast } from "../../lib/toast";
 
 const schema = z.object({
@@ -25,6 +26,8 @@ export default function DeleteAccountModal({ onClose }: DeleteAccountModalProps)
     const [serverError, setServerError] = useState('');
     const trapRef = useFocusTrap<HTMLDivElement>(true, onClose);
     const backdropHandlers = useBackdropClose(onClose);
+
+    useScrollLock();
 
     const {
         register,

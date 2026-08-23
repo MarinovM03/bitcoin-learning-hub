@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Trash2 } from "lucide-react";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { useBackdropClose } from "../../hooks/useBackdropClose";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 interface ConfirmModalProps {
     icon?: ReactNode;
@@ -26,6 +27,8 @@ export default function ConfirmModal({
 }: ConfirmModalProps) {
     const trapRef = useFocusTrap<HTMLDivElement>(true, onCancel);
     const backdropHandlers = useBackdropClose(onCancel);
+
+    useScrollLock();
 
     return (
         <div className="modal-overlay" {...backdropHandlers}>

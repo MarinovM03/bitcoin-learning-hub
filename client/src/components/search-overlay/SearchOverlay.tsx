@@ -7,6 +7,7 @@ import type { SearchArticleHit, SearchGlossaryHit } from "../../services/searchS
 import HighlightText from "../common/HighlightText";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { useBackdropClose } from "../../hooks/useBackdropClose";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 const DEBOUNCE_MS = 300;
 const QUICK_LIMIT = 5;
@@ -25,6 +26,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     const activeItemRef = useRef<HTMLAnchorElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
     const backdropHandlers = useBackdropClose(onClose);
+    useScrollLock();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,11 +38,8 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
             if (e.key === "Escape") onClose();
         };
         window.addEventListener("keydown", handleKey);
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
         return () => {
             window.removeEventListener("keydown", handleKey);
-            document.body.style.overflow = originalOverflow;
         };
     }, [onClose]);
 

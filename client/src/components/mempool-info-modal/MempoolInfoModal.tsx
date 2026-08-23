@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { FEE_TIERS } from '../../utils/mempoolHelpers';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useBackdropClose } from '../../hooks/useBackdropClose';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 interface MempoolInfoModalProps {
     onClose: () => void;
@@ -12,6 +13,8 @@ export default function MempoolInfoModal({ onClose }: MempoolInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
     const backdropHandlers = useBackdropClose(onClose);
+
+    useScrollLock();
 
     useEffect(() => {
         closeRef.current?.focus();

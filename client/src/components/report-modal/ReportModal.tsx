@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Flag } from 'lucide-react';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useBackdropClose } from '../../hooks/useBackdropClose';
+import { useScrollLock } from '../../hooks/useScrollLock';
 import * as reportService from '../../services/reportService';
 import { REPORT_REASONS } from '../../services/reportService';
 import type { ReportTarget, ReportReason } from '../../services/reportService';
@@ -21,6 +22,8 @@ export default function ReportModal({ targetType, targetId, targetLabel, onClose
 
     const trapRef = useFocusTrap<HTMLDivElement>(true, onClose);
     const backdropHandlers = useBackdropClose(onClose);
+
+    useScrollLock();
 
     const onSubmit = async () => {
         setIsSending(true);

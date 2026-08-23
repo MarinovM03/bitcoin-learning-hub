@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { ADDRESS_TYPES } from '../../utils/addressTypes';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useBackdropClose } from '../../hooks/useBackdropClose';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 const FORMAT_ROWS = [
     { type: ADDRESS_TYPES.LEGACY, prefix: '1...' },
@@ -22,6 +23,8 @@ export default function AddressInfoModal({ onClose }: AddressInfoModalProps) {
     const closeRef = useRef<HTMLButtonElement>(null);
     const trapRef = useFocusTrap<HTMLDivElement>(true);
     const backdropHandlers = useBackdropClose(onClose);
+
+    useScrollLock();
 
     useEffect(() => {
         closeRef.current?.focus();
