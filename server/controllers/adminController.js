@@ -104,9 +104,6 @@ export const updateUserRole = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { role } = req.body;
 
-    if (!['user', 'admin'].includes(role)) {
-        throw new AppError(400, 'Role must be "user" or "admin"');
-    }
     if (String(userId) === String(req.user._id)) {
         throw new AppError(400, 'You cannot change your own role.');
     }
@@ -130,10 +127,11 @@ export const deleteUser = asyncHandler(async (req, res) => {
 
     const targetId = new mongoose.Types.ObjectId(userId);
 
-    const user = await User.findByIdAndDelete(targetId);
+    const user = await User.findById(targetId).select('_id');
     if (!user) throw new AppError(404, 'User not found');
 
     await cascadeUserDelete(targetId);
+    await User.deleteOne({ _id: targetId });
 
     res.json({ message: 'User and all their content deleted.' });
 });
@@ -166,9 +164,10 @@ export const adminListArticles = asyncHandler(async (req, res) => {
 
 export const adminDeleteArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
-    const deleted = await Article.findByIdAndDelete(articleId);
-    if (!deleted) throw new AppError(404, 'Article not found');
+    const article = await Article.findById(articleId).select('_id');
+    if (!article) throw new AppError(404, 'Article not found');
     await cascadeArticleDelete(articleId);
+    await Article.deleteOne({ _id: articleId });
     res.json({ message: 'Article deleted.' });
 });
 
@@ -261,7 +260,7 @@ export const approveArticle = asyncHandler(async (req, res) => {
 
 export const rejectArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
-    const note = typeof req.body?.note === 'string' ? req.body.note.trim().slice(0, 300) : '';
+    const note = req.body.note ?? '';
 
     const article = await Article.findOneAndUpdate(
         { _id: articleId, status: 'pending' },
@@ -297,10 +296,6 @@ export const adminDeleteGlossaryTerm = asyncHandler(async (req, res) => {
 export const updateUserTrust = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { isTrusted } = req.body;
-
-    if (typeof isTrusted !== 'boolean') {
-        throw new AppError(400, 'isTrusted must be true or false.');
-    }
 
     const updated = await User.findByIdAndUpdate(
         userId,

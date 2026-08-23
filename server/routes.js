@@ -31,6 +31,7 @@ import { createCommentSchema, updateCommentSchema } from './validators/commentSc
 import { likeArticleSchema } from './validators/likeSchemas.js';
 import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
 import { createReportSchema, resolveReportSchema } from './validators/reportSchemas.js';
+import { updateUserRoleSchema, updateUserTrustSchema, rejectArticleSchema } from './validators/adminSchemas.js';
 import {
     articleIdParam,
     termIdParam,
@@ -106,7 +107,7 @@ router.delete('/comments/:commentId', requireAuth, validate({ params: commentIdP
 router.use('/admin', requireAdmin);
 router.get('/admin/stats', adminController.getStats);
 router.get('/admin/users', adminController.getUsers);
-router.patch('/admin/users/:userId/role', validate({ params: userIdParam }), adminController.updateUserRole);
+router.patch('/admin/users/:userId/role', validate({ params: userIdParam, body: updateUserRoleSchema }), adminController.updateUserRole);
 router.delete('/admin/users/:userId', validate({ params: userIdParam }), adminController.deleteUser);
 router.get('/admin/articles', adminController.adminListArticles);
 router.delete('/admin/articles/:articleId', validate({ params: articleIdParam }), adminController.adminDeleteArticle);
@@ -118,10 +119,10 @@ router.delete('/admin/comments/:commentId', validate({ params: commentIdParam })
 router.get('/admin/moderation/queue', adminController.getModerationQueue);
 router.get('/admin/articles/:articleId/preview', validate({ params: articleIdParam }), adminController.getArticlePreview);
 router.post('/admin/articles/:articleId/approve', validate({ params: articleIdParam }), adminController.approveArticle);
-router.post('/admin/articles/:articleId/reject', validate({ params: articleIdParam }), adminController.rejectArticle);
+router.post('/admin/articles/:articleId/reject', validate({ params: articleIdParam, body: rejectArticleSchema }), adminController.rejectArticle);
 router.post('/admin/glossary/:termId/approve', validate({ params: termIdParam }), adminController.approveGlossaryTerm);
 router.delete('/admin/glossary/:termId', validate({ params: termIdParam }), adminController.adminDeleteGlossaryTerm);
-router.patch('/admin/users/:userId/trust', validate({ params: userIdParam }), adminController.updateUserTrust);
+router.patch('/admin/users/:userId/trust', validate({ params: userIdParam, body: updateUserTrustSchema }), adminController.updateUserTrust);
 router.get('/admin/reports', adminController.adminListReports);
 router.patch('/admin/reports/:reportId', validate({ params: reportIdParam, body: resolveReportSchema }), adminController.resolveReport);
 

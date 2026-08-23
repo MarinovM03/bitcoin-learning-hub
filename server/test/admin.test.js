@@ -72,6 +72,30 @@ describe('Admin endpoints', () => {
         expect(res.body.role).toBe('admin');
     });
 
+    it('rejects malformed role and trust bodies', async () => {
+        const { token, user } = await registerAndToken();
+        await promoteToAdmin(user._id);
+        const { user: other } = await registerAndToken(userFixtures.secondary);
+
+        const badRole = await request(app())
+            .patch(`/admin/users/${other._id}/role`)
+            .set('Cookie', token)
+            .send({ role: 'superuser' });
+        expect(badRole.status).toBe(400);
+
+        const badTrust = await request(app())
+            .patch(`/admin/users/${other._id}/trust`)
+            .set('Cookie', token)
+            .send({ isTrusted: 'yes' });
+        expect(badTrust.status).toBe(400);
+
+        const longNote = await request(app())
+            .post(`/admin/articles/${other._id}/reject`)
+            .set('Cookie', token)
+            .send({ note: 'x'.repeat(301) });
+        expect(longNote.status).toBe(400);
+    });
+
     it('refuses to change the caller\'s own role', async () => {
         const { token, user } = await registerAndToken();
         await promoteToAdmin(user._id);
