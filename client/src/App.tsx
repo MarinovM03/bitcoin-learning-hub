@@ -72,6 +72,8 @@ function App() {
                         <Route path="/multisig" element={<MultisigExplainer />} />
                         <Route path="/converter" element={<SatsConverter />} />
                         <Route path="/verify-email" element={<VerifyEmail />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
 
                         <Route element={<AuthGuard />}>
                             <Route path="/articles/create" element={<Create />} />
@@ -84,8 +86,6 @@ function App() {
                         <Route element={<GuestGuard />}>
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
-                            <Route path="/forgot-password" element={<ForgotPassword />} />
-                            <Route path="/reset-password" element={<ResetPassword />} />
                         </Route>
 
                         <Route element={<AdminGuard />}>
