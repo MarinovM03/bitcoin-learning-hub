@@ -39,6 +39,9 @@ const absoluteOgImagePlugin = (siteUrl: string): Plugin => ({
     name: 'resolve-og-image-url',
     apply: 'build',
     transformIndexHtml(html) {
+        if (!siteUrl) {
+            console.warn('[build] VITE_SITE_URL is not set — social preview images will ship as relative URLs and will not render when the site is shared.');
+        }
         return html.replace(/__SITE_URL__/g, siteUrl.replace(/\/$/, ''));
     },
 });
@@ -63,11 +66,35 @@ const robotsPlugin = (sitemapUrl: string): Plugin => ({
     },
 });
 
+const readOrigin = (value: string | undefined, name: string, required: boolean): string => {
+    const trimmed = value?.trim() ?? '';
+
+    if (!trimmed) {
+        if (required) {
+            throw new Error(`[build] ${name} is not set. Define it in the client environment before building.`);
+        }
+        return '';
+    }
+
+    let parsed: URL;
+    try {
+        parsed = new URL(trimmed);
+    } catch {
+        throw new Error(`[build] ${name} is not a valid URL: "${trimmed}". Use an absolute origin such as https://api.example.com.`);
+    }
+
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error(`[build] ${name} must use http or https, but got "${parsed.protocol}".`);
+    }
+
+    return parsed.origin;
+};
+
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
     const env = loadEnv(mode, '.', 'VITE_');
-    const apiOrigin = env.VITE_API_URL?.match(/^https?:\/\/[^/]+/)?.[0] ?? '';
-    const siteUrl = env.VITE_SITE_URL?.trim() ?? '';
+    const apiOrigin = readOrigin(env.VITE_API_URL, 'VITE_API_URL', command === 'build');
+    const siteUrl = readOrigin(env.VITE_SITE_URL, 'VITE_SITE_URL', false);
     const sitemapUrl = apiOrigin ? `${apiOrigin}/sitemap.xml` : '';
 
     return {
