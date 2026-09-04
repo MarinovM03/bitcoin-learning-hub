@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import mongoose from 'mongoose';
 
 export const objectId = z
     .string()
-    .refine((v) => mongoose.Types.ObjectId.isValid(v), { message: 'Invalid ID' });
+    .regex(/^[0-9a-fA-F]{24}$/, 'Invalid ID');
 
 export const httpUrl = z
     .string()

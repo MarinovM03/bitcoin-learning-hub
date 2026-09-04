@@ -29,6 +29,16 @@ describe('Validation', () => {
         const res = await request(app()).get('/articles/not-an-objectid');
         expect(res.status).toBe(400);
     });
+
+    it('rejects a twelve-character string that is not a hex object id', async () => {
+        const res = await request(app()).get('/articles/spamspamspam');
+        expect(res.status).toBe(400);
+    });
+
+    it('accepts a well-formed object id', async () => {
+        const res = await request(app()).get('/articles/6a6facf5c2b82e683114aaaa');
+        expect(res.status).toBe(404);
+    });
 });
 
 describe('Auth middleware', () => {
