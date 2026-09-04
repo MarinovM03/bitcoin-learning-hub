@@ -18,4 +18,11 @@ describe('Unknown route', () => {
         expect(res.status).toBe(404);
         expect(res.body.message).toContain('not found');
     });
+
+    it('does not repeat the requested path back to the caller', async () => {
+        const res = await request(app()).get('/nope-<script>-marker');
+        expect(res.status).toBe(404);
+        expect(res.body.message).toBe('Route not found');
+        expect(JSON.stringify(res.body)).not.toContain('marker');
+    });
 });

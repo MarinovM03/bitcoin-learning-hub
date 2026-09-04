@@ -1,7 +1,8 @@
 import { AppError } from '../utils/AppError.js';
 
-export const notFoundHandler = (req, res, next) => {
-    next(new AppError(404, `Route ${req.method} ${req.originalUrl} not found`));
+export const notFoundHandler = (req, _res, next) => {
+    console.warn(`[404] ${req.method} ${req.originalUrl}`);
+    next(new AppError(404, 'Route not found'));
 };
 
 export const errorHandler = (err, req, res, _next) => {
