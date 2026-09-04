@@ -9,7 +9,7 @@ import * as authService from "../../services/authService";
 type VerifyState = 'pending' | 'success' | 'error';
 
 export default function VerifyEmail() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const token = searchParams.get('token') ?? '';
     const { updateAuthState, isAuthenticated } = useAuth();
 
@@ -23,6 +23,8 @@ export default function VerifyEmail() {
         if (!token || hasRun.current) return;
         hasRun.current = true;
 
+        setSearchParams(new URLSearchParams(), { replace: true });
+
         authService.verifyEmail(token)
             .then((user) => {
                 updateAuthState(user);
@@ -32,7 +34,7 @@ export default function VerifyEmail() {
                 setMessage(err instanceof Error ? err.message : 'We could not confirm this link.');
                 setState('error');
             });
-    }, [token, updateAuthState]);
+    }, [token, updateAuthState, setSearchParams]);
 
     if (state === 'pending') {
         return (
