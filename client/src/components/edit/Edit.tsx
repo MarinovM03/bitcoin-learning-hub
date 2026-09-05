@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ export default function Edit() {
     const [currentStatus, setCurrentStatus] = useState('published');
     const [quiz, setQuiz] = useState<QuizFormQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
-    const loadedArticleId = useRef<string | undefined>(undefined);
+    const [hasEditedQuiz, setHasEditedQuiz] = useState(false);
 
     const { data: article, isError } = useArticle(articleId);
     const updateArticle = useUpdateArticle();
@@ -42,14 +42,20 @@ export default function Edit() {
         },
     });
 
-    const { reset, watch } = form;
+    const { reset, watch, formState: { isDirty } } = form;
     const seriesName = watch('seriesName') || '';
     const title = watch('title');
     const takenParts = useSeriesParts(seriesName, articleId);
 
+    const hasUnsavedWork = isDirty || hasEditedQuiz;
+
+    const changeQuiz = (next: QuizFormQuestion[]) => {
+        setHasEditedQuiz(true);
+        setQuiz(next);
+    };
+
     useEffect(() => {
-        if (!article || loadedArticleId.current === articleId) return;
-        loadedArticleId.current = articleId;
+        if (!article || hasUnsavedWork) return;
 
         reset({
             title: article.title || '',
@@ -67,7 +73,7 @@ export default function Edit() {
             options: q.options,
             correctIndex: q.correctIndex ?? 0,
         })));
-    }, [article, articleId, reset]);
+    }, [article, hasUnsavedWork, reset]);
 
     const submitWithStatus = (status: ArticleStatus) => form.handleSubmit(async (values) => {
         setServerError('');
@@ -117,7 +123,7 @@ export default function Edit() {
                     formId="edit"
                     form={form}
                     quiz={quiz}
-                    onQuizChange={setQuiz}
+                    onQuizChange={changeQuiz}
                     showQuizErrors={showQuizErrors}
                     takenParts={takenParts}
                     serverError={serverError}
