@@ -28,8 +28,15 @@ export const useDeleteArticle = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (articleId: string) => articleService.remove(articleId),
-        onSuccess: () => {
+        onSuccess: (_data, articleId) => {
+            queryClient.removeQueries({ queryKey: queryKeys.articles.detail(articleId) });
+            queryClient.removeQueries({ queryKey: queryKeys.articles.related(articleId) });
+            queryClient.removeQueries({ queryKey: queryKeys.articles.series(articleId) });
+            queryClient.removeQueries({ queryKey: queryKeys.comments.forArticle(articleId) });
+            queryClient.removeQueries({ queryKey: queryKeys.likes.forArticle(articleId) });
+
             queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks.all });
         },
     });
 };
