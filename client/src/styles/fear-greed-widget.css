@@ -43,23 +43,21 @@
 .fg-arc-fill--greed         { stroke: #8db83f; }
 .fg-arc-fill--extreme-greed { stroke: var(--success-color); }
 
-.fg-needle--extreme-fear  { stroke: #e05252; }
-.fg-needle--fear          { stroke: #e07c2a; }
-.fg-needle--neutral       { stroke: #d4a017; }
-.fg-needle--greed         { stroke: #8db83f; }
-.fg-needle--extreme-greed { stroke: var(--success-color); }
+.fg-marker-ring {
+    fill: var(--card-bg);
+}
 
-.fg-needle-dot--extreme-fear  { fill: #e05252; }
-.fg-needle-dot--fear          { fill: #e07c2a; }
-.fg-needle-dot--neutral       { fill: #d4a017; }
-.fg-needle-dot--greed         { fill: #8db83f; }
-.fg-needle-dot--extreme-greed { fill: var(--success-color); }
+.fg-marker--extreme-fear  { fill: #e05252; }
+.fg-marker--fear          { fill: #e07c2a; }
+.fg-marker--neutral       { fill: #d4a017; }
+.fg-marker--greed         { fill: #8db83f; }
+.fg-marker--extreme-greed { fill: var(--success-color); }
 
 .fg-gauge-number {
     font-family: 'Exo 2', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.75rem;
     font-weight: 800;
-    fill: white;
+    fill: var(--text-primary, #fff);
 }
 
 .fg-sentiment {

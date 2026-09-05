@@ -19,27 +19,19 @@ function GaugeArc({ value }: GaugeArcProps) {
     const start = arcPoint(-180);
     const end = arcPoint(0);
     const valueAngle = -180 + (value / 100) * 180;
-    const valueEnd = arcPoint(valueAngle);
-    const largeArc = valueAngle > -90 ? 1 : 0;
+    const marker = arcPoint(valueAngle);
     const sentimentKey = getSentimentKey(value);
 
     const bgArc = `M ${start.x} ${start.y} A ${radius} ${radius} 0 0 1 ${end.x} ${end.y}`;
-    const fillArc = `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${valueEnd.x} ${valueEnd.y}`;
-    const needleTip = arcPoint(valueAngle);
+    const fillArc = `M ${start.x} ${start.y} A ${radius} ${radius} 0 0 1 ${marker.x} ${marker.y}`;
 
     return (
         <svg viewBox="0 0 160 90" className="fg-gauge-svg" aria-hidden="true">
             <path d={bgArc} fill="none" className="fg-arc-bg" strokeWidth="10" strokeLinecap="round" />
             <path d={fillArc} fill="none" className={`fg-arc-fill fg-arc-fill--${sentimentKey}`} strokeWidth="10" strokeLinecap="round" />
-            <line
-                x1={cx} y1={cy}
-                x2={needleTip.x} y2={needleTip.y}
-                className={`fg-needle fg-needle--${sentimentKey}`}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-            />
-            <circle cx={cx} cy={cy} r="4" className={`fg-needle-dot fg-needle-dot--${sentimentKey}`} />
-            <text x={cx} y={cy - 12} textAnchor="middle" className="fg-gauge-number">{value}</text>
+            <circle cx={marker.x} cy={marker.y} r="6.5" className="fg-marker-ring" />
+            <circle cx={marker.x} cy={marker.y} r="3.5" className={`fg-marker fg-marker--${sentimentKey}`} />
+            <text x={cx} y={cy - 8} textAnchor="middle" className="fg-gauge-number">{value}</text>
         </svg>
     );
 }
