@@ -1,6 +1,7 @@
 export const queryKeys = {
     articles: {
         all: ['articles'],
+        lists: ['articles', 'list'],
         list: (filters: unknown) => ['articles', 'list', filters],
         mine: ['articles', 'mine'],
         trending: ['articles', 'trending'],
