@@ -82,6 +82,8 @@ const articleSchema = new mongoose.Schema({
 
 articleSchema.index({ status: 1, createdAt: -1 });
 
+articleSchema.index({ _ownerId: 1, createdAt: -1 });
+
 articleSchema.index(
     { title: 'text', summary: 'text', content: 'text' },
     { weights: { title: 10, summary: 5, content: 1 }, name: 'ArticleTextIndex' }

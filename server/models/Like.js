@@ -17,6 +17,8 @@ likeSchema.index({ articleId: 1, _ownerId: 1 }, { unique: true });
 
 likeSchema.index({ createdAt: -1 });
 
+likeSchema.index({ _ownerId: 1 });
+
 const Like = mongoose.model('Like', likeSchema);
 
 export default Like;

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import mongoose from 'mongoose';
+import Article from '../models/Article.js';
 import Comment from '../models/Comment.js';
 import Bookmark from '../models/Bookmark.js';
 import Like from '../models/Like.js';
@@ -41,6 +42,25 @@ describe('hot-path queries run on an index', () => {
 
     it('clears read state for a deleted article without a full scan', async () => {
         const plan = await planFor(ReadArticle.find({ articleId: { $in: [anId()] } }));
+        expectIndexed(plan);
+    });
+
+    it('lists an author\'s articles without scanning every article', async () => {
+        const plan = await planFor(
+            Article.find({ _ownerId: anId() }).sort({ createdAt: -1 }),
+        );
+        expectIndexed(plan);
+    });
+
+    it('counts an author\'s recent comments without scanning every comment', async () => {
+        const plan = await planFor(
+            Comment.find({ _ownerId: anId(), createdAt: { $gte: new Date() } }),
+        );
+        expectIndexed(plan);
+    });
+
+    it('clears an author\'s likes without scanning every like', async () => {
+        const plan = await planFor(Like.find({ _ownerId: anId() }));
         expectIndexed(plan);
     });
 });
