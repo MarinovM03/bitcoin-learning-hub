@@ -1,28 +1,17 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import * as articleService from '../../services/articleService';
-import type { PublicProfile } from '../../services/articleService';
+import { useParams } from "react-router";
+import { usePublicProfile } from '../../hooks/queries/useArticles';
 import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
+import NotFound from "../not-found/NotFound";
 import { handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import PageMeta from "../page-meta/PageMeta";
 
 export default function AuthorProfile() {
     const { userId } = useParams();
-    const navigate = useNavigate();
-    const [profile, setProfile] = useState<PublicProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: profile, isPending, isError } = usePublicProfile(userId);
 
-    useEffect(() => {
-        if (!userId) return;
-        articleService.getPublicProfile(userId)
-            .then(data => setProfile(data))
-            .catch(() => navigate('/not-found'))
-            .finally(() => setIsLoading(false));
-    }, [userId, navigate]);
-
-    if (isLoading) return <AuthorProfileSkeleton />;
-    if (!profile) return null;
+    if (isError) return <NotFound />;
+    if (isPending || !profile) return <AuthorProfileSkeleton />;
 
     const { username, profilePicture, articles, totalLikes } = profile;
 
