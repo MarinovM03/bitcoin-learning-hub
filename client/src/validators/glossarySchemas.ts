@@ -5,7 +5,7 @@ const GLOSSARY_CATEGORIES = ['Technology', 'Economics', 'Trading', 'Culture', 'S
 export const createGlossarySchema = z.object({
     term: z.string().trim().min(1, 'Term is required'),
     definition: z.string().trim().min(10, 'Definition must be at least 10 characters long'),
-    category: z.enum(GLOSSARY_CATEGORIES),
+    category: z.enum(GLOSSARY_CATEGORIES, { message: 'Choose a category for this term' }),
     extendedDefinition: z.string().trim().optional(),
     examples: z.array(z.object({ value: z.string() })).optional(),
 });
