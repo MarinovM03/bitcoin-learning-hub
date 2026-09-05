@@ -101,8 +101,10 @@ export default defineConfig(({ mode, command }) => {
         build: {
             rollupOptions: {
                 output: {
-                    manualChunks: {
-                        'react-vendor': ['react', 'react-dom', 'react-router'],
+                    manualChunks(id) {
+                        if (/node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/.test(id)) {
+                            return 'react-vendor';
+                        }
                     },
                 },
             },
