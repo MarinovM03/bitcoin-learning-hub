@@ -32,7 +32,8 @@ describe('Comments', () => {
 
         const list = await request(app()).get(`/comments/${article._id}`);
         expect(list.status).toBe(200);
-        expect(list.body).toHaveLength(1);
+        expect(list.body.comments).toHaveLength(1);
+        expect(list.body.total).toBe(1);
     });
 
     it('allows the comment owner to delete their comment', async () => {
@@ -46,7 +47,8 @@ describe('Comments', () => {
         expect(del.status).toBe(200);
 
         const list = await request(app()).get(`/comments/${article._id}`);
-        expect(list.body).toHaveLength(0);
+        expect(list.body.comments).toHaveLength(0);
+        expect(list.body.total).toBe(0);
     });
 
     it('forbids deleting another user\'s comment', async () => {
@@ -178,6 +180,37 @@ describe('comment threads on unpublished articles', () => {
             .get(`/comments/${article._id}`)
             .set('Cookie', token);
         expect(res.status).toBe(200);
-        expect(res.body).toHaveLength(1);
+        expect(res.body.comments).toHaveLength(1);
+    });
+
+    it('pages a long thread newest first', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+        const { token: adminToken, user } = await registerAndToken(userFixtures.tertiary);
+        await promoteToAdmin(user._id);
+
+        for (let i = 1; i <= 5; i += 1) {
+            const res = await postComment(adminToken, article._id, `Comment number ${i}`);
+            expect(res.status).toBe(201);
+        }
+
+        const first = await request(app()).get(`/comments/${article._id}?page=1&limit=2`);
+        expect(first.status).toBe(200);
+        expect(first.body.total).toBe(5);
+        expect(first.body.totalPages).toBe(3);
+        expect(first.body.comments.map((c) => c.text)).toEqual(['Comment number 5', 'Comment number 4']);
+
+        const last = await request(app()).get(`/comments/${article._id}?page=3&limit=2`);
+        expect(last.body.comments.map((c) => c.text)).toEqual(['Comment number 1']);
+    });
+
+    it('clamps an oversized page size', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token);
+
+        const res = await request(app()).get(`/comments/${article._id}?limit=5000&page=-2`);
+        expect(res.status).toBe(200);
+        expect(res.body.page).toBe(1);
+        expect(res.body.comments.length).toBeLessThanOrEqual(50);
     });
 });

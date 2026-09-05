@@ -117,6 +117,31 @@
     text-decoration: underline;
 }
 
+.comments-load-more {
+    align-self: center;
+    margin-top: 0.4rem;
+    padding: 0.6rem 1.4rem;
+    background-color: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.comments-load-more:hover:not(:disabled) {
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
+}
+
+.comments-load-more:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
 .comment-card {
     display: flex;
     gap: 1rem;

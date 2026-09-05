@@ -1,8 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
 import { X, PenLine, Flag } from "lucide-react";
-import * as commentService from "../../services/commentService";
+import { useComments } from "../../hooks/queries/useComments";
+import {
+    useCreateComment,
+    useUpdateComment,
+    useDeleteComment,
+} from "../../hooks/mutations/useCommentMutations";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../common/ConfirmModal";
 import ReportModal from "../report-modal/ReportModal";
@@ -29,22 +34,29 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
     const { isAuthenticated, userId, profilePicture } = useAuth();
     const [reportTarget, setReportTarget] = useState<Comment | null>(null);
 
-    const [comments, setComments] = useState<Comment[]>([]);
     const [text, setText] = useState("");
     const [error, setError] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editText, setEditText] = useState("");
-    const [isSavingEdit, setIsSavingEdit] = useState(false);
 
-    useEffect(() => {
-        commentService.getAllForArticle(articleId)
-            .then(result => setComments(Array.isArray(result) ? result : []))
-            .catch(() => setComments([]))
-            .finally(() => setIsLoading(false));
-    }, [articleId]);
+    const {
+        data,
+        isPending: isLoading,
+        isError,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage,
+    } = useComments(articleId);
+
+    const createComment = useCreateComment(articleId);
+    const updateComment = useUpdateComment(articleId);
+    const deleteComment = useDeleteComment(articleId);
+
+    const comments = data?.pages.flatMap(page => page.comments) ?? [];
+    const total = data?.pages[0]?.total ?? 0;
+    const isSubmitting = createComment.isPending;
+    const isSavingEdit = updateComment.isPending;
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -52,16 +64,12 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
             setError("Comment must be at least 2 characters.");
             return;
         }
-        setIsSubmitting(true);
         try {
-            const newComment = await commentService.create(articleId, text.trim());
-            setComments(state => [newComment, ...state]);
+            await createComment.mutateAsync(text.trim());
             setText("");
             setError("");
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to post comment.");
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -77,24 +85,19 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
 
     const saveEdit = async () => {
         if (!editingId || editText.trim().length < 2 || isSavingEdit) return;
-        setIsSavingEdit(true);
         try {
-            const updated = await commentService.update(editingId, editText.trim());
-            setComments(state => state.map(c => (c._id === editingId ? updated : c)));
+            await updateComment.mutateAsync({ commentId: editingId, text: editText.trim() });
             cancelEditing();
             toast.success('Comment updated.');
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Couldn't update the comment. Try again.");
-        } finally {
-            setIsSavingEdit(false);
         }
     };
 
     const confirmDelete = async () => {
         if (!deleteTarget) return;
         try {
-            await commentService.remove(deleteTarget);
-            setComments(state => state.filter(c => c._id !== deleteTarget));
+            await deleteComment.mutateAsync(deleteTarget);
             toast.success('Comment deleted.');
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Couldn't delete the comment. Try again.");
@@ -126,7 +129,7 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
             )}
 
             <h3 className="comments-heading">
-                Discussion <span className="comments-count">({comments.length})</span>
+                Discussion <span className="comments-count">({total})</span>
             </h3>
 
             {isAuthenticated ? (
@@ -167,6 +170,8 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
 
             {isLoading ? (
                 <p className="comments-empty">Loading comments...</p>
+            ) : isError ? (
+                <p className="comments-empty">Couldn't load the discussion. Refresh to try again.</p>
             ) : (
                 <div className="comments-list">
                     {comments.length === 0 ? (
@@ -262,6 +267,19 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                                 </div>
                             </div>
                         ))
+                    )}
+
+                    {hasNextPage && (
+                        <button
+                            type="button"
+                            className="comments-load-more"
+                            onClick={() => fetchNextPage()}
+                            disabled={isFetchingNextPage}
+                        >
+                            {isFetchingNextPage
+                                ? 'Loading...'
+                                : `Load more comments (${total - comments.length} left)`}
+                        </button>
                     )}
                 </div>
             )}

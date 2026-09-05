@@ -13,10 +13,25 @@ export const getAllForArticle = asyncHandler(async (req, res) => {
 
     await requireAccessibleArticle(articleId, req.user?._id);
 
-    const comments = await Comment.find({ articleId })
-        .populate('_ownerId', 'username profilePicture')
-        .sort({ createdAt: -1 });
-    res.json(comments);
+    const pageNum = Math.max(parseInt(req.query.page) || 1, 1);
+    const limitNum = Math.min(Math.max(parseInt(req.query.limit) || 20, 1), 50);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [comments, total] = await Promise.all([
+        Comment.find({ articleId })
+            .populate('_ownerId', 'username profilePicture')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNum),
+        Comment.countDocuments({ articleId }),
+    ]);
+
+    res.json({
+        comments,
+        total,
+        page: pageNum,
+        totalPages: Math.ceil(total / limitNum),
+    });
 });
 
 export const create = asyncHandler(async (req, res) => {
