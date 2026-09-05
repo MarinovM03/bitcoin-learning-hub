@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { FileText, ArrowRight, RotateCcw } from "lucide-react";
 import * as articleService from "../../services/articleService";
-import * as likeService from "../../services/likeService";
+import { useMyArticles, usePublicProfile } from "../../hooks/queries/useArticles";
 import ProfileForm from "../profile-form/ProfileForm";
 import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
@@ -11,31 +11,16 @@ import { toast } from "../../lib/toast";
 
 export default function Profile() {
     const { userId } = useAuth();
-    const [isLoading, setIsLoading] = useState(true);
-    const [publishedCount, setPublishedCount] = useState(0);
-    const [draftCount, setDraftCount] = useState(0);
-    const [totalLikes, setTotalLikes] = useState(0);
     const [showResetModal, setShowResetModal] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
 
-    useEffect(() => {
-        articleService.getMyArticles()
-            .then(async (result) => {
-                const published = result.filter(a => a.status === 'published');
-                const drafts = result.filter(a => a.status === 'draft');
-                setPublishedCount(published.length);
-                setDraftCount(drafts.length);
+    const { data: myArticles, isPending: articlesPending } = useMyArticles();
+    const { data: publicProfile, isPending: profilePending } = usePublicProfile(userId);
 
-                const likeCounts = await Promise.all(
-                    published.map(a =>
-                        likeService.getSummary(a._id).then(summary => summary.totalLikes).catch(() => 0)
-                    )
-                );
-                setTotalLikes(likeCounts.reduce((sum, n) => sum + n, 0));
-            })
-            .catch(() => { /* stats fail silently — profile form is the primary content */ })
-            .finally(() => setIsLoading(false));
-    }, [userId]);
+    const publishedCount = myArticles?.filter(a => a.status === 'published').length ?? 0;
+    const draftCount = myArticles?.filter(a => a.status === 'draft').length ?? 0;
+    const totalLikes = publicProfile?.totalLikes ?? 0;
+    const isLoading = articlesPending || (!!userId && profilePending);
 
     const handleSaveSuccess = () => {
         toast.success('Profile updated successfully.');
