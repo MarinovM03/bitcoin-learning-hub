@@ -25,6 +25,16 @@ export const queryKeys = {
         forArticle: (articleId?: string) => ['comments', articleId],
     },
     publicProfile: (userId?: string) => ['users', userId, 'public'],
+    admin: {
+        all: ['admin'],
+        stats: ['admin', 'stats'],
+        users: (params: unknown) => ['admin', 'users', params],
+        articles: (params: unknown) => ['admin', 'articles', params],
+        comments: (params: unknown) => ['admin', 'comments', params],
+        moderation: (params: unknown) => ['admin', 'moderation', params],
+        preview: (articleId?: string) => ['admin', 'preview', articleId],
+        reports: (params: unknown) => ['admin', 'reports', params],
+    },
     market: {
         binance: ['market', 'binance'],
         global: ['market', 'global'],
