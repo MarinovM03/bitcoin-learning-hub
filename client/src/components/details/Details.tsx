@@ -10,6 +10,7 @@ import { useToggleBookmark } from '../../hooks/mutations/useBookmarkMutations';
 import { useMarkRead, useMarkUnread, useDeleteArticle } from '../../hooks/mutations/useArticleMutations';
 import { useAuth } from "../../contexts/AuthContext";
 import ArticleDetailsSkeleton from "../article-details-skeleton/ArticleDetailsSkeleton";
+import NotFound from "../not-found/NotFound";
 import CommentsSection from "../comments/CommentsSection";
 import ConfirmModal from "../common/ConfirmModal";
 import ReportModal from "../report-modal/ReportModal";
@@ -51,10 +52,6 @@ export default function Details() {
     const [showReportModal, setShowReportModal] = useState(false);
     const [readProgress, setReadProgress] = useState(0);
     const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        if (isError && !article) navigate('/not-found');
-    }, [isError, article, navigate]);
 
     useEffect(() => {
         let rafId = 0;
@@ -196,6 +193,7 @@ export default function Details() {
         }
     };
 
+    if (isError) return <NotFound />;
     if (isPending || !article || !articleId) return <ArticleDetailsSkeleton />;
 
     return (

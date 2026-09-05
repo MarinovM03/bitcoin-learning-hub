@@ -116,7 +116,7 @@ describe('Details', () => {
         expect(screen.queryByRole('button', { name: /delete article/i })).not.toBeInTheDocument();
     });
 
-    it('sends the reader to the not-found page when the article is gone', async () => {
+    it('shows the not-found page in place when the article is gone', async () => {
         vi.spyOn(globalThis, 'fetch').mockImplementation(
             routeFetch(() => json({ message: 'Article not found' }, 404)),
         );
@@ -125,9 +125,11 @@ describe('Details', () => {
 
         await waitFor(
             () => {
-                expect(screen.getByText('not-found-page')).toBeInTheDocument();
+                expect(screen.getByRole('heading', { name: /block not found/i })).toBeInTheDocument();
             },
             { timeout: 10_000 },
         );
+
+        expect(screen.queryByText('not-found-page')).not.toBeInTheDocument();
     });
 });
