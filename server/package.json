@@ -1,5 +1,12 @@
 {
+  "name": "bitcoin-learning-hub-server",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
