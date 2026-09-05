@@ -30,7 +30,6 @@ const Bookmarks = lazy(() => import("./components/bookmarks/Bookmarks"));
 const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfile"));
 const MyArticles = lazy(() => import("./components/my-articles/MyArticles"));
 const DcaCalculator = lazy(() => import("./components/dca-calculator/DcaCalculator"));
-const MempoolVisualizer = lazy(() => import("./components/mempool-visualizer/MempoolVisualizer"));
 const AddressDemystifier = lazy(() => import("./components/address-demystifier/AddressDemystifier"));
 const MultisigExplainer = lazy(() => import("./components/multisig-explainer/MultisigExplainer"));
 const SatsConverter = lazy(() => import("./components/sats-converter/SatsConverter"));
@@ -67,7 +66,6 @@ function App() {
                         <Route path="/glossary/:termId" element={<GlossaryDetails />} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/dca" element={<DcaCalculator />} />
-                        <Route path="/mempool" element={<MempoolVisualizer />} />
                         <Route path="/address" element={<AddressDemystifier />} />
                         <Route path="/multisig" element={<MultisigExplainer />} />
                         <Route path="/converter" element={<SatsConverter />} />

@@ -103,7 +103,7 @@ export default function Home() {
                             </div>
                             <div className="hero-metric-divider" />
                             <div className="hero-metric">
-                                <span className="hero-metric-value">5+</span>
+                                <span className="hero-metric-value">{TOOLS.length}</span>
                                 <span className="hero-metric-label">Live Tools</span>
                             </div>
                             <div className="hero-metric-divider" />

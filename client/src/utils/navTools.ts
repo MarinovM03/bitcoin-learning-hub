@@ -1,4 +1,4 @@
-import { ArrowLeftRight, LineChart, FileSearch, Layers, Users } from 'lucide-react';
+import { ArrowLeftRight, LineChart, FileSearch, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavTool {
@@ -30,13 +30,6 @@ export const TOOLS: NavTool[] = [
         short: 'Address',
         description: 'Decode and inspect Bitcoin addresses',
         Icon: FileSearch,
-    },
-    {
-        to: '/mempool',
-        label: 'Mempool Visualizer',
-        short: 'Mempool',
-        description: 'Live view of unconfirmed transactions',
-        Icon: Layers,
     },
     {
         to: '/multisig',

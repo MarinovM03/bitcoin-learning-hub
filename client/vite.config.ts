@@ -10,7 +10,6 @@ const buildCsp = (apiOrigin: string): string => {
         apiOrigin,
         'https://api.binance.com',
         'https://api.alternative.me',
-        'https://mempool.space',
     ].filter(Boolean).join(' ');
 
     return [

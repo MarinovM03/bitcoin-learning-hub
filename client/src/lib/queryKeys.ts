@@ -28,7 +28,5 @@ export const queryKeys = {
         binance: ['market', 'binance'],
         global: ['market', 'global'],
         fearGreed: ['market', 'fear-greed'],
-        mempoolStats: ['market', 'mempool', 'stats'],
-        mempoolTxs: ['market', 'mempool', 'txs'],
     },
 };
