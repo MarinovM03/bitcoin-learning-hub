@@ -4,7 +4,6 @@ const glossaryTermSchema = new mongoose.Schema({
     term: {
         type: String,
         required: true,
-        unique: true,
         trim: true,
         maxlength: 60,
     },
@@ -45,6 +44,13 @@ glossaryTermSchema.index(
     { term: 'text', definition: 'text' },
     { weights: { term: 10, definition: 2 }, name: 'GlossaryTextIndex' }
 );
+
+glossaryTermSchema.index(
+    { term: 1 },
+    { unique: true, collation: { locale: 'en', strength: 2 }, name: 'GlossaryTermUnique' }
+);
+
+glossaryTermSchema.index({ _ownerId: 1 });
 
 const GlossaryTerm = mongoose.model('GlossaryTerm', glossaryTermSchema);
 

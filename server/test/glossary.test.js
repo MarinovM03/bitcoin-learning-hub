@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { app, registerAndToken, userFixtures, glossaryFixture, promoteToAdmin } from './helpers.js';
+import GlossaryTerm from '../models/GlossaryTerm.js';
 
 const createTerm = (token, overrides = {}) =>
     request(app())
@@ -56,6 +57,17 @@ describe('Glossary', () => {
         await createTerm(token);
         const dup = await createTerm(token, { term: 'utxo' });
         expect(dup.status).toBe(400);
+    });
+
+    it('rejects a case-variant duplicate at the database level', async () => {
+        const { user } = await registerAndToken();
+        await GlossaryTerm.init();
+
+        await GlossaryTerm.create({ ...glossaryFixture, _ownerId: user._id });
+
+        await expect(
+            GlossaryTerm.create({ ...glossaryFixture, term: 'utxo', _ownerId: user._id }),
+        ).rejects.toMatchObject({ code: 11000 });
     });
 
     it('rejects too short a definition', async () => {
