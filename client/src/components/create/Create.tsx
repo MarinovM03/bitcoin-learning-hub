@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as articleService from '../../services/articleService';
+import { useCreateArticle } from '../../hooks/mutations/useArticleMutations';
 import { validateQuiz } from '../../utils/quizHelpers';
 import { validateSeries } from '../../utils/articleSubmission';
 import { useSeriesParts } from '../../hooks/useSeriesParts';
@@ -18,6 +18,7 @@ export default function Create() {
     const [serverError, setServerError] = useState('');
     const [quiz, setQuiz] = useState<QuizFormQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
+    const createArticle = useCreateArticle();
 
     const form = useForm<ArticleFormValues>({
         resolver: zodResolver(createArticleSchema),
@@ -53,7 +54,7 @@ export default function Create() {
         }
 
         try {
-            const created = await articleService.create({ ...values, status, quiz });
+            const created = await createArticle.mutateAsync({ ...values, status, quiz });
             if (created.status === 'pending') {
                 toast.info('Submitted for review. It goes live once a moderator approves it.');
                 navigate('/my-articles');
@@ -63,6 +64,8 @@ export default function Create() {
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
         }
+    }, () => {
+        setServerError('Some fields still need attention. Check the highlighted fields above.');
     });
 
     return (

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as articleService from '../../services/articleService';
 import { useArticle } from '../../hooks/queries/useArticles';
+import { useUpdateArticle } from '../../hooks/mutations/useArticleMutations';
 import { validateQuiz } from '../../utils/quizHelpers';
 import { validateSeries } from '../../utils/articleSubmission';
 import { useSeriesParts } from '../../hooks/useSeriesParts';
@@ -23,8 +23,10 @@ export default function Edit() {
     const [currentStatus, setCurrentStatus] = useState('published');
     const [quiz, setQuiz] = useState<QuizFormQuestion[]>([]);
     const [showQuizErrors, setShowQuizErrors] = useState(false);
+    const loadedArticleId = useRef<string | undefined>(undefined);
 
     const { data: article, isError } = useArticle(articleId);
+    const updateArticle = useUpdateArticle();
 
     const form = useForm<ArticleFormValues>({
         resolver: zodResolver(createArticleSchema),
@@ -46,7 +48,8 @@ export default function Edit() {
     const takenParts = useSeriesParts(seriesName, articleId);
 
     useEffect(() => {
-        if (!article) return;
+        if (!article || loadedArticleId.current === articleId) return;
+        loadedArticleId.current = articleId;
 
         reset({
             title: article.title || '',
@@ -64,7 +67,7 @@ export default function Edit() {
             options: q.options,
             correctIndex: q.correctIndex ?? 0,
         })));
-    }, [article, reset]);
+    }, [article, articleId, reset]);
 
     const submitWithStatus = (status: ArticleStatus) => form.handleSubmit(async (values) => {
         setServerError('');
@@ -84,7 +87,10 @@ export default function Edit() {
         }
 
         try {
-            const saved = await articleService.edit(articleId, { ...values, status, quiz });
+            const saved = await updateArticle.mutateAsync({
+                articleId,
+                data: { ...values, status, quiz },
+            });
             if (saved.status === 'pending') {
                 toast.info('Sent for review. It goes live once a moderator approves it.');
                 navigate('/my-articles');
@@ -94,6 +100,8 @@ export default function Edit() {
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
         }
+    }, () => {
+        setServerError('Some fields still need attention. Check the highlighted fields above.');
     });
 
     if (isError) return <NotFound />;
