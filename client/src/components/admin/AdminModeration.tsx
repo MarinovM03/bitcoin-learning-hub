@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, X, Eye, EyeOff, Trash2, Clock, BookMarked } from 'lucide-react';
-import * as adminService from '../../services/adminService';
-import type {
-    ModerationQueueResponse,
-    ModerationArticle,
-    ModerationTerm,
-    ArticlePreview,
-} from '../../services/adminService';
+import { useModerationQueue, useArticlePreview } from '../../hooks/queries/useAdmin';
+import {
+    useApproveArticle,
+    useRejectArticle,
+    useApproveGlossaryTerm,
+    useAdminDeleteGlossaryTerm,
+} from '../../hooks/mutations/useAdminMutations';
+import type { ModerationArticle, ModerationTerm } from '../../services/adminService';
 import MarkdownContent from '../markdown-content/MarkdownContent';
 import Spinner from '../spinner/Spinner';
 import ConfirmModal from '../common/ConfirmModal';
@@ -21,50 +22,41 @@ interface AdminModerationProps {
 }
 
 export default function AdminModeration({ onQueueChange }: AdminModerationProps) {
-    const [data, setData] = useState<ModerationQueueResponse | null>(null);
-    const [error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [busyId, setBusyId] = useState<string | null>(null);
-
     const [openId, setOpenId] = useState<string | null>(null);
-    const [preview, setPreview] = useState<ArticlePreview | null>(null);
-    const [previewLoading, setPreviewLoading] = useState(false);
 
     const [rejectTarget, setRejectTarget] = useState<ModerationArticle | null>(null);
     const [rejectNote, setRejectNote] = useState('');
     const [deleteTarget, setDeleteTarget] = useState<ModerationTerm | null>(null);
 
-    const reload = useCallback(() => {
-        setError('');
-        return adminService.getModerationQueue({ page, limit: PAGE_LIMIT })
-            .then((res) => {
-                setData(res);
-                onQueueChange?.(res.articleTotal + res.termTotal);
-            })
-            .catch((err) => setError(err instanceof Error ? err.message : 'Something went wrong'));
-    }, [page, onQueueChange]);
+    const { data, error: loadError } = useModerationQueue({ page, limit: PAGE_LIMIT });
+    const {
+        data: preview,
+        isFetching: previewLoading,
+        error: previewError,
+    } = useArticlePreview(openId ?? undefined);
+
+    const approveArticle = useApproveArticle();
+    const rejectArticle = useRejectArticle();
+    const approveTerm = useApproveGlossaryTerm();
+    const removeTerm = useAdminDeleteGlossaryTerm();
+
+    const error = loadError?.message || '';
+    const pendingTotal = data ? data.articleTotal + data.termTotal : undefined;
 
     useEffect(() => {
-        reload();
-    }, [reload]);
+        if (pendingTotal !== undefined) onQueueChange?.(pendingTotal);
+    }, [pendingTotal, onQueueChange]);
 
-    const togglePreview = async (articleId: string) => {
-        if (openId === articleId) {
-            setOpenId(null);
-            setPreview(null);
-            return;
-        }
-        setOpenId(articleId);
-        setPreview(null);
-        setPreviewLoading(true);
-        try {
-            setPreview(await adminService.getArticlePreview(articleId));
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : 'Could not load the article.');
-            setOpenId(null);
-        } finally {
-            setPreviewLoading(false);
-        }
+    useEffect(() => {
+        if (!previewError) return;
+        toast.error(previewError.message || 'Could not load the article.');
+        setOpenId(null);
+    }, [previewError]);
+
+    const togglePreview = (articleId: string) => {
+        setOpenId(current => (current === articleId ? null : articleId));
     };
 
     const runAction = async (id: string, action: () => Promise<unknown>, successMessage: string) => {
@@ -72,11 +64,7 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
         try {
             await action();
             toast.success(successMessage);
-            if (openId === id) {
-                setOpenId(null);
-                setPreview(null);
-            }
-            await reload();
+            if (openId === id) setOpenId(null);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Something went wrong');
         } finally {
@@ -92,7 +80,7 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
         setRejectNote('');
         await runAction(
             target._id,
-            () => adminService.rejectArticle(target._id, note),
+            () => rejectArticle.mutateAsync({ articleId: target._id, note }),
             'Sent back to the author as a draft.',
         );
     };
@@ -103,7 +91,7 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
         setDeleteTarget(null);
         await runAction(
             target._id,
-            () => adminService.deleteGlossaryTerm(target._id),
+            () => removeTerm.mutateAsync(target._id),
             'Term deleted.',
         );
     };
@@ -215,7 +203,7 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
                                                     className="admin-row-btn admin-row-btn--approve"
                                                     onClick={() => runAction(
                                                         article._id,
-                                                        () => adminService.approveArticle(article._id),
+                                                        () => approveArticle.mutateAsync(article._id),
                                                         'Published.',
                                                     )}
                                                     disabled={isBusy}
@@ -281,7 +269,7 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
                                                     className="admin-row-btn admin-row-btn--approve"
                                                     onClick={() => runAction(
                                                         term._id,
-                                                        () => adminService.approveGlossaryTerm(term._id),
+                                                        () => approveTerm.mutateAsync(term._id),
                                                         'Term published.',
                                                     )}
                                                     disabled={isBusy}

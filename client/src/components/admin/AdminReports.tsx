@@ -1,8 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Check, X, Trash2, ExternalLink, Flag } from 'lucide-react';
-import * as adminService from '../../services/adminService';
-import type { AdminReportsResponse, AdminReportRow, ReportStatus } from '../../services/adminService';
+import { useAdminReports } from '../../hooks/queries/useAdmin';
+import {
+    useResolveReport,
+    useAdminDeleteArticle,
+    useAdminDeleteComment,
+    useAdminDeleteGlossaryTerm,
+} from '../../hooks/mutations/useAdminMutations';
+import type { AdminReportRow, ReportStatus } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 import { formatDateTime } from '../../utils/formatters';
@@ -29,33 +35,30 @@ interface AdminReportsProps {
 }
 
 export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
-    const [data, setData] = useState<AdminReportsResponse | null>(null);
-    const [error, setError] = useState('');
     const [status, setStatus] = useState<ReportStatus>('open');
     const [page, setPage] = useState(1);
     const [busyId, setBusyId] = useState<string | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<AdminReportRow | null>(null);
 
-    const reload = useCallback(() => {
-        setError('');
-        return adminService.getReports({ page, limit: PAGE_LIMIT, status })
-            .then((res) => {
-                setData(res);
-                onOpenCountChange?.(res.openTotal);
-            })
-            .catch((err) => setError(err instanceof Error ? err.message : 'Something went wrong'));
-    }, [page, status, onOpenCountChange]);
+    const { data, error: loadError } = useAdminReports({ page, limit: PAGE_LIMIT, status });
+
+    const resolveReport = useResolveReport();
+    const removeArticle = useAdminDeleteArticle();
+    const removeComment = useAdminDeleteComment();
+    const removeTerm = useAdminDeleteGlossaryTerm();
+
+    const error = loadError?.message || '';
+    const openTotal = data?.openTotal;
 
     useEffect(() => {
-        reload();
-    }, [reload]);
+        if (openTotal !== undefined) onOpenCountChange?.(openTotal);
+    }, [openTotal, onOpenCountChange]);
 
     const runAction = async (id: string, action: () => Promise<unknown>, message: string) => {
         setBusyId(id);
         try {
             await action();
             toast.success(message);
-            await reload();
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Something went wrong');
         } finally {
@@ -69,9 +72,9 @@ export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
         setDeleteTarget(null);
 
         const remove = () => {
-            if (target.targetType === 'article') return adminService.deleteArticle(target.targetId);
-            if (target.targetType === 'comment') return adminService.deleteComment(target.targetId);
-            return adminService.deleteGlossaryTerm(target.targetId);
+            if (target.targetType === 'article') return removeArticle.mutateAsync(target.targetId);
+            if (target.targetType === 'comment') return removeComment.mutateAsync(target.targetId);
+            return removeTerm.mutateAsync(target.targetId);
         };
 
         await runAction(target._id, remove, 'Content deleted.');
@@ -167,7 +170,7 @@ export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
                                                 className="admin-row-btn"
                                                 onClick={() => runAction(
                                                     report._id,
-                                                    () => adminService.resolveReport(report._id, 'dismissed'),
+                                                    () => resolveReport.mutateAsync({ reportId: report._id, status: 'dismissed' }),
                                                     'Dismissed.',
                                                 )}
                                                 disabled={isBusy}
@@ -180,7 +183,7 @@ export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
                                                 className="admin-row-btn admin-row-btn--approve"
                                                 onClick={() => runAction(
                                                     report._id,
-                                                    () => adminService.resolveReport(report._id, 'resolved'),
+                                                    () => resolveReport.mutateAsync({ reportId: report._id, status: 'resolved' }),
                                                     'Marked resolved.',
                                                 )}
                                                 disabled={isBusy}

@@ -1,58 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Search, Star, Trash2, Eye } from 'lucide-react';
-import * as adminService from '../../services/adminService';
-import type { AdminArticlesResponse, AdminArticleRow } from '../../services/adminService';
+import { useAdminArticles } from '../../hooks/queries/useAdmin';
+import { useToggleFeatured, useAdminDeleteArticle } from '../../hooks/mutations/useAdminMutations';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import type { AdminArticleRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 
 const PAGE_LIMIT = 20;
 
 export default function AdminArticles() {
-    const [data, setData] = useState<AdminArticlesResponse | null>(null);
-    const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [pendingId, setPendingId] = useState<string | null>(null);
+    const [actionError, setActionError] = useState('');
     const [deleteTarget, setDeleteTarget] = useState<AdminArticleRow | null>(null);
 
-    const reload = () => {
-        setError('');
-        adminService.getArticles({ search, page, limit: PAGE_LIMIT })
-            .then(setData)
-            .catch(err => setError(err.message));
-    };
+    const debouncedSearch = useDebouncedValue(search);
+    const { data, error: loadError } = useAdminArticles({ search: debouncedSearch, page, limit: PAGE_LIMIT });
 
-    useEffect(() => {
-        const timer = setTimeout(reload, 250);
-        return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search, page]);
+    const toggleFeatured = useToggleFeatured();
+    const removeArticle = useAdminDeleteArticle();
 
-    const handleToggleFeatured = async (article: AdminArticleRow) => {
-        setPendingId(article._id);
+    const error = actionError || loadError?.message || '';
+    const pendingId = (toggleFeatured.isPending && toggleFeatured.variables)
+        || (removeArticle.isPending && removeArticle.variables)
+        || null;
+
+    const run = async (action: () => Promise<unknown>) => {
+        setActionError('');
         try {
-            await adminService.toggleFeatured(article._id);
-            reload();
+            await action();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
+            setActionError(err instanceof Error ? err.message : 'Something went wrong');
         }
     };
+
+    const handleToggleFeatured = (article: AdminArticleRow) =>
+        run(() => toggleFeatured.mutateAsync(article._id));
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
-        setPendingId(deleteTarget._id);
-        try {
-            await adminService.deleteArticle(deleteTarget._id);
+        await run(async () => {
+            await removeArticle.mutateAsync(deleteTarget._id);
             setDeleteTarget(null);
-            reload();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
-        }
+        });
     };
 
     return (

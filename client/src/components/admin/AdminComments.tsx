@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Trash2, ExternalLink } from 'lucide-react';
-import * as adminService from '../../services/adminService';
-import type { AdminCommentsResponse, AdminCommentRow } from '../../services/adminService';
+import { useAdminComments } from '../../hooks/queries/useAdmin';
+import { useAdminDeleteComment } from '../../hooks/mutations/useAdminMutations';
+import type { AdminCommentRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
@@ -10,35 +11,24 @@ import { formatDateTime } from '../../utils/formatters';
 
 const PAGE_LIMIT = 20;
 export default function AdminComments() {
-    const [data, setData] = useState<AdminCommentsResponse | null>(null);
-    const [error, setError] = useState('');
     const [page, setPage] = useState(1);
-    const [pendingId, setPendingId] = useState<string | null>(null);
+    const [actionError, setActionError] = useState('');
     const [deleteTarget, setDeleteTarget] = useState<AdminCommentRow | null>(null);
 
-    const reload = () => {
-        setError('');
-        adminService.getComments({ page, limit: PAGE_LIMIT })
-            .then(setData)
-            .catch(err => setError(err.message));
-    };
+    const { data, error: loadError } = useAdminComments({ page, limit: PAGE_LIMIT });
+    const deleteComment = useAdminDeleteComment();
 
-    useEffect(() => {
-        reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
+    const error = actionError || loadError?.message || '';
+    const pendingId = deleteComment.isPending ? deleteComment.variables : null;
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
-        setPendingId(deleteTarget._id);
+        setActionError('');
         try {
-            await adminService.deleteComment(deleteTarget._id);
+            await deleteComment.mutateAsync(deleteTarget._id);
             setDeleteTarget(null);
-            reload();
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
+            setActionError(err instanceof Error ? err.message : 'Something went wrong');
         }
     };
 

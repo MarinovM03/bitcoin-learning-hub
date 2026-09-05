@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Search, Trash2, ShieldCheck, ShieldOff, BadgeCheck, BadgeX } from 'lucide-react';
-import * as adminService from '../../services/adminService';
-import type { AdminUsersResponse, AdminUserRow } from '../../services/adminService';
+import { useAdminUsers } from '../../hooks/queries/useAdmin';
+import { useUpdateUserRole, useUpdateUserTrust, useDeleteUser } from '../../hooks/mutations/useAdminMutations';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import type { AdminUserRow } from '../../services/adminService';
 import { useAuth } from '../../contexts/AuthContext';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
@@ -11,64 +13,50 @@ const PAGE_LIMIT = 20;
 
 export default function AdminUsers() {
     const { userId: currentUserId } = useAuth();
-    const [data, setData] = useState<AdminUsersResponse | null>(null);
-    const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [pendingId, setPendingId] = useState<string | null>(null);
+    const [actionError, setActionError] = useState('');
     const [deleteTarget, setDeleteTarget] = useState<AdminUserRow | null>(null);
 
-    const reload = () => {
-        setError('');
-        adminService.getUsers({ search, page, limit: PAGE_LIMIT })
-            .then(setData)
-            .catch(err => setError(err.message));
+    const debouncedSearch = useDebouncedValue(search);
+    const { data, error: loadError } = useAdminUsers({ search: debouncedSearch, page, limit: PAGE_LIMIT });
+
+    const updateRole = useUpdateUserRole();
+    const updateTrust = useUpdateUserTrust();
+    const removeUser = useDeleteUser();
+
+    const error = actionError || loadError?.message || '';
+    const pendingId = (updateRole.isPending && updateRole.variables?.userId)
+        || (updateTrust.isPending && updateTrust.variables?.userId)
+        || (removeUser.isPending && removeUser.variables)
+        || null;
+
+    const run = async (action: () => Promise<unknown>) => {
+        setActionError('');
+        try {
+            await action();
+        } catch (err) {
+            setActionError(err instanceof Error ? err.message : 'Something went wrong');
+        }
     };
 
-    useEffect(() => {
-        const timer = setTimeout(reload, 250);
-        return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search, page]);
-
-    const handleToggleRole = async (user: AdminUserRow) => {
+    const handleToggleRole = (user: AdminUserRow) => {
         if (String(user._id) === String(currentUserId)) return;
-        setPendingId(user._id);
-        try {
-            const newRole = user.role === 'admin' ? 'user' : 'admin';
-            await adminService.updateUserRole(user._id, newRole);
-            reload();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
-        }
+        return run(() => updateRole.mutateAsync({
+            userId: user._id,
+            role: user.role === 'admin' ? 'user' : 'admin',
+        }));
     };
 
-    const handleToggleTrust = async (user: AdminUserRow) => {
-        setPendingId(user._id);
-        try {
-            await adminService.updateUserTrust(user._id, !user.isTrusted);
-            reload();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
-        }
-    };
+    const handleToggleTrust = (user: AdminUserRow) =>
+        run(() => updateTrust.mutateAsync({ userId: user._id, isTrusted: !user.isTrusted }));
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
-        setPendingId(deleteTarget._id);
-        try {
-            await adminService.deleteUser(deleteTarget._id);
+        await run(async () => {
+            await removeUser.mutateAsync(deleteTarget._id);
             setDeleteTarget(null);
-            reload();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong');
-        } finally {
-            setPendingId(null);
-        }
+        });
     };
 
     return (

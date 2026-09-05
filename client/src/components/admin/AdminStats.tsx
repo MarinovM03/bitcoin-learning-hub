@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import * as adminService from '../../services/adminService';
+import { useAdminStats } from '../../hooks/queries/useAdmin';
 import type { AdminStats as AdminStatsData } from '../../services/adminService';
 import Spinner from '../spinner/Spinner';
 
@@ -13,16 +12,9 @@ const STAT_CARDS = (data: AdminStatsData) => [
 ];
 
 export default function AdminStats() {
-    const [stats, setStats] = useState<AdminStatsData | null>(null);
-    const [error, setError] = useState('');
+    const { data: stats, error } = useAdminStats();
 
-    useEffect(() => {
-        adminService.getStats()
-            .then(setStats)
-            .catch(err => setError(err.message));
-    }, []);
-
-    if (error) return <p className="admin-error">{error}</p>;
+    if (error) return <p className="admin-error">{error.message}</p>;
     if (!stats) return <Spinner />;
 
     return (
