@@ -14,7 +14,8 @@
     "backfill:verified": "node scripts/backfillEmailVerified.js",
     "backfill:moderation": "node scripts/backfillModeration.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "migrate:collections": "node scripts/migrateSeriesToCollections.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
