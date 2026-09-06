@@ -69,9 +69,14 @@ export default function MyCollections() {
         }
         setError('');
         try {
-            await createCollection.mutateAsync({ title: newTitle.trim() });
+            const created = await createCollection.mutateAsync({ title: newTitle.trim() });
             setNewTitle('');
-            toast.success('Collection created.');
+            setEditingId(created._id);
+            setDraftOrder([]);
+            setDraftTitle(created.title);
+            setDraftDescription('');
+            setDraftCover('');
+            toast.success('Collection created. Add your articles below.');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Could not create the collection.');
         }
@@ -139,22 +144,32 @@ export default function MyCollections() {
                 </header>
 
                 <div className="collection-create">
-                    <input
-                        type="text"
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        placeholder="New collection name (e.g. Bitcoin Foundations)"
-                        maxLength={80}
-                    />
-                    <button
-                        type="button"
-                        className="btn-submit"
-                        onClick={handleCreate}
-                        disabled={createCollection.isPending}
-                    >
-                        <Plus size={15} strokeWidth={2.25} />
-                        {createCollection.isPending ? 'Creating...' : 'Create'}
-                    </button>
+                    <span className="collection-create-label">
+                        <Plus size={16} strokeWidth={2.5} />
+                        Start a new collection
+                    </span>
+                    <p className="collection-create-hint">
+                        Name it first, then add and order your articles.
+                    </p>
+                    <div className="collection-create-row">
+                        <input
+                            type="text"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
+                            placeholder="e.g. Bitcoin Foundations"
+                            maxLength={80}
+                            aria-label="New collection name"
+                        />
+                        <button
+                            type="button"
+                            className="btn-submit"
+                            onClick={handleCreate}
+                            disabled={createCollection.isPending}
+                        >
+                            {createCollection.isPending ? 'Creating...' : 'Create collection'}
+                        </button>
+                    </div>
                 </div>
 
                 {error && <p className="field-error">{error}</p>}
@@ -281,7 +296,19 @@ export default function MyCollections() {
 
                                     <ol className="collection-order-list">
                                         {order.length === 0 && (
-                                            <li className="collection-order-empty">No articles in this collection yet.</li>
+                                            <li className="collection-order-empty">
+                                                No articles in this collection yet.
+                                                {!isEditing && (
+                                                    <button
+                                                        type="button"
+                                                        className="collection-order-empty-cta"
+                                                        onClick={() => startEditing(collection)}
+                                                    >
+                                                        <Plus size={13} strokeWidth={2.5} />
+                                                        Add articles
+                                                    </button>
+                                                )}
+                                            </li>
                                         )}
                                         {order.map((articleId, index) => (
                                             <li key={articleId} className="collection-order-item">
