@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Collection from '../models/Collection.js';
 import Article from '../models/Article.js';
 import { AppError } from '../utils/AppError.js';
@@ -26,7 +27,13 @@ const visibleArticles = (collection, viewerId) => {
 };
 
 export const getAll = asyncHandler(async (req, res) => {
-    const collections = await Collection.find()
+    const filter = {};
+    const { author } = req.query;
+    if (typeof author === 'string' && mongoose.Types.ObjectId.isValid(author)) {
+        filter._ownerId = author;
+    }
+
+    const collections = await Collection.find(filter)
         .sort({ createdAt: -1 })
         .populate('_ownerId', 'username profilePicture')
         .populate({ path: 'articles', select: 'status imageUrl' })
