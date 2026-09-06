@@ -15,7 +15,7 @@ export const queryKeys = {
     },
     collections: {
         all: ['collections'],
-        list: ['collections', 'list'],
+        list: (author?: string) => ['collections', 'list', author ?? 'all'],
         mine: ['collections', 'mine'],
         detail: (slug?: string) => ['collections', 'detail', slug],
         forArticle: (articleId?: string) => ['collections', 'article', articleId],

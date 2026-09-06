@@ -2,9 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import * as collectionService from '../../services/collectionService';
 import { queryKeys } from '../../lib/queryKeys';
 
-export const useCollections = () => useQuery({
-    queryKey: queryKeys.collections.list,
-    queryFn: collectionService.getAll,
+export const useCollections = (author?: string) => useQuery({
+    queryKey: queryKeys.collections.list(author),
+    queryFn: () => collectionService.getAll(author),
 });
 
 export const useMyCollections = (enabled = true) => useQuery({

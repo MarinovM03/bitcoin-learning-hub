@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Layers, ArrowRight } from 'lucide-react';
 import { useCollections } from '../../hooks/queries/useCollections';
@@ -6,7 +7,20 @@ import Skeleton from '../skeleton/Skeleton';
 import { handleImgError } from '../../utils/imageHelpers';
 
 export default function Collections() {
+    const [author, setAuthor] = useState('');
     const { data: collections = [], isPending } = useCollections();
+
+    const authors = Array.from(
+        new Map(
+            collections
+                .filter(c => c._ownerId)
+                .map(c => [c._ownerId!._id, c._ownerId!]),
+        ).values(),
+    ).sort((a, b) => a.username.localeCompare(b.username));
+
+    const shown = author
+        ? collections.filter(c => c._ownerId?._id === author)
+        : collections;
 
     return (
         <section id="collections-page" className="page-content">
@@ -27,6 +41,28 @@ export default function Collections() {
                     </p>
                 </header>
 
+                {authors.length > 1 && (
+                    <div className="collections-filter" role="group" aria-label="Filter by author">
+                        <button
+                            type="button"
+                            className={`collections-filter-btn ${author === '' ? 'collections-filter-btn--active' : ''}`}
+                            onClick={() => setAuthor('')}
+                        >
+                            Everyone
+                        </button>
+                        {authors.map(person => (
+                            <button
+                                key={person._id}
+                                type="button"
+                                className={`collections-filter-btn ${author === person._id ? 'collections-filter-btn--active' : ''}`}
+                                onClick={() => setAuthor(person._id)}
+                            >
+                                {person.username}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
                 {isPending ? (
                     <div className="collections-grid">
                         {Array.from({ length: 3 }).map((_, i) => (
@@ -39,7 +75,7 @@ export default function Collections() {
                             </div>
                         ))}
                     </div>
-                ) : collections.length === 0 ? (
+                ) : shown.length === 0 ? (
                     <div className="collections-empty">
                         <div className="collections-empty-icon">
                             <Layers size={40} strokeWidth={1.6} />
@@ -52,7 +88,7 @@ export default function Collections() {
                     </div>
                 ) : (
                     <div className="collections-grid">
-                        {collections.map(collection => (
+                        {shown.map(collection => (
                             <Link
                                 key={collection._id}
                                 to={`/collections/${collection.slug}`}

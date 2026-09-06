@@ -60,8 +60,8 @@ export interface CollectionWriteData {
     articles?: string[];
 }
 
-export const getAll = (): Promise<CollectionSummary[]> =>
-    request.get<CollectionSummary[]>(baseUrl);
+export const getAll = (author?: string): Promise<CollectionSummary[]> =>
+    request.get<CollectionSummary[]>(author ? `${baseUrl}?author=${author}` : baseUrl);
 
 export const getMine = (): Promise<MyCollection[]> =>
     request.get<MyCollection[]>(`${baseUrl}/mine`);

@@ -1,9 +1,9 @@
 import { Link, useParams } from 'react-router';
-import { Layers, ArrowLeft } from 'lucide-react';
+import { Layers, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useCollection } from '../../hooks/queries/useCollections';
 import { useAuth } from '../../contexts/AuthContext';
-import ArticleCard from '../article-card/ArticleCard';
 import ArticleCardSkeleton from '../article-card-skeleton/ArticleCardSkeleton';
+import { handleImgError } from '../../utils/imageHelpers';
 import NotFound from '../not-found/NotFound';
 import PageMeta from '../page-meta/PageMeta';
 
@@ -73,11 +73,31 @@ export default function CollectionDetails() {
                 ) : (
                     <ol className="collection-parts">
                         {collection.articles.map((article, index) => (
-                            <li key={article._id} className="collection-part">
-                                <span className="collection-part-number">{index + 1}</span>
-                                <div className="collection-part-card">
-                                    <ArticleCard article={article} readLabel="Read this part →" />
-                                </div>
+                            <li key={article._id}>
+                                <Link
+                                    to={`/articles/${article._id}/details`}
+                                    className="collection-part"
+                                >
+                                    <span className="collection-part-number">{index + 1}</span>
+                                    <img
+                                        src={article.imageUrl}
+                                        alt=""
+                                        className="collection-part-thumb"
+                                        loading="lazy"
+                                        decoding="async"
+                                        onError={handleImgError}
+                                    />
+                                    <span className="collection-part-body">
+                                        <span className="collection-part-title">{article.title}</span>
+                                        <span className="collection-part-summary">{article.summary}</span>
+                                        <span className="collection-part-meta">
+                                            {article.category}
+                                            {article.readingTime ? ` · ${article.readingTime} min read` : ''}
+                                            {article.status !== 'published' ? ' · draft' : ''}
+                                        </span>
+                                    </span>
+                                    <ChevronRight size={18} strokeWidth={2.25} className="collection-part-chevron" />
+                                </Link>
                             </li>
                         ))}
                     </ol>
