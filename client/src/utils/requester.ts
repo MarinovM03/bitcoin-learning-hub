@@ -3,6 +3,19 @@ import { toast } from '../lib/toast';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+export class HttpError extends Error {
+    readonly status: number;
+
+    constructor(message: string, status: number) {
+        super(message);
+        this.name = 'HttpError';
+        this.status = status;
+    }
+}
+
+export const isHttpError = (err: unknown, status?: number): err is HttpError =>
+    err instanceof HttpError && (status === undefined || err.status === status);
+
 async function request<T>(method: HttpMethod, url: string, data?: unknown): Promise<T> {
     const options: RequestInit = { credentials: 'include' };
 
@@ -37,9 +50,12 @@ async function request<T>(method: HttpMethod, url: string, data?: unknown): Prom
             toast.info('Your session has expired. Please sign in again.');
             window.dispatchEvent(new Event('auth:unauthorized'));
         }
-        throw new Error(result !== null
-            ? parseApiError(result)
-            : `The server returned an unexpected response (${response.status}). Please try again.`);
+        throw new HttpError(
+            result !== null
+                ? parseApiError(result)
+                : `The server returned an unexpected response (${response.status}). Please try again.`,
+            response.status,
+        );
     }
 
     return result as T;
