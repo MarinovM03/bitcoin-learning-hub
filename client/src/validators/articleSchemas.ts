@@ -25,7 +25,5 @@ export const createArticleSchema = z.object({
     content: z.string().min(1, 'Content is required').max(100_000, 'Content is too long'),
     status: z.enum(STATUSES, { message: 'Status must be draft or published' }).optional(),
     quiz: z.array(quizQuestion).max(5, 'At most 5 quiz questions allowed').optional(),
-    seriesName: z.string().trim().max(80, 'Series name must be at most 80 characters').optional(),
-    seriesPart: z.union([z.number().int().min(1).max(99), z.string(), z.null()]).optional(),
 });
 

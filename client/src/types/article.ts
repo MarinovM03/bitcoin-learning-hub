@@ -43,8 +43,6 @@ export interface Article {
     views: number;
     status: ArticleStatus;
     moderationNote?: string;
-    seriesName: string;
-    seriesPart: number | null;
     quiz?: QuizQuestion[];
     _ownerId: string | ArticleOwnerRef;
     createdAt: string;

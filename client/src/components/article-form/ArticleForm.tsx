@@ -4,7 +4,6 @@ import { Save } from 'lucide-react';
 import type { z } from 'zod';
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
-import { isSeriesPartTaken } from '../../utils/articleSubmission';
 import { createArticleSchema } from '../../validators/articleSchemas';
 import QuizBuilder from '../quiz-builder/QuizBuilder';
 import MarkdownWritePreview from '../markdown-write-preview/MarkdownWritePreview';
@@ -18,7 +17,6 @@ interface ArticleFormProps {
     quiz: QuizFormQuestion[];
     onQuizChange: (quiz: QuizFormQuestion[]) => void;
     showQuizErrors: boolean;
-    takenParts: number[];
     serverError: string;
     isSubmitting: boolean;
     publishLabel: string;
@@ -32,7 +30,6 @@ export default function ArticleForm({
     quiz,
     onQuizChange,
     showQuizErrors,
-    takenParts,
     serverError,
     isSubmitting,
     publishLabel,
@@ -41,13 +38,8 @@ export default function ArticleForm({
 }: ArticleFormProps) {
     const { register, control, watch, setValue, formState: { errors } } = form;
 
-    const seriesName = watch('seriesName') || '';
-    const seriesPartRaw = watch('seriesPart');
     const summary = watch('summary') || '';
     const difficulty = watch('difficulty');
-
-    const partNum = Number(seriesPartRaw);
-    const seriesPartTaken = isSeriesPartTaken(seriesName, seriesPartRaw, takenParts);
 
     return (
         <form id={formId} className="create-form" onSubmit={(e) => e.preventDefault()} noValidate>
@@ -87,34 +79,6 @@ export default function ArticleForm({
                         </button>
                     ))}
                 </div>
-            </div>
-
-            <div className="form-group series-group">
-                <label>Series <span className="series-optional">(optional)</span></label>
-                <p className="series-hint">Group this article with others in a multi-part guide. Leave blank for standalone articles.</p>
-                <div className="series-inputs">
-                    <input
-                        type="text"
-                        id="seriesName"
-                        placeholder="Series name (e.g. Bitcoin 101)"
-                        maxLength={80}
-                        {...register('seriesName')}
-                    />
-                    <input
-                        type="number"
-                        id="seriesPart"
-                        placeholder="Part #"
-                        min={1}
-                        max={99}
-                        {...register('seriesPart')}
-                        className={seriesPartTaken ? 'series-part-input--error' : ''}
-                    />
-                </div>
-                {seriesPartTaken && (
-                    <p className="series-inline-error">
-                        Part {partNum} is already used in "{seriesName.trim()}". Pick another number{takenParts.length > 0 && <> (taken: {[...takenParts].sort((a, b) => a - b).join(', ')})</>}.
-                    </p>
-                )}
             </div>
 
             <div className="form-group">

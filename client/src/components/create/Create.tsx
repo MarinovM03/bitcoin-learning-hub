@@ -4,8 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateArticle } from '../../hooks/mutations/useArticleMutations';
 import { validateQuiz } from '../../utils/quizHelpers';
-import { validateSeries } from '../../utils/articleSubmission';
-import { useSeriesParts } from '../../hooks/useSeriesParts';
 import ArticleForm from '../article-form/ArticleForm';
 import type { ArticleFormValues } from '../article-form/ArticleForm';
 import PageMeta from '../page-meta/PageMeta';
@@ -29,22 +27,12 @@ export default function Create() {
             imageUrl: '',
             summary: '',
             content: '',
-            seriesName: '',
-            seriesPart: '',
         },
     });
 
-    const seriesName = form.watch('seriesName') || '';
-    const takenParts = useSeriesParts(seriesName);
 
     const submitWithStatus = (status: ArticleStatus) => form.handleSubmit(async (values) => {
         setServerError('');
-
-        const seriesError = validateSeries(values, takenParts);
-        if (seriesError) {
-            setServerError(seriesError);
-            return;
-        }
 
         const quizError = validateQuiz(quiz);
         if (quizError) {
@@ -81,7 +69,6 @@ export default function Create() {
                     quiz={quiz}
                     onQuizChange={setQuiz}
                     showQuizErrors={showQuizErrors}
-                    takenParts={takenParts}
                     serverError={serverError}
                     isSubmitting={form.formState.isSubmitting}
                     publishLabel="Publish Article"

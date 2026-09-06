@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Link } from "react-router";
-import { Layers } from "lucide-react";
 import { formatViews } from "../../utils/formatters";
 import { handleImgError } from "../../utils/imageHelpers";
 import Skeleton from "../skeleton/Skeleton";
@@ -9,7 +8,7 @@ import type { Article, ArticleOwnerRef } from "../../types";
 
 type ArticleCardArticle =
     Pick<Article, '_id' | 'title' | 'category' | 'imageUrl' | 'summary'>
-    & Partial<Pick<Article, 'difficulty' | 'seriesName' | 'seriesPart' | 'readingTime' | 'views'>>
+    & Partial<Pick<Article, 'difficulty' | 'readingTime' | 'views'>>
     & { _ownerId?: string | ArticleOwnerRef };
 
 interface ArticleCardProps {
@@ -17,14 +16,9 @@ interface ArticleCardProps {
     readLabel?: string;
 }
 
-const isPopulatedOwner = (owner: ArticleCardArticle['_ownerId']): owner is ArticleOwnerRef =>
-    typeof owner === 'object' && owner !== null && 'username' in owner;
-
 export default function ArticleCard({ article, readLabel = "Read Article →" }: ArticleCardProps) {
-    const inSeries = Boolean(article.seriesName) && Number.isFinite(article.seriesPart);
     const [imgLoaded, setImgLoaded] = useState(false);
 
-    const ownerUsername = isPopulatedOwner(article._ownerId) ? article._ownerId.username : null;
 
     return (
         <Link
@@ -53,16 +47,6 @@ export default function ArticleCard({ article, readLabel = "Read Article →" }:
                 )}
             </div>
             <div className="catalog-card-body">
-                {inSeries && (
-                    <span className="catalog-card-series">
-                        <Layers size={11} strokeWidth={2.5} />
-                        <span className="catalog-card-series__name">{article.seriesName}</span>
-                        <span>· Part {article.seriesPart}</span>
-                        {ownerUsername && (
-                            <span className="catalog-card-series__author">· @{ownerUsername}</span>
-                        )}
-                    </span>
-                )}
                 <h3 className="catalog-card-title">{article.title}</h3>
                 <p className="catalog-card-summary">{article.summary}</p>
                 <div className="catalog-card-footer">

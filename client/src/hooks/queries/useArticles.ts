@@ -31,12 +31,6 @@ export const useTrendingArticles = () => useQuery({
     queryFn: articleService.getTrending,
 });
 
-export const useArticleSeries = (articleId?: string) => useQuery({
-    queryKey: queryKeys.articles.series(articleId),
-    queryFn: () => articleService.getSeries(articleId!),
-    enabled: !!articleId,
-});
-
 export const usePublicProfile = (userId?: string) => useQuery({
     queryKey: queryKeys.publicProfile(userId),
     queryFn: () => articleService.getPublicProfile(userId!),

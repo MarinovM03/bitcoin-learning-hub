@@ -140,8 +140,6 @@ export interface ArticlePreview extends ModerationArticle {
     content: string;
     status: 'draft' | 'pending' | 'published';
     quiz?: { question: string; options: string[]; correctIndex: number }[];
-    seriesName?: string;
-    seriesPart?: number | null;
 }
 
 export const getModerationQueue = (params: { page?: number; limit?: number } = {}): Promise<ModerationQueueResponse> =>

@@ -5,8 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useArticle } from '../../hooks/queries/useArticles';
 import { useUpdateArticle } from '../../hooks/mutations/useArticleMutations';
 import { validateQuiz } from '../../utils/quizHelpers';
-import { validateSeries } from '../../utils/articleSubmission';
-import { useSeriesParts } from '../../hooks/useSeriesParts';
 import ArticleForm from '../article-form/ArticleForm';
 import type { ArticleFormValues } from '../article-form/ArticleForm';
 import NotFound from '../not-found/NotFound';
@@ -37,15 +35,11 @@ export default function Edit() {
             imageUrl: '',
             summary: '',
             content: '',
-            seriesName: '',
-            seriesPart: '',
         },
     });
 
     const { reset, watch, formState: { isDirty } } = form;
-    const seriesName = watch('seriesName') || '';
     const title = watch('title');
-    const takenParts = useSeriesParts(seriesName, articleId);
 
     const hasUnsavedWork = isDirty || hasEditedQuiz;
 
@@ -64,8 +58,6 @@ export default function Edit() {
             imageUrl: article.imageUrl || '',
             summary: article.summary || '',
             content: article.content || '',
-            seriesName: article.seriesName || '',
-            seriesPart: article.seriesPart ?? '',
         });
         setCurrentStatus(article.status || 'published');
         setQuiz((article.quiz ?? []).map(q => ({
@@ -78,12 +70,6 @@ export default function Edit() {
     const submitWithStatus = (status: ArticleStatus) => form.handleSubmit(async (values) => {
         setServerError('');
         if (!articleId) return;
-
-        const seriesError = validateSeries(values, takenParts);
-        if (seriesError) {
-            setServerError(seriesError);
-            return;
-        }
 
         const quizError = validateQuiz(quiz);
         if (quizError) {
@@ -125,7 +111,6 @@ export default function Edit() {
                     quiz={quiz}
                     onQuizChange={changeQuiz}
                     showQuizErrors={showQuizErrors}
-                    takenParts={takenParts}
                     serverError={serverError}
                     isSubmitting={form.formState.isSubmitting}
                     publishLabel={currentStatus === 'draft' ? 'Publish Article' : 'Save & Publish'}

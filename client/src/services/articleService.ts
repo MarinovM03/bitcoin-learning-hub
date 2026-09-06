@@ -32,8 +32,6 @@ export interface ArticleWriteData {
     content: string;
     status?: ArticleStatus;
     quiz?: QuizFormQuestion[];
-    seriesName?: string;
-    seriesPart?: number | string | null;
 }
 
 export interface RelatedArticle {
@@ -42,24 +40,6 @@ export interface RelatedArticle {
     summary: string;
     imageUrl: string;
     category: ArticleCategory;
-}
-
-export interface SeriesPart {
-    _id: string;
-    title: string;
-    seriesPart: number | null;
-    imageUrl: string;
-    category: ArticleCategory;
-    readingTime: number;
-}
-
-export interface SeriesResponse {
-    seriesName: string;
-    parts: SeriesPart[];
-}
-
-export interface MySeriesPartsResponse {
-    parts: number[];
 }
 
 export interface PublicProfile {
@@ -110,15 +90,6 @@ export const getOne = (articleId: string): Promise<ArticleDetail> =>
 
 export const getRelated = (articleId: string): Promise<RelatedArticle[]> =>
     request.get<RelatedArticle[]>(`${baseUrl}/${articleId}/related`);
-
-export const getSeries = (articleId: string): Promise<SeriesResponse> =>
-    request.get<SeriesResponse>(`${baseUrl}/${articleId}/series`);
-
-export const getMySeriesParts = (name: string, excludeId?: string): Promise<MySeriesPartsResponse> => {
-    const params = new URLSearchParams({ name });
-    if (excludeId) params.set('excludeId', excludeId);
-    return request.get<MySeriesPartsResponse>(`${baseUrl}/series/mine?${params.toString()}`);
-};
 
 export const getPublicProfile = (userId: string): Promise<PublicProfile> =>
     request.get<PublicProfile>(`${usersUrl}/${userId}/public`);

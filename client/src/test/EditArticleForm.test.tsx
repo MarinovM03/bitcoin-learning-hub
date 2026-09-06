@@ -22,8 +22,6 @@ const article = {
     readingTime: 4,
     views: 12,
     status: 'published',
-    seriesName: '',
-    seriesPart: null,
     quiz: [
         { question: 'A stored question?', options: ['a', 'b', 'c', 'd'], correctIndex: 0 },
     ],
@@ -58,7 +56,6 @@ describe('editing an article', () => {
         }));
         vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
             const url = String(input);
-            if (/\/articles\/series\/mine/.test(url)) return Promise.resolve(json({ parts: [] }));
             if (/\/articles\/[a-f0-9]+$/.test(url)) return Promise.resolve(json(article));
             return Promise.resolve(json({}));
         });
