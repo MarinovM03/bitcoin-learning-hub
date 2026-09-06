@@ -1,5 +1,6 @@
 import Article from '../models/Article.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
+import Collection from '../models/Collection.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { clientBaseUrl } from '../utils/authEmails.js';
 import { escapeXml } from '../utils/escapeXml.js';
@@ -15,6 +16,7 @@ const STATIC_ROUTES = [
     { path: '', changefreq: 'daily', priority: '1.0' },
     { path: '/articles', changefreq: 'daily', priority: '0.9' },
     { path: '/glossary', changefreq: 'weekly', priority: '0.8' },
+    { path: '/collections', changefreq: 'weekly', priority: '0.8' },
     { path: '/dca', changefreq: 'monthly', priority: '0.6' },
     { path: '/address', changefreq: 'monthly', priority: '0.6' },
     { path: '/multisig', changefreq: 'monthly', priority: '0.6' },
@@ -38,9 +40,10 @@ export const getSitemap = asyncHandler(async (_req, res) => {
     }
 
     const base = clientBaseUrl();
-    const [articles, terms] = await Promise.all([
+    const [articles, terms, collections] = await Promise.all([
         Article.find({ status: 'published' }).select('updatedAt').sort({ updatedAt: -1 }).lean(),
         GlossaryTerm.find({ status: 'published' }).select('updatedAt').sort({ updatedAt: -1 }).lean(),
+        Collection.find().select('slug updatedAt').sort({ updatedAt: -1 }).lean(),
     ]);
 
     const entries = [
@@ -60,6 +63,12 @@ export const getSitemap = asyncHandler(async (_req, res) => {
             lastmod: term.updatedAt,
             changefreq: 'monthly',
             priority: '0.6',
+        })),
+        ...collections.map((collection) => ({
+            loc: `${base}/collections/${collection.slug}`,
+            lastmod: collection.updatedAt,
+            changefreq: 'weekly',
+            priority: '0.7',
         })),
     ];
 
