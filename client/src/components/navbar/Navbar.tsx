@@ -20,6 +20,7 @@ const NAV_LINKS: NavLinkItem[] = [
     { to: "/", label: "Home", end: true },
     { to: "/articles", label: "Articles" },
     { to: "/glossary", label: "Glossary" },
+    { to: "/collections", label: "Collections" },
 ];
 
 const IS_MAC = typeof navigator !== 'undefined'

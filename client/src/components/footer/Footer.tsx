@@ -25,6 +25,7 @@ export default function Footer() {
                         <Link to="/" className="footer-nav-link">Home</Link>
                         <Link to="/articles" className="footer-nav-link">Articles</Link>
                         <Link to="/glossary" className="footer-nav-link">Glossary</Link>
+                        <Link to="/collections" className="footer-nav-link">Collections</Link>
                     </div>
                     <div className="footer-nav-group">
                         <span className="footer-nav-label">Tools</span>
@@ -37,6 +38,7 @@ export default function Footer() {
                             <>
                                 <Link to="/profile" className="footer-nav-link">Profile</Link>
                                 <Link to="/bookmarks" className="footer-nav-link">Bookmarks</Link>
+                                <Link to="/my-collections" className="footer-nav-link">My Collections</Link>
                                 <Link to="/articles/create" className="footer-nav-link">Write Article</Link>
                             </>
                         ) : (

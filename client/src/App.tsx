@@ -25,6 +25,9 @@ const Edit = lazy(() => import("./components/edit/Edit"));
 const Profile = lazy(() => import("./components/profile/Profile"));
 const NotFound = lazy(() => import("./components/not-found/NotFound"));
 const Glossary = lazy(() => import("./components/glossary/Glossary"));
+const Collections = lazy(() => import("./components/collections/Collections"));
+const CollectionDetails = lazy(() => import("./components/collection-details/CollectionDetails"));
+const MyCollections = lazy(() => import("./components/my-collections/MyCollections"));
 const GlossaryDetails = lazy(() => import("./components/glossary-details/GlossaryDetails"));
 const Bookmarks = lazy(() => import("./components/bookmarks/Bookmarks"));
 const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfile"));
@@ -69,6 +72,8 @@ function App() {
                         <Route path="/address" element={<AddressDemystifier />} />
                         <Route path="/multisig" element={<MultisigExplainer />} />
                         <Route path="/converter" element={<SatsConverter />} />
+                        <Route path="/collections" element={<Collections />} />
+                        <Route path="/collections/:slug" element={<CollectionDetails />} />
                         <Route path="/verify-email" element={<VerifyEmail />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
@@ -79,6 +84,7 @@ function App() {
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/bookmarks" element={<Bookmarks />} />
                             <Route path="/my-articles" element={<MyArticles />} />
+                            <Route path="/my-collections" element={<MyCollections />} />
                         </Route>
 
                         <Route element={<GuestGuard />}>
