@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { app, registerAndToken, createArticle, userFixtures } from './helpers.js';
+import { app, registerAndToken, createArticle, userFixtures, promoteToAdmin } from './helpers.js';
 import Collection from '../models/Collection.js';
 import Article from '../models/Article.js';
+import Report from '../models/Report.js';
 
 const createCollection = (token, body) =>
     request(app()).post('/collections').set('Cookie', token).send(body);
@@ -192,5 +193,63 @@ describe('changing a collection', () => {
 
         expect(res.status).toBe(200);
         expect(await Collection.countDocuments()).toBe(0);
+    });
+});
+
+describe('moderating a collection', () => {
+    it('lets a reader report one', async () => {
+        const { token } = await registerAndToken();
+        const { body: collection } = await createCollection(token, { title: 'Questionable Path' });
+
+        const { token: reporter } = await registerAndToken(userFixtures.secondary);
+        const res = await request(app())
+            .post('/reports')
+            .set('Cookie', reporter)
+            .send({ targetType: 'collection', targetId: collection._id, reason: 'spam' });
+
+        expect(res.status).toBe(201);
+    });
+
+    it('lets an admin delete one and clears its reports', async () => {
+        const { token } = await registerAndToken();
+        const { body: collection } = await createCollection(token, { title: 'Spammy Path' });
+
+        const { token: reporter } = await registerAndToken(userFixtures.secondary);
+        await request(app())
+            .post('/reports')
+            .set('Cookie', reporter)
+            .send({ targetType: 'collection', targetId: collection._id, reason: 'spam' });
+
+        const { token: adminToken, user: admin } = await registerAndToken(userFixtures.tertiary);
+        await promoteToAdmin(admin._id);
+
+        const res = await request(app())
+            .delete(`/admin/collections/${collection._id}`)
+            .set('Cookie', adminToken);
+
+        expect(res.status).toBe(200);
+        expect(await Collection.countDocuments()).toBe(0);
+        expect(await Report.countDocuments({ targetType: 'collection' })).toBe(0);
+    });
+
+    it('refuses a non-admin', async () => {
+        const { token } = await registerAndToken();
+        const { body: collection } = await createCollection(token, { title: 'Guarded Path' });
+
+        const res = await request(app())
+            .delete(`/admin/collections/${collection._id}`)
+            .set('Cookie', token);
+
+        expect(res.status).toBe(403);
+    });
+
+    it('rejects a cover image that is not a web address', async () => {
+        const { token } = await registerAndToken();
+        const res = await createCollection(token, {
+            title: 'Bad Cover Path',
+            coverImage: 'javascript:alert(1)',
+        });
+
+        expect(res.status).toBe(400);
     });
 });
