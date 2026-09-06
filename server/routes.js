@@ -15,6 +15,7 @@ import * as reportController from './controllers/reportController.js';
 import * as marketController from './controllers/marketController.js';
 import * as sitemapController from './controllers/sitemapController.js';
 import * as rssController from './controllers/rssController.js';
+import * as collectionController from './controllers/collectionController.js';
 import mongoose from 'mongoose';
 import {
     registerSchema,
@@ -27,6 +28,12 @@ import {
 } from './validators/authSchemas.js';
 import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
+import {
+    createCollectionSchema,
+    updateCollectionSchema,
+    collectionIdParam,
+    collectionSlugParam,
+} from './validators/collectionSchemas.js';
 import { createCommentSchema, updateCommentSchema } from './validators/commentSchemas.js';
 import { likeArticleSchema } from './validators/likeSchemas.js';
 import { toggleBookmarkSchema } from './validators/bookmarkSchemas.js';
@@ -51,11 +58,10 @@ router.get('/health', (_req, res) => {
 
 // Article routes
 router.get('/articles/my', requireAuth, articleController.getMyArticles);
-router.get('/articles/series/mine', requireAuth, articleController.getMySeriesParts);
 router.get('/articles/trending', articleController.getTrending);
 router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', validate({ params: articleIdParam }), articleController.getRelated);
-router.get('/articles/:articleId/series', validate({ params: articleIdParam }), articleController.getSeries);
+router.get('/articles/:articleId/collections', validate({ params: articleIdParam }), collectionController.getForArticle);
 router.get('/articles/:articleId', validate({ params: articleIdParam }), articleController.getOne);
 router.post('/articles/:articleId/quiz/check', validate({ params: articleIdParam, body: checkQuizAnswerSchema }), articleController.checkQuizAnswer);
 router.post('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markRead);
@@ -91,6 +97,13 @@ router.post('/bookmarks', requireAuth, validate({ body: toggleBookmarkSchema }),
 router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 
 // Glossary routes
+router.get('/collections/mine', requireAuth, collectionController.getMine);
+router.get('/collections', collectionController.getAll);
+router.get('/collections/:slug', validate({ params: collectionSlugParam }), collectionController.getOne);
+router.post('/collections', requireAuth, requireVerified, validate({ body: createCollectionSchema }), collectionController.create);
+router.put('/collections/:collectionId', requireAuth, validate({ params: collectionIdParam, body: updateCollectionSchema }), collectionController.update);
+router.delete('/collections/:collectionId', requireAuth, validate({ params: collectionIdParam }), collectionController.remove);
+
 router.get('/glossary', glossaryController.getAll);
 router.get('/glossary/:termId', validate({ params: termIdParam }), glossaryController.getOne);
 router.post('/glossary', requireAuth, requireVerified, validate({ body: createGlossarySchema }), glossaryController.create);
