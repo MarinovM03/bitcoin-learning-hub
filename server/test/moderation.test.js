@@ -340,30 +340,22 @@ describe('the write surface of a pending article', () => {
 });
 
 describe('unpublished articles as an existence oracle', () => {
-    it('gives nothing away through the related and series endpoints', async () => {
+    it('gives nothing away through the related endpoint', async () => {
         const { token } = await newAuthor();
-        const { body: article } = await createArticle(token, { seriesName: 'Deep dives', seriesPart: 1 });
+        const { body: article } = await createArticle(token);
 
         const related = await request(app()).get(`/articles/${article._id}/related`);
         expect(related.status).toBe(404);
-
-        const series = await request(app()).get(`/articles/${article._id}/series`);
-        expect(series.status).toBe(404);
     });
 
-    it('still serves both endpoints to the author', async () => {
+    it('still serves the related endpoint to the author', async () => {
         const { token } = await newAuthor();
-        const { body: article } = await createArticle(token, { seriesName: 'Deep dives', seriesPart: 1 });
+        const { body: article } = await createArticle(token);
 
         const related = await request(app())
             .get(`/articles/${article._id}/related`)
             .set('Cookie', token);
         expect(related.status).toBe(200);
-
-        const series = await request(app())
-            .get(`/articles/${article._id}/series`)
-            .set('Cookie', token);
-        expect(series.status).toBe(200);
     });
 });
 

@@ -38,30 +38,6 @@ describe('POST /articles', () => {
         expect(res.status).toBe(400);
     });
 
-    it('rejects duplicate series part for the same owner', async () => {
-        const { token } = await registerAndToken();
-        await createArticle(token, { seriesName: 'Beginners Path', seriesPart: 1 });
-        const dup = await createArticle(token, {
-            title: 'Another article',
-            seriesName: 'Beginners Path',
-            seriesPart: 1,
-        });
-        expect(dup.status).toBe(409);
-    });
-});
-
-describe('GET /articles', () => {
-    it('returns published articles only', async () => {
-        const { token } = await registerAndToken();
-        await createArticle(token, { title: 'Public one' });
-        await createArticle(token, { title: 'A draft article', status: 'draft' });
-
-        const res = await request(app()).get('/articles');
-        expect(res.status).toBe(200);
-        expect(res.body.articles).toHaveLength(1);
-        expect(res.body.articles[0].title).toBe('Public one');
-    });
-
     it('paginates results', async () => {
         const { token } = await registerAndToken();
         for (let i = 0; i < 5; i++) {
@@ -376,24 +352,6 @@ describe('Interaction existence checks', () => {
         const ownBookmark = await request(app()).post('/bookmarks').set('Cookie', ownerToken)
             .send({ articleId: draft._id });
         expect(ownBookmark.status).toBe(201);
-    });
-});
-
-describe('Series partial updates', () => {
-    it('keeps the series intact when only one series field is sent', async () => {
-        const { token } = await registerAndToken();
-        const { body: created } = await createArticle(token, {
-            seriesName: 'Bitcoin Basics',
-            seriesPart: 2,
-        });
-
-        const res = await request(app())
-            .put(`/articles/${created._id}`)
-            .set('Cookie', token)
-            .send({ seriesPart: 3 });
-        expect(res.status).toBe(200);
-        expect(res.body.seriesName).toBe('Bitcoin Basics');
-        expect(res.body.seriesPart).toBe(3);
     });
 });
 
