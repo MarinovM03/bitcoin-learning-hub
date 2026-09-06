@@ -7,12 +7,18 @@ export const queryKeys = {
         trending: ['articles', 'trending'],
         detail: (id?: string) => ['articles', 'detail', id],
         related: (id?: string) => ['articles', 'related', id],
-        series: (id?: string) => ['articles', 'series', id],
     },
     glossary: {
         all: ['glossary'],
         list: ['glossary', 'list'],
         detail: (id?: string) => ['glossary', 'detail', id],
+    },
+    collections: {
+        all: ['collections'],
+        list: ['collections', 'list'],
+        mine: ['collections', 'mine'],
+        detail: (slug?: string) => ['collections', 'detail', slug],
+        forArticle: (articleId?: string) => ['collections', 'article', articleId],
     },
     bookmarks: {
         all: ['bookmarks'],
