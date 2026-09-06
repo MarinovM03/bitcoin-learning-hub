@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Layers, Plus, Trash2, ArrowUp, ArrowDown, X } from 'lucide-react';
+import { handleImgError } from '../../utils/imageHelpers';
 import { useMyCollections } from '../../hooks/queries/useCollections';
 import { useMyArticles } from '../../hooks/queries/useArticles';
 import {
@@ -21,7 +22,9 @@ export default function MyCollections() {
     const [newTitle, setNewTitle] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [draftOrder, setDraftOrder] = useState<string[]>([]);
+    const [draftTitle, setDraftTitle] = useState('');
     const [draftDescription, setDraftDescription] = useState('');
+    const [draftCover, setDraftCover] = useState('');
     const [deleteTarget, setDeleteTarget] = useState<MyCollection | null>(null);
     const [error, setError] = useState('');
 
@@ -35,14 +38,18 @@ export default function MyCollections() {
     const startEditing = (collection: MyCollection) => {
         setEditingId(collection._id);
         setDraftOrder(collection.articles.map(a => a._id));
+        setDraftTitle(collection.title);
         setDraftDescription(collection.description);
+        setDraftCover(collection.coverImage);
         setError('');
     };
 
     const stopEditing = () => {
         setEditingId(null);
         setDraftOrder([]);
+        setDraftTitle('');
         setDraftDescription('');
+        setDraftCover('');
     };
 
     const move = (index: number, delta: number) => {
@@ -71,11 +78,20 @@ export default function MyCollections() {
     };
 
     const handleSave = async (collectionId: string) => {
+        if (draftTitle.trim().length < 3) {
+            setError('The collection name needs at least 3 characters.');
+            return;
+        }
         setError('');
         try {
             await updateCollection.mutateAsync({
                 collectionId,
-                data: { articles: draftOrder, description: draftDescription.trim() },
+                data: {
+                    title: draftTitle.trim(),
+                    description: draftDescription.trim(),
+                    coverImage: draftCover.trim(),
+                    articles: draftOrder,
+                },
             });
             stopEditing();
             toast.success('Collection saved.');
@@ -213,14 +229,54 @@ export default function MyCollections() {
                                     </div>
 
                                     {isEditing && (
-                                        <textarea
-                                            className="collection-description-input"
-                                            value={draftDescription}
-                                            onChange={(e) => setDraftDescription(e.target.value)}
-                                            placeholder="What is this collection about? (optional)"
-                                            maxLength={300}
-                                            rows={2}
-                                        />
+                                        <div className="collection-edit-fields">
+                                            <div className="collection-field">
+                                                <label htmlFor={`title-${collection._id}`}>Name</label>
+                                                <input
+                                                    id={`title-${collection._id}`}
+                                                    type="text"
+                                                    value={draftTitle}
+                                                    onChange={(e) => setDraftTitle(e.target.value)}
+                                                    maxLength={80}
+                                                />
+                                            </div>
+
+                                            <div className="collection-field">
+                                                <label htmlFor={`desc-${collection._id}`}>
+                                                    Description
+                                                    <span className="collection-field-count">{draftDescription.length}/300</span>
+                                                </label>
+                                                <textarea
+                                                    id={`desc-${collection._id}`}
+                                                    value={draftDescription}
+                                                    onChange={(e) => setDraftDescription(e.target.value)}
+                                                    placeholder="What is this collection about?"
+                                                    maxLength={300}
+                                                    rows={2}
+                                                />
+                                            </div>
+
+                                            <div className="collection-field">
+                                                <label htmlFor={`cover-${collection._id}`}>Cover image</label>
+                                                <div className="collection-cover-row">
+                                                    <input
+                                                        id={`cover-${collection._id}`}
+                                                        type="text"
+                                                        value={draftCover}
+                                                        onChange={(e) => setDraftCover(e.target.value)}
+                                                        placeholder="https://... (defaults to the first article's image)"
+                                                    />
+                                                    {draftCover && (
+                                                        <img
+                                                            src={draftCover}
+                                                            alt=""
+                                                            className="collection-cover-preview"
+                                                            onError={handleImgError}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
 
                                     <ol className="collection-order-list">
@@ -262,23 +318,37 @@ export default function MyCollections() {
                                         ))}
                                     </ol>
 
-                                    {isEditing && available.length > 0 && (
-                                        <div className="collection-add-row">
-                                            <label htmlFor={`add-${collection._id}`}>Add an article</label>
-                                            <select
-                                                id={`add-${collection._id}`}
-                                                value=""
-                                                onChange={(e) => {
-                                                    if (e.target.value) setDraftOrder(o => [...o, e.target.value]);
-                                                }}
-                                            >
-                                                <option value="">Choose one of your articles...</option>
-                                                {available.map(article => (
-                                                    <option key={article._id} value={article._id}>
-                                                        {article.title}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                    {isEditing && (
+                                        <div className="collection-picker">
+                                            <span className="collection-picker-label">
+                                                Add an article
+                                                <span className="collection-field-count">
+                                                    {available.length} available
+                                                </span>
+                                            </span>
+                                            {available.length === 0 ? (
+                                                <p className="collection-picker-empty">
+                                                    Every article you have written is already in this collection.
+                                                </p>
+                                            ) : (
+                                                <ul className="collection-picker-list">
+                                                    {available.map(article => (
+                                                        <li key={article._id}>
+                                                            <button
+                                                                type="button"
+                                                                className="collection-picker-item"
+                                                                onClick={() => setDraftOrder(o => [...o, article._id])}
+                                                            >
+                                                                <Plus size={13} strokeWidth={2.5} />
+                                                                <span className="collection-picker-title">{article.title}</span>
+                                                                <span className={`collection-picker-status collection-picker-status--${article.status}`}>
+                                                                    {article.status}
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
                                         </div>
                                     )}
                                 </div>
