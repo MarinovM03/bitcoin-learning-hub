@@ -135,6 +135,7 @@ router.post('/admin/articles/:articleId/approve', validate({ params: articleIdPa
 router.post('/admin/articles/:articleId/reject', validate({ params: articleIdParam, body: rejectArticleSchema }), adminController.rejectArticle);
 router.post('/admin/glossary/:termId/approve', validate({ params: termIdParam }), adminController.approveGlossaryTerm);
 router.delete('/admin/glossary/:termId', validate({ params: termIdParam }), adminController.adminDeleteGlossaryTerm);
+router.delete('/admin/collections/:collectionId', validate({ params: collectionIdParam }), adminController.adminDeleteCollection);
 router.patch('/admin/users/:userId/trust', validate({ params: userIdParam, body: updateUserTrustSchema }), adminController.updateUserTrust);
 router.get('/admin/reports', adminController.adminListReports);
 router.patch('/admin/reports/:reportId', validate({ params: reportIdParam, body: resolveReportSchema }), adminController.resolveReport);

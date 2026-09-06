@@ -2,6 +2,7 @@ import Report from '../models/Report.js';
 import Article from '../models/Article.js';
 import Comment from '../models/Comment.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
+import Collection from '../models/Collection.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -9,6 +10,7 @@ const TARGET_MODELS = {
     article: Article,
     comment: Comment,
     glossary: GlossaryTerm,
+    collection: Collection,
 };
 
 export const create = asyncHandler(async (req, res) => {

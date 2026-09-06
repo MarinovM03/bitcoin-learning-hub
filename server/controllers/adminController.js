@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import Article from '../models/Article.js';
 import Comment from '../models/Comment.js';
 import GlossaryTerm from '../models/GlossaryTerm.js';
+import Collection from '../models/Collection.js';
 import Bookmark from '../models/Bookmark.js';
 import Like from '../models/Like.js';
 import { AppError } from '../utils/AppError.js';
@@ -313,21 +314,23 @@ export const updateUserTrust = asyncHandler(async (req, res) => {
 });
 
 const snapshotTargets = async (reports) => {
-    const idsByType = { article: [], comment: [], glossary: [] };
+    const idsByType = { article: [], comment: [], glossary: [], collection: [] };
     for (const report of reports) {
         idsByType[report.targetType]?.push(report.targetId);
     }
 
-    const [articles, comments, terms] = await Promise.all([
+    const [articles, comments, terms, collections] = await Promise.all([
         Article.find({ _id: { $in: idsByType.article } }).select('title status').lean(),
         Comment.find({ _id: { $in: idsByType.comment } }).select('text articleId').lean(),
         GlossaryTerm.find({ _id: { $in: idsByType.glossary } }).select('term status').lean(),
+        Collection.find({ _id: { $in: idsByType.collection } }).select('title slug').lean(),
     ]);
 
     const lookup = new Map();
     for (const a of articles) lookup.set(`article:${a._id}`, { label: a.title, status: a.status });
     for (const c of comments) lookup.set(`comment:${c._id}`, { label: c.text, articleId: c.articleId });
     for (const t of terms) lookup.set(`glossary:${t._id}`, { label: t.term, status: t.status });
+    for (const c of collections) lookup.set(`collection:${c._id}`, { label: c.title, slug: c.slug });
 
     return reports.map((report) => ({
         ...report,
@@ -402,4 +405,15 @@ export const adminDeleteComment = asyncHandler(async (req, res) => {
     if (!deleted) throw new AppError(404, 'Comment not found');
     await Report.deleteMany({ targetType: 'comment', targetId: commentId });
     res.json({ message: 'Comment deleted.' });
+});
+
+export const adminDeleteCollection = asyncHandler(async (req, res) => {
+    const { collectionId } = req.params;
+
+    const deleted = await Collection.findByIdAndDelete(collectionId);
+    if (!deleted) throw new AppError(404, 'Collection not found');
+
+    await Report.deleteMany({ targetType: 'collection', targetId: collectionId });
+
+    res.json({ message: 'Collection deleted.' });
 });

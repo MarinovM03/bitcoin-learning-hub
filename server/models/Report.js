@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export const REPORT_TARGETS = ['article', 'comment', 'glossary'];
+export const REPORT_TARGETS = ['article', 'comment', 'glossary', 'collection'];
 export const REPORT_REASONS = ['spam', 'scam', 'abuse', 'misinformation', 'other'];
 
 const reportSchema = new mongoose.Schema({
