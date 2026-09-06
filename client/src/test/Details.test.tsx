@@ -34,7 +34,7 @@ const json = (body: unknown, status = 200) =>
 const routeFetch = (articleResponse: () => Response) => (input: RequestInfo | URL) => {
     const url = String(input);
     if (/\/articles\/[a-f0-9]+\/related/.test(url)) return Promise.resolve(json([]));
-    if (/\/articles\/[a-f0-9]+\/series/.test(url)) return Promise.resolve(json({ seriesName: '', parts: [] }));
+    if (/\/articles\/[a-f0-9]+\/collections/.test(url)) return Promise.resolve(json([]));
     if (/\/articles\/[a-f0-9]+$/.test(url)) return Promise.resolve(articleResponse());
     if (url.includes('/likes/')) return Promise.resolve(json({ totalLikes: 3, likedByMe: false }));
     if (url.includes('/bookmarks')) return Promise.resolve(json([]));

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle, Flag } from "lucide-react";
-import { useArticle, useRelatedArticles, useArticleSeries } from '../../hooks/queries/useArticles';
+import { useArticle, useRelatedArticles } from '../../hooks/queries/useArticles';
+import { useArticleCollections } from '../../hooks/queries/useCollections';
 import { useLikeSummary } from '../../hooks/queries/useLikes';
 import { useMyBookmarks } from '../../hooks/queries/useBookmarks';
 import { useToggleLike } from '../../hooks/mutations/useLikeMutations';
@@ -32,7 +33,7 @@ export default function Details() {
 
     const { data: article, isPending, isError } = useArticle(articleId);
     const { data: relatedArticles = [] } = useRelatedArticles(articleId);
-    const { data: seriesInfo = { seriesName: '', parts: [] } } = useArticleSeries(articleId);
+    const { data: memberships = [] } = useArticleCollections(articleId);
     const { data: likeSummary } = useLikeSummary(articleId);
     const { data: myBookmarks } = useMyBookmarks(isAuthenticated);
 
@@ -130,15 +131,9 @@ export default function Details() {
     const ownerProfilePicture = article?._ownerId?.profilePicture;
     const isOwner = userId && ownerId && userId === String(ownerId);
 
-    const seriesParts = seriesInfo.parts || [];
-    const isInSeries = Boolean(seriesInfo.seriesName) && seriesParts.length > 0;
-    const currentSeriesIndex = isInSeries
-        ? seriesParts.findIndex(p => String(p._id) === String(articleId))
-        : -1;
-    const prevPart = currentSeriesIndex > 0 ? seriesParts[currentSeriesIndex - 1] : null;
-    const nextPart = currentSeriesIndex >= 0 && currentSeriesIndex < seriesParts.length - 1
-        ? seriesParts[currentSeriesIndex + 1]
-        : null;
+    const membership = memberships[0] ?? null;
+    const prevPart = membership?.prev ?? null;
+    const nextPart = membership?.next ?? null;
 
     const confirmDelete = async () => {
         if (!articleId) return;
@@ -278,12 +273,11 @@ export default function Details() {
                             <span className="details-reading-time">
                                 {article.content?.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} words
                             </span>
-                            {isInSeries && (
-                                <span className="series-inline-badge">
+                            {membership && (
+                                <Link to={`/collections/${membership.slug}`} className="series-inline-badge">
                                     <Layers size={13} strokeWidth={2.25} />
-                                    Part {article.seriesPart} of {seriesParts.length} · {seriesInfo.seriesName}
-                                    {ownerUsername && <span className="series-inline-badge__author"> · by @{ownerUsername}</span>}
-                                </span>
+                                    Part {membership.position} of {membership.total} · {membership.title}
+                                </Link>
                             )}
                         </div>
 
@@ -293,8 +287,8 @@ export default function Details() {
                             <MarkdownContent content={article.content} />
                         </div>
 
-                        {isInSeries && (prevPart || nextPart) && (
-                            <nav className="series-prev-next" aria-label="Series navigation">
+                        {membership && (prevPart || nextPart) && (
+                            <nav className="series-prev-next" aria-label="Collection navigation">
                                 {prevPart ? (
                                     <Link
                                         to={`/articles/${prevPart._id}/details`}
@@ -302,7 +296,7 @@ export default function Details() {
                                     >
                                         <ChevronLeft size={18} strokeWidth={2.25} />
                                         <span className="series-prev-next__label">
-                                            <span className="series-prev-next__kicker">Previous · Part {prevPart.seriesPart}</span>
+                                            <span className="series-prev-next__kicker">Previous part</span>
                                             <span className="series-prev-next__title">{prevPart.title}</span>
                                         </span>
                                     </Link>
@@ -313,7 +307,7 @@ export default function Details() {
                                         className="series-prev-next__link series-prev-next__link--next"
                                     >
                                         <span className="series-prev-next__label">
-                                            <span className="series-prev-next__kicker">Next · Part {nextPart.seriesPart}</span>
+                                            <span className="series-prev-next__kicker">Next part</span>
                                             <span className="series-prev-next__title">{nextPart.title}</span>
                                         </span>
                                         <ChevronRight size={18} strokeWidth={2.25} />
@@ -389,19 +383,14 @@ export default function Details() {
                             </div>
                         )}
 
-                        {isInSeries && (
+                        {membership && (
                             <div className="details-series-panel">
-                                <span className="details-action-panel-title">
+                                <Link to={`/collections/${membership.slug}`} className="details-action-panel-title">
                                     <Layers size={14} strokeWidth={2.25} />
-                                    {seriesInfo.seriesName}
-                                </span>
-                                {ownerUsername && (
-                                    <Link to={`/users/${ownerId}`} className="details-series-author">
-                                        by @{ownerUsername}
-                                    </Link>
-                                )}
+                                    {membership.title}
+                                </Link>
                                 <ol className="details-series-list">
-                                    {seriesParts.map(part => {
+                                    {membership.parts.map((part, index) => {
                                         const isCurrent = String(part._id) === String(articleId);
                                         return (
                                             <li
@@ -410,7 +399,7 @@ export default function Details() {
                                             >
                                                 {isCurrent ? (
                                                     <span className="details-series-link">
-                                                        <span className="details-series-part">Part {part.seriesPart}</span>
+                                                        <span className="details-series-part">Part {index + 1}</span>
                                                         <span className="details-series-title">{part.title}</span>
                                                     </span>
                                                 ) : (
@@ -418,7 +407,7 @@ export default function Details() {
                                                         to={`/articles/${part._id}/details`}
                                                         className="details-series-link"
                                                     >
-                                                        <span className="details-series-part">Part {part.seriesPart}</span>
+                                                        <span className="details-series-part">Part {index + 1}</span>
                                                         <span className="details-series-title">{part.title}</span>
                                                     </Link>
                                                 )}
