@@ -3,6 +3,7 @@ import Like from '../models/Like.js';
 import Bookmark from '../models/Bookmark.js';
 import ReadArticle from '../models/ReadArticle.js';
 import Report from '../models/Report.js';
+import Collection from '../models/Collection.js';
 
 export const cascadeArticleDelete = async (articleIds) => {
     const ids = Array.isArray(articleIds) ? articleIds : [articleIds];
@@ -22,5 +23,6 @@ export const cascadeArticleDelete = async (articleIds) => {
                 { targetType: 'comment', targetId: { $in: commentIds } },
             ],
         }),
+        Collection.updateMany({ articles: { $in: ids } }, { $pull: { articles: { $in: ids } } }),
     ]);
 };
