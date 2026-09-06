@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Navigate } from 'react-router';
 import { ShieldCheck, BarChart3, Users, FileText, MessageSquare, ClipboardCheck, Flag } from 'lucide-react';
+import { useModerationQueue, useAdminReports } from '../../hooks/queries/useAdmin';
+import { isHttpError } from '../../utils/requester';
 import PageMeta from '../page-meta/PageMeta';
 import AdminStats from './AdminStats';
 import AdminUsers from './AdminUsers';
@@ -7,7 +10,6 @@ import AdminArticles from './AdminArticles';
 import AdminComments from './AdminComments';
 import AdminModeration from './AdminModeration';
 import AdminReports from './AdminReports';
-import * as adminService from '../../services/adminService';
 
 const TABS = [
     { id: 'review', label: 'Review', Icon: ClipboardCheck },
@@ -20,20 +22,16 @@ const TABS = [
 
 export default function Admin() {
     const [tab, setTab] = useState('review');
-    const [pending, setPending] = useState(0);
-    const [openReports, setOpenReports] = useState(0);
 
-    useEffect(() => {
-        adminService.getModerationQueue({ limit: 1 })
-            .then((res) => setPending(res.articleTotal + res.termTotal))
-            .catch(() => setPending(0));
-        adminService.getReports({ limit: 1 })
-            .then((res) => setOpenReports(res.openTotal))
-            .catch(() => setOpenReports(0));
-    }, []);
+    const { data: queue, error: queueError } = useModerationQueue({ limit: 1 });
+    const { data: reports } = useAdminReports({ limit: 1, status: 'open' });
 
-    const handleQueueChange = useCallback((count: number) => setPending(count), []);
-    const handleReportCountChange = useCallback((count: number) => setOpenReports(count), []);
+    const pending = queue ? queue.articleTotal + queue.termTotal : 0;
+    const openReports = reports?.openTotal ?? 0;
+
+    if (isHttpError(queueError, 403)) {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <section id="admin-page" className="page-content">
@@ -75,8 +73,8 @@ export default function Admin() {
                 </div>
 
                 <div className="admin-tab-panel">
-                    {tab === 'review' && <AdminModeration onQueueChange={handleQueueChange} />}
-                    {tab === 'reports' && <AdminReports onOpenCountChange={handleReportCountChange} />}
+                    {tab === 'review' && <AdminModeration />}
+                    {tab === 'reports' && <AdminReports />}
                     {tab === 'stats' && <AdminStats />}
                     {tab === 'users' && <AdminUsers />}
                     {tab === 'articles' && <AdminArticles />}

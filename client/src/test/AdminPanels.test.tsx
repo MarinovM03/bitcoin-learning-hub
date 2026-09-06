@@ -2,10 +2,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Routes, Route } from 'react-router';
 import type { ReactNode } from 'react';
 import { queryClient } from '../lib/queryClient';
 import { AuthProvider } from '../contexts/AuthContext';
+import Admin from '../components/admin/Admin';
 import AdminComments from '../components/admin/AdminComments';
 import AdminUsers from '../components/admin/AdminUsers';
 
@@ -76,6 +77,38 @@ describe('admin comments panel', () => {
         }, { timeout: 10_000 });
 
         expect(screen.getByText('Second comment')).toBeInTheDocument();
+    }, 20_000);
+});
+
+describe('the admin dashboard', () => {
+    beforeEach(() => {
+        queryClient.clear();
+        localStorage.clear();
+    });
+
+    it('sends a user away once the server refuses admin access', async () => {
+        localStorage.setItem('auth', JSON.stringify({
+            _id: 'u1', username: 'demoted', email: 'd@example.com',
+            role: 'admin', emailVerified: true, expiresAt: Date.now() + 3_600_000,
+        }));
+        vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
+            Promise.resolve(json({ message: 'Admin access required.' }, 403)),
+        );
+
+        render(
+            <MemoryRouter initialEntries={['/admin']}>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider>
+                        <Routes>
+                            <Route path="/admin" element={<Admin />} />
+                            <Route path="/" element={<div>home-page</div>} />
+                        </Routes>
+                    </AuthProvider>
+                </QueryClientProvider>
+            </MemoryRouter>,
+        );
+
+        expect(await screen.findByText('home-page', {}, { timeout: 10_000 })).toBeInTheDocument();
     }, 20_000);
 });
 

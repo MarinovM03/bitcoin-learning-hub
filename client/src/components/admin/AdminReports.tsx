@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { Check, X, Trash2, ExternalLink, Flag } from 'lucide-react';
 import { useAdminReports } from '../../hooks/queries/useAdmin';
@@ -30,11 +30,7 @@ const TARGET_LABELS: Record<string, string> = {
     glossary: 'Glossary term',
 };
 
-interface AdminReportsProps {
-    onOpenCountChange?: (count: number) => void;
-}
-
-export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
+export default function AdminReports() {
     const [status, setStatus] = useState<ReportStatus>('open');
     const [page, setPage] = useState(1);
     const [busyId, setBusyId] = useState<string | null>(null);
@@ -48,12 +44,6 @@ export default function AdminReports({ onOpenCountChange }: AdminReportsProps) {
     const removeTerm = useAdminDeleteGlossaryTerm();
 
     const error = loadError?.message || '';
-    const openTotal = data?.openTotal;
-
-    useEffect(() => {
-        if (openTotal !== undefined) onOpenCountChange?.(openTotal);
-    }, [openTotal, onOpenCountChange]);
-
     const runAction = async (id: string, action: () => Promise<unknown>, message: string) => {
         setBusyId(id);
         try {

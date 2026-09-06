@@ -17,11 +17,7 @@ import { toast } from '../../lib/toast';
 
 const PAGE_LIMIT = 20;
 
-interface AdminModerationProps {
-    onQueueChange?: (pending: number) => void;
-}
-
-export default function AdminModeration({ onQueueChange }: AdminModerationProps) {
+export default function AdminModeration() {
     const [page, setPage] = useState(1);
     const [busyId, setBusyId] = useState<string | null>(null);
     const [openId, setOpenId] = useState<string | null>(null);
@@ -43,12 +39,6 @@ export default function AdminModeration({ onQueueChange }: AdminModerationProps)
     const removeTerm = useAdminDeleteGlossaryTerm();
 
     const error = loadError?.message || '';
-    const pendingTotal = data ? data.articleTotal + data.termTotal : undefined;
-
-    useEffect(() => {
-        if (pendingTotal !== undefined) onQueueChange?.(pendingTotal);
-    }, [pendingTotal, onQueueChange]);
-
     useEffect(() => {
         if (!previewError) return;
         toast.error(previewError.message || 'Could not load the article.');
