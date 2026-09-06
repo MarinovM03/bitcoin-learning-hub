@@ -23,6 +23,10 @@ const collectionSchema = new mongoose.Schema({
     coverImage: {
         type: String,
         default: '',
+        validate: {
+            validator: v => !v || /^https?:\/\//.test(v),
+            message: 'Cover image must be a valid URL.',
+        },
     },
     articles: [{
         type: mongoose.Types.ObjectId,
