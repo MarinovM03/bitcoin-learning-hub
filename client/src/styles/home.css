@@ -388,11 +388,19 @@
 }
 
 .section-heading h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     font-size: 1.3rem;
     color: white;
     margin: 0;
     font-weight: 700;
     white-space: nowrap;
+}
+
+.section-heading-icon {
+    flex-shrink: 0;
+    color: var(--btc-orange);
 }
 
 .section-heading-line {

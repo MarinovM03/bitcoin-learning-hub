@@ -242,7 +242,7 @@ export default function Home() {
                 <div className="trending-section">
                     <div className="section-heading">
                         <h2>
-                            <TrendingUp size={22} strokeWidth={2} className="section-heading-icon" />
+                            <TrendingUp size={20} strokeWidth={2} className="section-heading-icon" />
                             Trending This Week
                         </h2>
                         <div className="section-heading-line" />
