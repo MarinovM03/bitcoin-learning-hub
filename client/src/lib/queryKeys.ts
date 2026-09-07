@@ -33,7 +33,9 @@ export const queryKeys = {
     follows: {
         all: ['follows'],
         summary: (targetType?: string, targetId?: string) => ['follows', targetType, targetId],
+        following: ['follows', 'following'],
         feed: ['follows', 'feed'],
+        feedPage: (page: number, limit: number) => ['follows', 'feed', 'page', page, limit],
     },
     publicProfile: (userId?: string) => ['users', userId, 'public'],
     admin: {

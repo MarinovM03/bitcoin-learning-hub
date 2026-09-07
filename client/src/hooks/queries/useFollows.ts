@@ -9,8 +9,20 @@ export const useFollowSummary = (targetType: FollowTarget, targetId?: string) =>
     enabled: !!targetId,
 });
 
+export const useFollowing = (enabled = true) => useQuery({
+    queryKey: queryKeys.follows.following,
+    queryFn: followService.getFollowing,
+    enabled,
+});
+
 export const useFeed = (enabled = true) => useQuery({
     queryKey: queryKeys.follows.feed,
     queryFn: () => followService.getFeed(),
     enabled,
+});
+
+export const useFeedPage = (page: number, limit: number) => useQuery({
+    queryKey: queryKeys.follows.feedPage(page, limit),
+    queryFn: () => followService.getFeed(page, limit),
+    placeholderData: previous => previous,
 });
