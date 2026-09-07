@@ -30,6 +30,11 @@ export const queryKeys = {
     comments: {
         forArticle: (articleId?: string) => ['comments', articleId],
     },
+    follows: {
+        all: ['follows'],
+        summary: (targetType?: string, targetId?: string) => ['follows', targetType, targetId],
+        feed: ['follows', 'feed'],
+    },
     publicProfile: (userId?: string) => ['users', userId, 'public'],
     admin: {
         all: ['admin'],
