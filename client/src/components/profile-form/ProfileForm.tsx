@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Lock, AlertCircle, KeyRound, Trash2 } from "lucide-react";
+import { Lock, AlertCircle, KeyRound, Trash2, UserCog } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import * as authService from "../../services/authService";
 import { updateProfileSchema } from "../../validators/authSchemas";
@@ -104,17 +104,15 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
 
     return (
         <div className="profile-card">
-            <div className="profile-avatar-container">
-                <img
-                    src={profilePictureValue || DEFAULT_AVATAR}
-                    alt="Profile"
-                    className="profile-avatar"
-                    onError={handleAvatarError}
-                />
+            <div className="profile-panel-head">
+                <span className="profile-panel-icon">
+                    <UserCog size={16} strokeWidth={2} />
+                </span>
+                <div>
+                    <h2>Account settings</h2>
+                    <p>Your username, email address and picture.</p>
+                </div>
             </div>
-
-            <h1>Edit Profile</h1>
-            <p className="profile-card-subtitle">Manage your account details</p>
 
             {serverError && <div className="profile-error-message">{serverError}</div>}
 
@@ -168,6 +166,14 @@ export default function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                         {...register('profilePicture')}
                     />
                     {errors.profilePicture && <p className="field-error">{errors.profilePicture.message}</p>}
+                    <div className="profile-picture-preview">
+                        <img
+                            src={profilePictureValue || DEFAULT_AVATAR}
+                            alt=""
+                            onError={handleAvatarError}
+                        />
+                        <span>{profilePictureValue ? 'Preview' : 'No picture set — using the default'}</span>
+                    </div>
                 </div>
 
                 {needsCurrentPassword && (

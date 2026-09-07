@@ -1,26 +1,55 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { FileText, ArrowRight, RotateCcw } from "lucide-react";
+import {
+    Users,
+    FileText,
+    Library,
+    Bookmark,
+    ExternalLink,
+    RotateCcw,
+    History,
+} from "lucide-react";
 import * as articleService from "../../services/articleService";
 import { useMyArticles, usePublicProfile } from "../../hooks/queries/useArticles";
+import { useFollowSummary, useFollowing } from "../../hooks/queries/useFollows";
 import ProfileForm from "../profile-form/ProfileForm";
+import FollowingList from "../following-list/FollowingList";
 import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
 import PageMeta from "../page-meta/PageMeta";
+import { DEFAULT_AVATAR, handleAvatarError } from "../../utils/imageHelpers";
+import { formatMonthYear } from "../../utils/formatters";
 import { toast } from "../../lib/toast";
 
+const QUICK_LINKS = [
+    { to: '/feed', label: 'Your Feed', Icon: Users },
+    { to: '/my-articles', label: 'My Articles', Icon: FileText },
+    { to: '/my-collections', label: 'My Collections', Icon: Library },
+    { to: '/bookmarks', label: 'Bookmarks', Icon: Bookmark },
+];
+
 export default function Profile() {
-    const { userId } = useAuth();
+    const { userId, username, profilePicture } = useAuth();
     const [showResetModal, setShowResetModal] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
 
     const { data: myArticles, isPending: articlesPending } = useMyArticles();
     const { data: publicProfile, isPending: profilePending } = usePublicProfile(userId);
+    const { data: followSummary } = useFollowSummary('user', userId);
+    const { data: following } = useFollowing();
 
-    const publishedCount = myArticles?.filter(a => a.status === 'published').length ?? 0;
-    const draftCount = myArticles?.filter(a => a.status === 'draft').length ?? 0;
-    const totalLikes = publicProfile?.totalLikes ?? 0;
     const isLoading = articlesPending || (!!userId && profilePending);
+
+    const stats = [
+        { label: 'Published', value: myArticles?.filter(a => a.status === 'published').length ?? 0 },
+        { label: 'Drafts', value: myArticles?.filter(a => a.status === 'draft').length ?? 0 },
+        { label: 'Likes Received', value: publicProfile?.totalLikes ?? 0 },
+        { label: 'Followers', value: followSummary?.followers ?? 0 },
+        {
+            label: 'Following',
+            value: (following?.users.length ?? 0) + (following?.collections.length ?? 0),
+        },
+    ];
 
     const handleSaveSuccess = () => {
         toast.success('Profile updated successfully.');
@@ -59,39 +88,79 @@ export default function Profile() {
                 />
             )}
 
-            <ProfileForm onSaveSuccess={handleSaveSuccess} />
+            <header className="profile-hero">
+                <div className="profile-hero-glow" />
 
-            <div className="profile-articles-section">
-                <div className="profile-stats-row">
-                    <div className="profile-stat-card">
-                        <span className="profile-stat-value">{isLoading ? '—' : publishedCount}</span>
-                        <span className="profile-stat-label">Published</span>
-                    </div>
-                    <div className="profile-stat-card">
-                        <span className="profile-stat-value">{isLoading ? '—' : draftCount}</span>
-                        <span className="profile-stat-label">Drafts</span>
-                    </div>
-                    <div className="profile-stat-card">
-                        <span className="profile-stat-value">{isLoading ? '—' : totalLikes}</span>
-                        <span className="profile-stat-label">Likes Received</span>
+                <div className="profile-hero-id">
+                    <img
+                        src={profilePicture || DEFAULT_AVATAR}
+                        alt=""
+                        className="profile-hero-avatar"
+                        onError={handleAvatarError}
+                    />
+                    <div className="profile-hero-text">
+                        <span className="profile-hero-kicker">Your account</span>
+                        <h1 className="profile-hero-name">{username}</h1>
+                        {publicProfile?.joinedAt && (
+                            <p className="profile-hero-meta">
+                                Member since {formatMonthYear(publicProfile.joinedAt)}
+                            </p>
+                        )}
                     </div>
                 </div>
 
-                <Link to="/my-articles" className="profile-manage-btn">
-                    <FileText size={16} strokeWidth={2} />
-                    Manage My Articles
-                    <ArrowRight size={16} strokeWidth={2} />
-                </Link>
+                <nav className="profile-hero-links">
+                    {userId && (
+                        <Link to={`/users/${userId}`} className="profile-hero-link profile-hero-link--primary">
+                            <ExternalLink size={14} strokeWidth={2.2} />
+                            View public profile
+                        </Link>
+                    )}
+                    {QUICK_LINKS.map(({ to, label, Icon }) => (
+                        <Link key={to} to={to} className="profile-hero-link">
+                            <Icon size={14} strokeWidth={2.2} />
+                            {label}
+                        </Link>
+                    ))}
+                </nav>
+            </header>
 
-                <button
-                    type="button"
-                    className="profile-reset-btn"
-                    onClick={() => setShowResetModal(true)}
-                    disabled={isResetting}
-                >
-                    <RotateCcw size={16} strokeWidth={2} />
-                    Reset Reading History
-                </button>
+            <div className="profile-stats-row">
+                {stats.map(stat => (
+                    <div key={stat.label} className="profile-stat-card">
+                        <span className="profile-stat-value">{isLoading ? '—' : stat.value}</span>
+                        <span className="profile-stat-label">{stat.label}</span>
+                    </div>
+                ))}
+            </div>
+
+            <div className="profile-grid">
+                <ProfileForm onSaveSuccess={handleSaveSuccess} />
+
+                <div className="profile-side">
+                    <FollowingList />
+
+                    <div className="profile-panel">
+                        <div className="profile-panel-head">
+                            <span className="profile-panel-icon">
+                                <History size={16} strokeWidth={2} />
+                            </span>
+                            <div>
+                                <h2>Reading history</h2>
+                                <p>Clears every article you've marked as read.</p>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            className="profile-reset-btn"
+                            onClick={() => setShowResetModal(true)}
+                            disabled={isResetting}
+                        >
+                            <RotateCcw size={16} strokeWidth={2} />
+                            Reset Reading History
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
     );
