@@ -1,5 +1,7 @@
 import { useParams } from "react-router";
 import { usePublicProfile } from '../../hooks/queries/useArticles';
+import { useFollowSummary } from '../../hooks/queries/useFollows';
+import FollowButton from '../follow-button/FollowButton';
 import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
 import NotFound from "../not-found/NotFound";
@@ -9,6 +11,7 @@ import PageMeta from "../page-meta/PageMeta";
 export default function AuthorProfile() {
     const { userId } = useParams();
     const { data: profile, isPending, isError } = usePublicProfile(userId);
+    const { data: followSummary } = useFollowSummary('user', userId);
 
     if (isError) return <NotFound />;
     if (isPending || !profile) return <AuthorProfileSkeleton />;
@@ -42,7 +45,13 @@ export default function AuthorProfile() {
                             <span className="author-stat-value">{totalLikes}</span>
                             <span className="author-stat-label">Likes Received</span>
                         </div>
+                        <div className="author-stat">
+                            <span className="author-stat-value">{followSummary?.followers ?? 0}</span>
+                            <span className="author-stat-label">Followers</span>
+                        </div>
                     </div>
+
+                    {userId && <FollowButton targetType="user" targetId={userId} ownerId={userId} />}
                 </div>
             </div>
 

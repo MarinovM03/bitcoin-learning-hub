@@ -1,0 +1,55 @@
+.follow-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
+    background-color: var(--btc-orange);
+    border: 1px solid var(--btc-orange);
+    border-radius: 8px;
+    color: #1a1206;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.follow-btn:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--btc-orange);
+}
+
+.follow-btn--following {
+    background-color: transparent;
+    color: var(--btc-orange);
+}
+
+.follow-btn--following:hover:not(:disabled) {
+    background-color: rgba(224, 82, 82, 0.12);
+    border-color: #e05252;
+    color: #e05252;
+}
+
+.follow-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.follow-count {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.following-feed {
+    margin-bottom: 3rem;
+}

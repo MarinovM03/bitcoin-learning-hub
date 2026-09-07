@@ -5,6 +5,7 @@ import { useCollection } from '../../hooks/queries/useCollections';
 import { useAuth } from '../../contexts/AuthContext';
 import ArticleCardSkeleton from '../article-card-skeleton/ArticleCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
+import FollowButton from '../follow-button/FollowButton';
 import NotFound from '../not-found/NotFound';
 import PageMeta from '../page-meta/PageMeta';
 
@@ -68,6 +69,12 @@ export default function CollectionDetails() {
                             </Link>
                         </p>
                     )}
+                    <FollowButton
+                        targetType="collection"
+                        targetId={collection._id}
+                        label="Follow this collection"
+                    />
+
                     {isOwner && (
                         <Link to="/my-collections" className="collection-manage-link">
                             Manage this collection
