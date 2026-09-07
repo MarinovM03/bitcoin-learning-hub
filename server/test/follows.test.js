@@ -74,6 +74,55 @@ describe('following an account', () => {
     });
 });
 
+describe('the list of what a reader follows', () => {
+    it('requires authentication', async () => {
+        const res = await request(app()).get('/follows/following');
+        expect(res.status).toBe(401);
+    });
+
+    it('starts empty', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app()).get('/follows/following').set('Cookie', token);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ users: [], collections: [] });
+    });
+
+    it('returns followed accounts and collections, newest first', async () => {
+        const { token: authorToken, user: author } = await registerAndToken();
+        const { body: article } = await createArticle(authorToken, { title: 'A collected article' });
+        const { body: collection } = await request(app())
+            .post('/collections')
+            .set('Cookie', authorToken)
+            .send({ title: 'Listed Path', articles: [article._id] });
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await follow(reader, 'user', String(author._id));
+        await follow(reader, 'collection', String(collection._id));
+
+        const res = await request(app()).get('/follows/following').set('Cookie', reader);
+
+        expect(res.status).toBe(200);
+        expect(res.body.users.map(u => u.username)).toEqual([author.username]);
+        expect(res.body.collections[0]).toMatchObject({
+            title: 'Listed Path',
+            slug: 'listed-path',
+            articleCount: 1,
+        });
+    });
+
+    it('drops an account once the reader unfollows it', async () => {
+        const { user: author } = await registerAndToken();
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+
+        await follow(reader, 'user', String(author._id));
+        await follow(reader, 'user', String(author._id));
+
+        const res = await request(app()).get('/follows/following').set('Cookie', reader);
+        expect(res.body.users).toEqual([]);
+    });
+});
+
 describe('the following feed', () => {
     it('requires authentication', async () => {
         const res = await request(app()).get('/feed');
