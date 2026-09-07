@@ -6,6 +6,7 @@ import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
 import HomeLatestSkeleton from "../home-latest-skeleton/HomeLatestSkeleton";
 import OnThisDay from "../on-this-day/OnThisDay";
 import TermOfTheDay from "../term-of-the-day/TermOfTheDay";
+import FollowingFeed from "../following-feed/FollowingFeed";
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 import { TOOLS } from "../../utils/navTools";
@@ -173,6 +174,8 @@ export default function Home() {
                 <OnThisDay />
                 <TermOfTheDay />
             </div>
+
+            <FollowingFeed />
 
             <div className="latest-articles">
                 <div className="section-heading">
