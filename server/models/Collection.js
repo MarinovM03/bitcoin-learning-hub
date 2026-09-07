@@ -14,6 +14,10 @@ const collectionSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
     },
+    previousSlugs: {
+        type: [String],
+        default: [],
+    },
     description: {
         type: String,
         default: '',
@@ -44,6 +48,8 @@ collectionSchema.index({ slug: 1 }, { unique: true });
 collectionSchema.index({ _ownerId: 1, createdAt: -1 });
 
 collectionSchema.index({ articles: 1 });
+
+collectionSchema.index({ previousSlugs: 1 });
 
 const Collection = mongoose.model('Collection', collectionSchema);
 

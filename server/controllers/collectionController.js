@@ -70,7 +70,7 @@ export const getMine = asyncHandler(async (req, res) => {
 export const getOne = asyncHandler(async (req, res) => {
     const { slug } = req.params;
 
-    const collection = await Collection.findOne({ slug })
+    const collection = await Collection.findOne({ $or: [{ slug }, { previousSlugs: slug }] })
         .populate('_ownerId', 'username profilePicture')
         .populate({
             path: 'articles',
@@ -143,6 +143,13 @@ export const update = asyncHandler(async (req, res) => {
     if (title !== undefined && title !== existing.title) {
         updateData.title = title;
         updateData.slug = await uniqueSlug(Collection, title, collectionId);
+
+        if (updateData.slug !== existing.slug) {
+            updateData.previousSlugs = [
+                ...existing.previousSlugs.filter(s => s !== updateData.slug),
+                existing.slug,
+            ].slice(-20);
+        }
     }
 
     const updated = await Collection.findOneAndUpdate(

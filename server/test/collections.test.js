@@ -253,3 +253,56 @@ describe('moderating a collection', () => {
         expect(res.status).toBe(400);
     });
 });
+
+describe('renaming a collection', () => {
+    it('keeps the old address working', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token, { title: 'A part to keep' });
+        const { body: collection } = await createCollection(token, {
+            title: 'First Name Here',
+            articles: [article._id],
+        });
+
+        await request(app())
+            .put(`/collections/${collection._id}`)
+            .set('Cookie', token)
+            .send({ title: 'Second Name Here' });
+
+        const viaOld = await request(app()).get('/collections/first-name-here');
+        expect(viaOld.status).toBe(200);
+        expect(viaOld.body.slug).toBe('second-name-here');
+
+        const viaNew = await request(app()).get('/collections/second-name-here');
+        expect(viaNew.status).toBe(200);
+    });
+
+    it('stops a new collection from claiming a retired address', async () => {
+        const { token } = await registerAndToken();
+        const { body: collection } = await createCollection(token, { title: 'Retired Address' });
+
+        await request(app())
+            .put(`/collections/${collection._id}`)
+            .set('Cookie', token)
+            .send({ title: 'Current Address' });
+
+        const other = await createCollection(token, { title: 'Retired Address' });
+        expect(other.status).toBe(201);
+        expect(other.body.slug).not.toBe('retired-address');
+    });
+
+    it('restores the address when renamed back', async () => {
+        const { token } = await registerAndToken();
+        const { body: collection } = await createCollection(token, { title: 'Original Title' });
+
+        const rename = (title) => request(app())
+            .put(`/collections/${collection._id}`)
+            .set('Cookie', token)
+            .send({ title });
+
+        await rename('Changed Title');
+        const back = await rename('Original Title');
+
+        expect(back.body.slug).toBe('original-title');
+        expect(back.body.previousSlugs).not.toContain('original-title');
+    });
+});

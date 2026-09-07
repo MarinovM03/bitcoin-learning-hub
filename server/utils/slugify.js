@@ -13,7 +13,7 @@ export const uniqueSlug = async (Model, title, excludeId = null) => {
 
     for (let attempt = 0; attempt < 50; attempt += 1) {
         const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`;
-        const query = { slug: candidate };
+        const query = { $or: [{ slug: candidate }, { previousSlugs: candidate }] };
         if (excludeId) query._id = { $ne: excludeId };
 
         const taken = await Model.exists(query);
