@@ -45,6 +45,7 @@ export interface RelatedArticle {
 export interface PublicProfile {
     username: string;
     profilePicture?: string;
+    joinedAt?: string;
     articles: Article[];
     totalLikes: number;
 }

@@ -6,6 +6,7 @@ import ArticleCard from "../article-card/ArticleCard";
 import AuthorProfileSkeleton from "../author-profile-skeleton/AuthorProfileSkeleton";
 import NotFound from "../not-found/NotFound";
 import { handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
+import { formatMonthYear } from '../../utils/formatters';
 import PageMeta from "../page-meta/PageMeta";
 
 export default function AuthorProfile() {
@@ -16,7 +17,7 @@ export default function AuthorProfile() {
     if (isError) return <NotFound />;
     if (isPending || !profile) return <AuthorProfileSkeleton />;
 
-    const { username, profilePicture, articles, totalLikes } = profile;
+    const { username, profilePicture, joinedAt, articles, totalLikes } = profile;
 
     return (
         <section className="page-content author-profile-page">
@@ -35,7 +36,10 @@ export default function AuthorProfile() {
                 />
                 <div className="author-profile-info">
                     <h1 className="author-profile-name">{username}</h1>
-                    <p className="author-profile-role">Community Author</p>
+                    <p className="author-profile-role">
+                        Community Author
+                        {joinedAt && ` · Member since ${formatMonthYear(joinedAt)}`}
+                    </p>
                     <div className="author-profile-stats">
                         <div className="author-stat">
                             <span className="author-stat-value">{articles.length}</span>

@@ -16,6 +16,12 @@ export function formatDate(dateString: string | undefined | null): string {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+export function formatMonthYear(dateString: string | undefined | null): string {
+    const date = parseDate(dateString);
+    if (!date) return '—';
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+}
+
 export function formatDateTime(dateString: string | undefined | null): string {
     const date = parseDate(dateString);
     if (!date) return '—';
