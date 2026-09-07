@@ -16,6 +16,7 @@ import * as marketController from './controllers/marketController.js';
 import * as sitemapController from './controllers/sitemapController.js';
 import * as rssController from './controllers/rssController.js';
 import * as collectionController from './controllers/collectionController.js';
+import * as followController from './controllers/followController.js';
 import mongoose from 'mongoose';
 import {
     registerSchema,
@@ -28,6 +29,7 @@ import {
 } from './validators/authSchemas.js';
 import { createArticleSchema, updateArticleSchema, checkQuizAnswerSchema } from './validators/articleSchemas.js';
 import { createGlossarySchema } from './validators/glossarySchemas.js';
+import { toggleFollowSchema, followTargetParam } from './validators/followSchemas.js';
 import {
     createCollectionSchema,
     updateCollectionSchema,
@@ -97,6 +99,10 @@ router.post('/bookmarks', requireAuth, validate({ body: toggleBookmarkSchema }),
 router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 
 // Glossary routes
+router.get('/feed', requireAuth, followController.getFeed);
+router.post('/follows', requireAuth, requireVerified, validate({ body: toggleFollowSchema }), followController.toggle);
+router.get('/follows/:targetType/:targetId', validate({ params: followTargetParam }), followController.getSummary);
+
 router.get('/collections/mine', requireAuth, collectionController.getMine);
 router.get('/collections', collectionController.getAll);
 router.get('/collections/:slug', validate({ params: collectionSlugParam }), collectionController.getOne);

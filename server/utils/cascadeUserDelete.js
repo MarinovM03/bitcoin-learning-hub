@@ -8,6 +8,7 @@ import PasswordResetToken from '../models/PasswordResetToken.js';
 import EmailVerificationToken from '../models/EmailVerificationToken.js';
 import Report from '../models/Report.js';
 import Collection from '../models/Collection.js';
+import Follow from '../models/Follow.js';
 import { cascadeArticleDelete } from './cascadeArticles.js';
 
 export const cascadeUserDelete = async (userId) => {
@@ -25,6 +26,7 @@ export const cascadeUserDelete = async (userId) => {
         Like.deleteMany({ _ownerId: userId }),
         GlossaryTerm.deleteMany({ _ownerId: userId }),
         Collection.deleteMany({ _ownerId: userId }),
+        Follow.deleteMany({ $or: [{ _followerId: userId }, { targetType: 'user', targetId: userId }] }),
         ReadArticle.deleteMany({ _ownerId: userId }),
         PasswordResetToken.deleteMany({ _ownerId: userId }),
         EmailVerificationToken.deleteMany({ _ownerId: userId }),

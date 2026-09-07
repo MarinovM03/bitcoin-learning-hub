@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Collection from '../models/Collection.js';
 import Article from '../models/Article.js';
+import Follow from '../models/Follow.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slugify.js';
@@ -178,6 +179,8 @@ export const remove = asyncHandler(async (req, res) => {
         if (!exists) throw new AppError(404, 'Collection not found');
         throw new AppError(403, 'Forbidden');
     }
+
+    await Follow.deleteMany({ targetType: 'collection', targetId: collectionId });
 
     res.json({ message: 'Collection deleted successfully' });
 });
