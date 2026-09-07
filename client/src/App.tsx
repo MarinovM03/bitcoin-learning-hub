@@ -30,6 +30,7 @@ const CollectionDetails = lazy(() => import("./components/collection-details/Col
 const MyCollections = lazy(() => import("./components/my-collections/MyCollections"));
 const GlossaryDetails = lazy(() => import("./components/glossary-details/GlossaryDetails"));
 const Bookmarks = lazy(() => import("./components/bookmarks/Bookmarks"));
+const Feed = lazy(() => import("./components/feed/Feed"));
 const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfile"));
 const MyArticles = lazy(() => import("./components/my-articles/MyArticles"));
 const DcaCalculator = lazy(() => import("./components/dca-calculator/DcaCalculator"));
@@ -83,6 +84,7 @@ function App() {
                             <Route path="/articles/:articleId/edit" element={<Edit />} />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/bookmarks" element={<Bookmarks />} />
+                            <Route path="/feed" element={<Feed />} />
                             <Route path="/my-articles" element={<MyArticles />} />
                             <Route path="/my-collections" element={<MyCollections />} />
                         </Route>

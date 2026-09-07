@@ -22,7 +22,7 @@ export default function FollowingFeed() {
                     From People You Follow
                 </h2>
                 <div className="section-heading-line" />
-                <Link to="/articles" className="section-heading-link">
+                <Link to="/feed" className="section-heading-link">
                     View all →
                 </Link>
             </div>
