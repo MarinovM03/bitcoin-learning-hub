@@ -213,7 +213,7 @@ export const getPublicProfile = asyncHandler(async (req, res) => {
     }
 
     const [user, articles] = await Promise.all([
-        User.findById(userId).select('username profilePicture'),
+        User.findById(userId).select('username profilePicture createdAt'),
         Article.find({ _ownerId: userId, status: 'published' })
             .select('-content -quiz')
             .sort({ createdAt: -1 })
@@ -228,7 +228,13 @@ export const getPublicProfile = asyncHandler(async (req, res) => {
         ? await Like.countDocuments({ articleId: { $in: articleIds } })
         : 0;
 
-    res.json({ username: user.username, profilePicture: user.profilePicture, articles, totalLikes });
+    res.json({
+        username: user.username,
+        profilePicture: user.profilePicture,
+        joinedAt: user.createdAt ?? user._id.getTimestamp(),
+        articles,
+        totalLikes,
+    });
 });
 
 export const update = asyncHandler(async (req, res) => {
