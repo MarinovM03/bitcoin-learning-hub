@@ -98,11 +98,13 @@ router.get('/likes/:articleId', validate({ params: articleIdParam }), likeContro
 router.post('/bookmarks', requireAuth, validate({ body: toggleBookmarkSchema }), bookmarkController.toggle);
 router.get('/bookmarks', requireAuth, bookmarkController.getMyBookmarks);
 
-// Glossary routes
+// Follow routes
 router.get('/feed', requireAuth, followController.getFeed);
+router.get('/follows/following', requireAuth, followController.getFollowing);
 router.post('/follows', requireAuth, requireVerified, validate({ body: toggleFollowSchema }), followController.toggle);
 router.get('/follows/:targetType/:targetId', validate({ params: followTargetParam }), followController.getSummary);
 
+// Collection routes
 router.get('/collections/mine', requireAuth, collectionController.getMine);
 router.get('/collections', collectionController.getAll);
 router.get('/collections/:slug', validate({ params: collectionSlugParam }), collectionController.getOne);
@@ -110,6 +112,7 @@ router.post('/collections', requireAuth, requireVerified, validate({ body: creat
 router.put('/collections/:collectionId', requireAuth, validate({ params: collectionIdParam, body: updateCollectionSchema }), collectionController.update);
 router.delete('/collections/:collectionId', requireAuth, validate({ params: collectionIdParam }), collectionController.remove);
 
+// Glossary routes
 router.get('/glossary', glossaryController.getAll);
 router.get('/glossary/:termId', validate({ params: termIdParam }), glossaryController.getOne);
 router.post('/glossary', requireAuth, requireVerified, validate({ body: createGlossarySchema }), glossaryController.create);

@@ -59,6 +59,35 @@ export const getSummary = asyncHandler(async (req, res) => {
     res.json({ followers, following, followedByMe: Boolean(followedByMe) });
 });
 
+export const getFollowing = asyncHandler(async (req, res) => {
+    const follows = await Follow.find({ _followerId: req.user._id }).sort({ createdAt: -1 }).lean();
+
+    const userIds = follows.filter(f => f.targetType === 'user').map(f => f.targetId);
+    const collectionIds = follows.filter(f => f.targetType === 'collection').map(f => f.targetId);
+
+    const [users, collections] = await Promise.all([
+        userIds.length > 0
+            ? User.find({ _id: { $in: userIds } }).select('username profilePicture').lean()
+            : [],
+        collectionIds.length > 0
+            ? Collection.find({ _id: { $in: collectionIds } })
+                .select('title slug coverImage articles')
+                .populate('_ownerId', 'username')
+                .lean()
+            : [],
+    ]);
+
+    const rank = new Map(follows.map((f, index) => [String(f.targetId), index]));
+    const byFollowedAt = (a, b) => rank.get(String(a._id)) - rank.get(String(b._id));
+
+    res.json({
+        users: users.sort(byFollowedAt),
+        collections: collections
+            .map(({ articles, ...rest }) => ({ ...rest, articleCount: articles?.length ?? 0 }))
+            .sort(byFollowedAt),
+    });
+});
+
 export const getFeed = asyncHandler(async (req, res) => {
     const pageNum = Math.max(parseInt(req.query.page) || 1, 1);
     const limitNum = Math.min(Math.max(parseInt(req.query.limit) || 12, 1), 50);
