@@ -25,6 +25,7 @@ export interface CollectionDetail {
     _id: string;
     title: string;
     slug: string;
+    previousSlugs?: string[];
     description: string;
     coverImage: string;
     articles: Article[];

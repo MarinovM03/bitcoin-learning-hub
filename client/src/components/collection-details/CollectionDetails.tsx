@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router';
 import { Layers, ArrowLeft, ChevronRight } from 'lucide-react';
 import { useCollection } from '../../hooks/queries/useCollections';
@@ -11,6 +12,14 @@ export default function CollectionDetails() {
     const { slug } = useParams();
     const { userId } = useAuth();
     const { data: collection, isPending, isError } = useCollection(slug);
+
+    const canonicalSlug = collection?.slug;
+
+    useEffect(() => {
+        if (canonicalSlug && canonicalSlug !== slug) {
+            window.history.replaceState(null, '', `/collections/${canonicalSlug}`);
+        }
+    }, [canonicalSlug, slug]);
 
     if (isError) return <NotFound />;
 
