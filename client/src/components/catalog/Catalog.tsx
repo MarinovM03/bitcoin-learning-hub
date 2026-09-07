@@ -5,6 +5,7 @@ import ArticleCard from "../article-card/ArticleCard";
 import ArticleCardSkeleton from "../article-card-skeleton/ArticleCardSkeleton";
 import { ARTICLE_CATEGORIES } from '../../utils/categories';
 import { ARTICLE_DIFFICULTIES } from '../../utils/difficulties';
+import { getPaginationPages } from '../../utils/pagination';
 import PageMeta from "../page-meta/PageMeta";
 import { useArticles } from '../../hooks/queries/useArticles';
 import type { ArticleSort } from '../../services/articleService';
@@ -16,23 +17,6 @@ const SORT_LABELS = {
 };
 
 const ITEMS_PER_PAGE = 12;
-
-const getPaginationPages = (current: number, total: number) => {
-    if (total <= 7) {
-        return Array.from({ length: total }, (_, i) => i + 1);
-    }
-
-    const pages: (number | string)[] = [];
-    pages.push(1);
-    if (current > 3) pages.push('...');
-    for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
-        pages.push(p);
-    }
-    if (current < total - 2) pages.push('...');
-    pages.push(total);
-
-    return pages;
-};
 
 export default function Catalog() {
     const [searchParams, setSearchParams] = useSearchParams();
