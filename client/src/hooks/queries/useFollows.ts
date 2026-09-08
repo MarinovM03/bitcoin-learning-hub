@@ -21,8 +21,8 @@ export const useFeed = (enabled = true) => useQuery({
     enabled,
 });
 
-export const useFeedPage = (page: number, limit: number) => useQuery({
-    queryKey: queryKeys.follows.feedPage(page, limit),
-    queryFn: () => followService.getFeed(page, limit),
+export const useFeedPage = (page: number, limit: number, author = '') => useQuery({
+    queryKey: queryKeys.follows.feedPage(page, limit, author),
+    queryFn: () => followService.getFeed(page, limit, author),
     placeholderData: previous => previous,
 });

@@ -52,5 +52,7 @@ export const toggle = (targetType: FollowTarget, targetId: string): Promise<Foll
 export const getFollowing = (): Promise<FollowingList> =>
     request.get<FollowingList>(`${API_BASE_URL}/follows/following`);
 
-export const getFeed = (page = 1, limit = 6): Promise<FeedPage> =>
-    request.get<FeedPage>(`${API_BASE_URL}/feed?page=${page}&limit=${limit}`);
+export const getFeed = (page = 1, limit = 6, author = ''): Promise<FeedPage> =>
+    request.get<FeedPage>(
+        `${API_BASE_URL}/feed?page=${page}&limit=${limit}${author ? `&author=${author}` : ''}`,
+    );
