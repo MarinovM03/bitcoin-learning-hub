@@ -1,11 +1,6 @@
-/* =========================================================
-   Author profile skeleton — header + article grid placeholder.
-   Uses existing .author-profile-header wrapper for spacing.
-   ========================================================= */
-
 .author-profile-skeleton__avatar {
-    width: 100px;
-    height: 100px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -13,42 +8,42 @@
 .author-profile-skeleton__info {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
     flex: 1;
 }
 
-.author-profile-skeleton__name {
-    height: 1.8rem;
-    width: 12rem;
-    border-radius: 4px;
-}
-
 .author-profile-skeleton__role {
-    height: 0.9rem;
+    height: 0.7rem;
     width: 8rem;
     border-radius: 4px;
 }
 
-.author-profile-skeleton__stats {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 0.4rem;
+.author-profile-skeleton__name {
+    height: 1.75rem;
+    width: 12rem;
+    border-radius: 4px;
 }
 
-.author-profile-skeleton__stat {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+.author-profile-skeleton__meta {
+    height: 0.8rem;
+    width: 10rem;
+    border-radius: 4px;
+}
+
+.author-profile-skeleton__follow {
+    height: 2.3rem;
+    width: 9rem;
+    border-radius: 8px;
 }
 
 .author-profile-skeleton__stat-value {
-    height: 1.4rem;
+    height: 1.7rem;
     width: 2.5rem;
     border-radius: 4px;
 }
 
 .author-profile-skeleton__stat-label {
-    height: 0.68rem;
+    height: 0.66rem;
     width: 4.5rem;
     border-radius: 4px;
 }

@@ -4,22 +4,25 @@ import ArticleCardSkeleton from "../article-card-skeleton/ArticleCardSkeleton";
 export default function AuthorProfileSkeleton() {
     return (
         <section className="page-content author-profile-page" aria-hidden="true">
-            <div className="author-profile-header">
-                <Skeleton className="author-profile-skeleton__avatar" />
-                <div className="author-profile-skeleton__info">
-                    <Skeleton className="author-profile-skeleton__name" />
-                    <Skeleton className="author-profile-skeleton__role" />
-                    <div className="author-profile-skeleton__stats">
-                        <div className="author-profile-skeleton__stat">
-                            <Skeleton className="author-profile-skeleton__stat-value" />
-                            <Skeleton className="author-profile-skeleton__stat-label" />
-                        </div>
-                        <div className="author-profile-skeleton__stat">
-                            <Skeleton className="author-profile-skeleton__stat-value" />
-                            <Skeleton className="author-profile-skeleton__stat-label" />
-                        </div>
+            <div className="author-hero">
+                <div className="author-hero-id">
+                    <Skeleton className="author-profile-skeleton__avatar" />
+                    <div className="author-profile-skeleton__info">
+                        <Skeleton className="author-profile-skeleton__role" />
+                        <Skeleton className="author-profile-skeleton__name" />
+                        <Skeleton className="author-profile-skeleton__meta" />
                     </div>
                 </div>
+                <Skeleton className="author-profile-skeleton__follow" />
+            </div>
+
+            <div className="author-stats-row">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="author-stat-card">
+                        <Skeleton className="author-profile-skeleton__stat-value" />
+                        <Skeleton className="author-profile-skeleton__stat-label" />
+                    </div>
+                ))}
             </div>
 
             <div className="author-profile-articles">
