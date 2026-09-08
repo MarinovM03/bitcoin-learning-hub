@@ -124,18 +124,35 @@ describe('publishing requires a confirmed address', () => {
         expect(term.status).toBe(403);
     });
 
-    it('still allows reading, liking and bookmarking while unconfirmed', async () => {
+    it('blocks likes until confirmed, then allows them', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const article = await createArticle(authorToken);
+
+        const { token, user } = await registerAndToken(userFixtures.secondary, { verified: false });
+
+        const blocked = await request(app())
+            .post('/likes')
+            .set('Cookie', token)
+            .send({ articleId: article.body._id });
+        expect(blocked.status).toBe(403);
+        expect(blocked.body.message).toMatch(/confirm your email/i);
+
+        const rawToken = await issueToken(user);
+        await verifyEmail(rawToken);
+
+        const allowed = await request(app())
+            .post('/likes')
+            .set('Cookie', token)
+            .send({ articleId: article.body._id });
+        expect(allowed.status).toBe(201);
+        expect(allowed.body.liked).toBe(true);
+    });
+
+    it('still allows reading and bookmarking while unconfirmed', async () => {
         const { token: authorToken } = await registerAndToken();
         const article = await createArticle(authorToken);
 
         const { token } = await registerAndToken(userFixtures.secondary, { verified: false });
-
-        const like = await request(app())
-            .post('/likes')
-            .set('Cookie', token)
-            .send({ articleId: article.body._id });
-        expect(like.status).toBe(201);
-        expect(like.body.liked).toBe(true);
 
         const bookmark = await request(app())
             .post('/bookmarks')
