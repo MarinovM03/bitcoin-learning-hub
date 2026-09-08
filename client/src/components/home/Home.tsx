@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { BookOpen, Library, TrendingUp, Heart } from "lucide-react";
+import { BookOpen, Library, TrendingUp, Heart, ArrowRight } from "lucide-react";
 import StatsBar from "../stats-bar/StatsBar";
 import HalvingCountdown from "../halving-countdown/HalvingCountdown";
 import FearGreedWidget from "../fear-greed-widget/FearGreedWidget";
@@ -182,7 +182,8 @@ export default function Home() {
                     <h2>Latest Knowledge</h2>
                     <div className="section-heading-line" />
                     <Link to="/articles" className="section-heading-link">
-                        View all →
+                        View all
+                        <ArrowRight size={13} strokeWidth={2.5} />
                     </Link>
                 </div>
 

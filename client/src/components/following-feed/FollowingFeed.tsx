@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Users } from 'lucide-react';
+import { Users, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFeed } from '../../hooks/queries/useFollows';
 import ArticleCard from '../article-card/ArticleCard';
@@ -23,7 +23,8 @@ export default function FollowingFeed() {
                 </h2>
                 <div className="section-heading-line" />
                 <Link to="/feed" className="section-heading-link">
-                    View all →
+                    View all
+                    <ArrowRight size={13} strokeWidth={2.5} />
                 </Link>
             </div>
 
@@ -36,7 +37,7 @@ export default function FollowingFeed() {
             ) : (
                 <div className="catalog-grid">
                     {articles.map(article => (
-                        <ArticleCard key={article._id} article={article} />
+                        <ArticleCard key={article._id} article={article} showAuthor />
                     ))}
                 </div>
             )}
