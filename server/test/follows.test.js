@@ -137,6 +137,21 @@ describe('the following feed', () => {
         expect(res.body.following).toBe(0);
     });
 
+    it('still counts a follow that has nothing published behind it', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const { body: collection } = await request(app())
+            .post('/collections')
+            .set('Cookie', authorToken)
+            .send({ title: 'Empty For Now' });
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await follow(reader, 'collection', String(collection._id));
+
+        const res = await request(app()).get('/feed').set('Cookie', reader);
+        expect(res.body.articles).toEqual([]);
+        expect(res.body.following).toBe(1);
+    });
+
     it('shows published articles from followed accounts, newest first', async () => {
         const { token: authorToken, user: author } = await registerAndToken();
         await createArticle(authorToken, { title: 'The earlier article' });
@@ -179,6 +194,55 @@ describe('the following feed', () => {
 
         const second = await request(app()).get('/feed?page=2&limit=2').set('Cookie', reader);
         expect(second.body.articles).toHaveLength(1);
+    });
+});
+
+describe('narrowing the feed to one author', () => {
+    it('returns only that author\'s articles', async () => {
+        const { token: oneToken, user: one } = await registerAndToken();
+        await createArticle(oneToken, { title: 'Written by the first' });
+
+        const { token: twoToken, user: two } = await registerAndToken(userFixtures.secondary);
+        await createArticle(twoToken, { title: 'Written by the second' });
+
+        const { token: reader } = await registerAndToken(userFixtures.tertiary);
+        await follow(reader, 'user', String(one._id));
+        await follow(reader, 'user', String(two._id));
+
+        const res = await request(app())
+            .get(`/feed?author=${one._id}`)
+            .set('Cookie', reader);
+
+        expect(res.status).toBe(200);
+        expect(res.body.articles.map(a => a.title)).toEqual(['Written by the first']);
+        expect(res.body.following).toBe(2);
+    });
+
+    it('refuses to surface an author the reader does not follow', async () => {
+        const { token: authorToken, user: author } = await registerAndToken();
+        await createArticle(authorToken, { title: 'Not for this reader' });
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+
+        const res = await request(app())
+            .get(`/feed?author=${author._id}`)
+            .set('Cookie', reader);
+
+        expect(res.status).toBe(200);
+        expect(res.body.articles).toEqual([]);
+    });
+
+    it('ignores an unreadable author id', async () => {
+        const { token: authorToken, user: author } = await registerAndToken();
+        await createArticle(authorToken, { title: 'Still in the feed' });
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await follow(reader, 'user', String(author._id));
+
+        const res = await request(app()).get('/feed?author=not-an-id').set('Cookie', reader);
+
+        expect(res.status).toBe(200);
+        expect(res.body.articles.map(a => a.title)).toEqual(['Still in the feed']);
     });
 });
 
