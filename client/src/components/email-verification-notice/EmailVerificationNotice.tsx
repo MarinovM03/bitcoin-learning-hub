@@ -32,7 +32,7 @@ export default function EmailVerificationNotice() {
         <div className="verification-notice" role="status">
             <MailWarning size={18} strokeWidth={2} aria-hidden="true" />
             <p className="verification-notice-text">
-                Confirm your email{email ? ` (${email})` : ''} to publish articles, comment, and add glossary terms.
+                Confirm your email{email ? ` (${email})` : ''} to publish articles, comment, like, and add glossary terms.
             </p>
             <button
                 type="button"

@@ -29,7 +29,7 @@ import { useJsonLd } from "../../hooks/useJsonLd";
 export default function Details() {
     const navigate = useNavigate();
     const { articleId } = useParams();
-    const { userId, isAuthenticated } = useAuth();
+    const { userId, isAuthenticated, isEmailVerified } = useAuth();
 
     const { data: article, isPending, isError } = useArticle(articleId);
     const { data: relatedArticles = [] } = useRelatedArticles(articleId);
@@ -343,6 +343,8 @@ export default function Details() {
                                     className={hasLiked ? "btn-like btn-like-active" : "btn-like"}
                                     onClick={onLike}
                                     aria-pressed={hasLiked}
+                                    disabled={!isEmailVerified}
+                                    title={isEmailVerified ? undefined : 'Confirm your email address to like articles'}
                                 >
                                     <Heart size={16} strokeWidth={2} fill={hasLiked ? "currentColor" : "none"} />
                                     {hasLiked ? 'Liked' : 'Like this article'}

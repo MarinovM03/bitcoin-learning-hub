@@ -31,7 +31,7 @@ interface CommentsSectionProps {
 }
 
 export default function CommentsSection({ articleId, articleOwnerId }: CommentsSectionProps) {
-    const { isAuthenticated, userId, profilePicture } = useAuth();
+    const { isAuthenticated, isEmailVerified, userId, profilePicture } = useAuth();
     const [reportTarget, setReportTarget] = useState<Comment | null>(null);
 
     const [text, setText] = useState("");
@@ -132,7 +132,7 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                 Discussion <span className="comments-count">({total})</span>
             </h3>
 
-            {isAuthenticated ? (
+            {isAuthenticated && isEmailVerified ? (
                 <form className="comment-form" onSubmit={onSubmit}>
                     <img
                         src={profilePicture || DEFAULT_AVATAR}
@@ -162,6 +162,10 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                         </div>
                     </div>
                 </form>
+            ) : isAuthenticated ? (
+                <p className="comments-login-prompt">
+                    Confirm your email address to join the discussion.
+                </p>
             ) : (
                 <p className="comments-login-prompt">
                     <Link to="/login">Log in</Link> to join the discussion.
