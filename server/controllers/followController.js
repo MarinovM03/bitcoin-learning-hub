@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Follow from '../models/Follow.js';
 import User from '../models/User.js';
 import Article from '../models/Article.js';
@@ -93,27 +94,38 @@ export const getFeed = asyncHandler(async (req, res) => {
     const limitNum = Math.min(Math.max(parseInt(req.query.limit) || 12, 1), 50);
     const skip = (pageNum - 1) * limitNum;
 
+    const author = mongoose.Types.ObjectId.isValid(req.query.author) ? String(req.query.author) : null;
+
     const follows = await Follow.find({ _followerId: req.user._id }).lean();
+    const following = follows.length;
 
     const authorIds = follows.filter(f => f.targetType === 'user').map(f => f.targetId);
     const collectionIds = follows.filter(f => f.targetType === 'collection').map(f => f.targetId);
 
-    const followedCollections = collectionIds.length > 0
+    const emptyPage = { articles: [], total: 0, page: pageNum, totalPages: 0, following };
+
+    if (author && !authorIds.some(id => String(id) === author)) {
+        return res.json(emptyPage);
+    }
+
+    const followedCollections = !author && collectionIds.length > 0
         ? await Collection.find({ _id: { $in: collectionIds } }).select('articles').lean()
         : [];
     const collectedArticleIds = followedCollections.flatMap(c => c.articles ?? []);
 
-    if (authorIds.length === 0 && collectedArticleIds.length === 0) {
-        return res.json({ articles: [], total: 0, page: pageNum, totalPages: 0, following: 0 });
+    if (!author && authorIds.length === 0 && collectedArticleIds.length === 0) {
+        return res.json(emptyPage);
     }
 
-    const filter = {
-        status: 'published',
-        $or: [
-            { _ownerId: { $in: authorIds } },
-            { _id: { $in: collectedArticleIds } },
-        ],
-    };
+    const filter = author
+        ? { status: 'published', _ownerId: author }
+        : {
+            status: 'published',
+            $or: [
+                { _ownerId: { $in: authorIds } },
+                { _id: { $in: collectedArticleIds } },
+            ],
+        };
 
     const [articles, total] = await Promise.all([
         Article.find(filter)
@@ -130,6 +142,6 @@ export const getFeed = asyncHandler(async (req, res) => {
         total,
         page: pageNum,
         totalPages: Math.ceil(total / limitNum),
-        following: follows.length,
+        following,
     });
 });
