@@ -91,7 +91,7 @@ router.put('/users/profile', requireAuth, validate({ body: updateProfileSchema }
 router.get('/users/:userId/public', validate({ params: userIdParam }), articleController.getPublicProfile);
 
 // Like routes
-router.post('/likes', requireAuth, validate({ body: likeArticleSchema }), likeController.toggleLike);
+router.post('/likes', requireAuth, requireVerified, validate({ body: likeArticleSchema }), likeController.toggleLike);
 router.get('/likes/:articleId', validate({ params: articleIdParam }), likeController.getLikes);
 
 // Bookmark routes
