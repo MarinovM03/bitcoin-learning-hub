@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import * as authService from '../services/authService';
@@ -70,8 +71,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const logoutHandler = useCallback(async () => {
         await authService.logout().catch(() => {});
-        setAuth({});
         localStorage.removeItem('auth');
+        flushSync(() => setAuth({}));
         queryClient.resetQueries();
         navigate('/');
     }, [navigate]);
@@ -83,8 +84,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         const onUnauthorized = () => {
-            setAuth({});
             localStorage.removeItem('auth');
+            flushSync(() => setAuth({}));
             queryClient.resetQueries();
         };
         window.addEventListener('auth:unauthorized', onUnauthorized);
