@@ -1,0 +1,79 @@
+.feed-rail {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.35rem 0.15rem 1rem 0.15rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.feed-rail::-webkit-scrollbar {
+    height: 6px;
+}
+
+.feed-rail::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+    border-radius: 999px;
+}
+
+.feed-rail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    width: 84px;
+    padding: 0.35rem 0.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.feed-rail-item:hover {
+    color: var(--text-color);
+}
+
+.feed-rail-item--active {
+    color: var(--btc-orange);
+}
+
+.feed-rail-avatar,
+.feed-rail-all {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-light);
+    background-color: var(--card-bg);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feed-rail-item:hover .feed-rail-avatar,
+.feed-rail-item:hover .feed-rail-all {
+    border-color: var(--text-secondary);
+}
+
+.feed-rail-item--active .feed-rail-avatar,
+.feed-rail-item--active .feed-rail-all {
+    border-color: var(--btc-orange);
+    box-shadow: 0 0 14px var(--btc-orange-glow);
+}
+
+.feed-rail-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

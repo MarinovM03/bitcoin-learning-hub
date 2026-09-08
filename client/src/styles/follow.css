@@ -286,10 +286,16 @@
 }
 
 .following-empty-cta {
+    background: none;
+    border: none;
+    padding: 0;
     color: var(--btc-orange);
+    font-family: 'Exo 2', sans-serif;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .following-empty-cta:hover {
