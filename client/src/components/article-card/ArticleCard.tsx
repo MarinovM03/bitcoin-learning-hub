@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { SyntheticEvent } from "react";
 import { Link } from "react-router";
 import { formatViews } from "../../utils/formatters";
-import { handleImgError } from "../../utils/imageHelpers";
+import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from "../../utils/imageHelpers";
 import Skeleton from "../skeleton/Skeleton";
 import type { Article, ArticleOwnerRef } from "../../types";
 
@@ -14,11 +14,13 @@ type ArticleCardArticle =
 interface ArticleCardProps {
     article: ArticleCardArticle;
     readLabel?: string;
+    showAuthor?: boolean;
 }
 
-export default function ArticleCard({ article, readLabel = "Read Article →" }: ArticleCardProps) {
+export default function ArticleCard({ article, readLabel = "Read Article →", showAuthor = false }: ArticleCardProps) {
     const [imgLoaded, setImgLoaded] = useState(false);
 
+    const author = typeof article._ownerId === 'object' ? article._ownerId : null;
 
     return (
         <Link
@@ -47,6 +49,19 @@ export default function ArticleCard({ article, readLabel = "Read Article →" }:
                 )}
             </div>
             <div className="catalog-card-body">
+                {showAuthor && author && (
+                    <span className="catalog-card-author">
+                        <img
+                            src={author.profilePicture || DEFAULT_AVATAR}
+                            alt=""
+                            className="catalog-card-author-avatar"
+                            loading="lazy"
+                            decoding="async"
+                            onError={handleAvatarError}
+                        />
+                        {author.username}
+                    </span>
+                )}
                 <h3 className="catalog-card-title">{article.title}</h3>
                 <p className="catalog-card-summary">{article.summary}</p>
                 <div className="catalog-card-footer">
