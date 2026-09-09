@@ -129,6 +129,11 @@ export const markRead = (articleId: string): Promise<ReadStateResponse> =>
 export const markUnread = (articleId: string): Promise<ReadStateResponse> =>
     request.del<ReadStateResponse>(`${baseUrl}/${articleId}/read`);
 
+export type ReadArticle = Article & { readAt: string };
+
+export const getReadHistory = (): Promise<ReadArticle[]> =>
+    request.get<ReadArticle[]>(`${usersUrl}/me/read-history`);
+
 export interface ResetReadHistoryResponse {
     cleared: number;
 }

@@ -5,6 +5,7 @@ export const queryKeys = {
         list: (filters: unknown) => ['articles', 'list', filters],
         mine: ['articles', 'mine'],
         trending: ['articles', 'trending'],
+        readHistory: ['articles', 'read-history'],
         detail: (id?: string) => ['articles', 'detail', id],
         related: (id?: string) => ['articles', 'related', id],
     },

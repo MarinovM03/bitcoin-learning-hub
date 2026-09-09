@@ -31,6 +31,11 @@ export const useTrendingArticles = () => useQuery({
     queryFn: articleService.getTrending,
 });
 
+export const useReadHistory = () => useQuery({
+    queryKey: queryKeys.articles.readHistory,
+    queryFn: articleService.getReadHistory,
+});
+
 export const usePublicProfile = (userId?: string) => useQuery({
     queryKey: queryKeys.publicProfile(userId),
     queryFn: () => articleService.getPublicProfile(userId!),
