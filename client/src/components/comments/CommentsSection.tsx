@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router";
-import { X, PenLine, Flag } from "lucide-react";
+import { X, PenLine, Flag, MailWarning } from "lucide-react";
 import { useComments } from "../../hooks/queries/useComments";
 import {
     useCreateComment,
@@ -163,7 +163,8 @@ export default function CommentsSection({ articleId, articleOwnerId }: CommentsS
                     </div>
                 </form>
             ) : isAuthenticated ? (
-                <p className="comments-login-prompt">
+                <p className="comments-locked-prompt">
+                    <MailWarning size={16} strokeWidth={2} aria-hidden="true" />
                     Confirm your email address to join the discussion.
                 </p>
             ) : (
