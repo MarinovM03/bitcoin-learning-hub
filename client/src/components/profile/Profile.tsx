@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
     Users,
     FileText,
@@ -8,17 +9,20 @@ import {
     ExternalLink,
     RotateCcw,
     History,
+    BookOpenCheck,
 } from "lucide-react";
 import * as articleService from "../../services/articleService";
-import { useMyArticles, usePublicProfile } from "../../hooks/queries/useArticles";
+import { useMyArticles, usePublicProfile, useReadHistory } from "../../hooks/queries/useArticles";
 import { useFollowSummary, useFollowing } from "../../hooks/queries/useFollows";
 import ProfileForm from "../profile-form/ProfileForm";
 import FollowingList from "../following-list/FollowingList";
 import ConfirmModal from "../common/ConfirmModal";
 import { useAuth } from "../../contexts/AuthContext";
 import PageMeta from "../page-meta/PageMeta";
-import { DEFAULT_AVATAR, handleAvatarError } from "../../utils/imageHelpers";
-import { formatMonthYear } from "../../utils/formatters";
+import { queryKeys } from "../../lib/queryKeys";
+import Skeleton from "../skeleton/Skeleton";
+import { DEFAULT_AVATAR, handleAvatarError, handleImgError } from "../../utils/imageHelpers";
+import { formatMonthYear, timeAgo } from "../../utils/formatters";
 import { toast } from "../../lib/toast";
 
 const QUICK_LINKS = [
@@ -30,6 +34,7 @@ const QUICK_LINKS = [
 
 export default function Profile() {
     const { userId, username, profilePicture } = useAuth();
+    const queryClient = useQueryClient();
     const [showResetModal, setShowResetModal] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
 
@@ -37,6 +42,7 @@ export default function Profile() {
     const { data: publicProfile, isPending: profilePending } = usePublicProfile(userId);
     const { data: followSummary } = useFollowSummary('user', userId);
     const { data: following } = useFollowing();
+    const { data: readHistory = [], isPending: isHistoryPending } = useReadHistory();
 
     const isLoading = articlesPending || (!!userId && profilePending);
 
@@ -60,6 +66,7 @@ export default function Profile() {
         setIsResetting(true);
         try {
             const result = await articleService.resetReadHistory();
+            queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
             toast.success(
                 result.cleared === 0
                     ? 'Your reading history was already empty.'
@@ -147,14 +154,65 @@ export default function Profile() {
                             </span>
                             <div>
                                 <h2>Reading history</h2>
-                                <p>Clears every article you've marked as read.</p>
+                                <p>
+                                    {readHistory.length > 0
+                                        ? `${readHistory.length} article${readHistory.length === 1 ? '' : 's'} marked as read.`
+                                        : "Articles you mark as read collect here."}
+                                </p>
                             </div>
                         </div>
+
+                        {isHistoryPending ? (
+                            <div className="read-history-list">
+                                {Array.from({ length: 3 }).map((_, i) => (
+                                    <div key={i} className="read-history-row">
+                                        <Skeleton className="read-history-thumb" />
+                                        <div className="read-history-body">
+                                            <Skeleton className="read-history-line" />
+                                            <Skeleton className="read-history-line read-history-line--short" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : readHistory.length === 0 ? (
+                            <div className="read-history-empty">
+                                <BookOpenCheck size={26} strokeWidth={1.6} />
+                                <p>Nothing read yet. Open an article and mark it as read.</p>
+                                <Link to="/articles" className="read-history-cta">Browse articles →</Link>
+                            </div>
+                        ) : (
+                            <ul className="read-history-list">
+                                {readHistory.map(article => (
+                                    <li key={article._id}>
+                                        <Link
+                                            to={`/articles/${article._id}/details`}
+                                            className="read-history-row"
+                                        >
+                                            <img
+                                                src={article.imageUrl}
+                                                alt=""
+                                                className="read-history-thumb"
+                                                loading="lazy"
+                                                decoding="async"
+                                                onError={handleImgError}
+                                            />
+                                            <span className="read-history-body">
+                                                <span className="read-history-title">{article.title}</span>
+                                                <span className="read-history-meta">
+                                                    {article.category} · read {timeAgo(article.readAt)}
+                                                </span>
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
                         <button
                             type="button"
                             className="profile-reset-btn"
                             onClick={() => setShowResetModal(true)}
-                            disabled={isResetting}
+                            disabled={isResetting || readHistory.length === 0}
                         >
                             <RotateCcw size={16} strokeWidth={2} />
                             Reset Reading History

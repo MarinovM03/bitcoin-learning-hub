@@ -633,6 +633,120 @@
     background-color: var(--danger-dim);
 }
 
+.read-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    padding-right: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.read-history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.read-history-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+    border-radius: 999px;
+}
+
+.read-history-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0.6rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+    min-width: 0;
+}
+
+.read-history-row:hover {
+    border-color: var(--btc-orange);
+}
+
+.read-history-thumb {
+    width: 54px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 7px;
+    border: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+
+.read-history-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.read-history-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.read-history-row:hover .read-history-title {
+    color: var(--btc-orange);
+}
+
+.read-history-meta {
+    font-size: 0.71rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.read-history-line {
+    height: 10px;
+    width: 70%;
+    border-radius: 4px;
+}
+
+.read-history-line--short {
+    width: 40%;
+}
+
+.read-history-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 1.75rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px dashed var(--border-light);
+    border-radius: 12px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.read-history-empty p {
+    margin: 0;
+    font-size: 0.84rem;
+}
+
+.read-history-cta {
+    color: var(--btc-orange);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.read-history-cta:hover {
+    color: white;
+}
+
 .profile-reset-btn {
     display: inline-flex;
     align-items: center;
