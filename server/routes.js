@@ -73,6 +73,7 @@ router.put('/articles/:articleId', requireAuth, requireVerified, validate({ para
 router.delete('/articles/:articleId', requireAuth, validate({ params: articleIdParam }), articleController.remove);
 
 // Reading history
+router.get('/users/me/read-history', requireAuth, articleController.getReadHistory);
 router.delete('/users/me/read-history', requireAuth, articleController.resetReadHistory);
 
 // Account deletion

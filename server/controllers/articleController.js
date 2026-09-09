@@ -176,6 +176,20 @@ export const markUnread = asyncHandler(async (req, res) => {
     res.json({ read: false });
 });
 
+export const getReadHistory = asyncHandler(async (req, res) => {
+    const entries = await ReadArticle.find({ _ownerId: req.user._id })
+        .populate('articleId', 'title category imageUrl summary difficulty readingTime views status createdAt')
+        .sort({ createdAt: -1 })
+        .limit(60)
+        .lean();
+
+    const articles = entries
+        .filter(entry => entry.articleId?.status === 'published')
+        .map(entry => ({ ...entry.articleId, readAt: entry.createdAt }));
+
+    res.json(articles);
+});
+
 export const resetReadHistory = asyncHandler(async (req, res) => {
     const result = await ReadArticle.deleteMany({ _ownerId: req.user._id });
     res.json({ cleared: result.deletedCount || 0 });
