@@ -329,6 +329,9 @@
 .details-like-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
     margin-bottom: 1.5rem;
 }
 
@@ -364,6 +367,17 @@
     background-color: rgba(231, 76, 60, 0.14);
     border-color: rgba(231, 76, 60, 0.4);
     color: #e74c3c;
+}
+
+.btn-like--locked {
+    color: var(--text-muted);
+    border-style: dashed;
+}
+
+.btn-like--locked:hover {
+    background-color: transparent;
+    border-color: var(--btc-orange);
+    color: var(--btc-orange);
 }
 
 .details-info-panel {

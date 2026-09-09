@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle, Flag } from "lucide-react";
+import { Bookmark, Heart, PenLine, Trash2, Link2, Check, Share2, Layers, ChevronLeft, ChevronRight, CheckCircle2, Circle, Flag, Lock } from "lucide-react";
 import { useArticle, useRelatedArticles } from '../../hooks/queries/useArticles';
 import { useArticleCollections } from '../../hooks/queries/useCollections';
 import { useLikeSummary } from '../../hooks/queries/useLikes';
@@ -149,6 +149,10 @@ export default function Details() {
 
     const onLike = async () => {
         if (!articleId) return;
+        if (!isEmailVerified) {
+            toast.info('Confirm your email address to like articles.');
+            return;
+        }
         try {
             await toggleLikeMutation.mutateAsync(articleId);
         } catch (err) {
@@ -340,13 +344,14 @@ export default function Details() {
                         {isAuthenticated && !isOwner && (
                             <div className="details-like-row">
                                 <button
-                                    className={hasLiked ? "btn-like btn-like-active" : "btn-like"}
+                                    className={`${hasLiked ? "btn-like btn-like-active" : "btn-like"}${isEmailVerified ? '' : ' btn-like--locked'}`}
                                     onClick={onLike}
                                     aria-pressed={hasLiked}
-                                    disabled={!isEmailVerified}
                                     title={isEmailVerified ? undefined : 'Confirm your email address to like articles'}
                                 >
-                                    <Heart size={16} strokeWidth={2} fill={hasLiked ? "currentColor" : "none"} />
+                                    {isEmailVerified
+                                        ? <Heart size={16} strokeWidth={2} fill={hasLiked ? "currentColor" : "none"} />
+                                        : <Lock size={14} strokeWidth={2.25} />}
                                     {hasLiked ? 'Liked' : 'Like this article'}
                                 </button>
                                 <button className="btn-report" onClick={() => setShowReportModal(true)}>
