@@ -299,6 +299,79 @@ describe('POST /articles/:id/quiz/check', () => {
     });
 });
 
+describe('GET /users/me/read-history', () => {
+    it('requires authentication', async () => {
+        const res = await request(app()).get('/users/me/read-history');
+        expect(res.status).toBe(401);
+    });
+
+    it('starts empty', async () => {
+        const { token } = await registerAndToken();
+        const res = await request(app()).get('/users/me/read-history').set('Cookie', token);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual([]);
+    });
+
+    it('lists what the reader marked, most recent first', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const { body: first } = await createArticle(authorToken, { title: 'The earlier read' });
+        const { body: second } = await createArticle(authorToken, { title: 'The later read' });
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await request(app()).post(`/articles/${first._id}/read`).set('Cookie', reader);
+        await request(app()).post(`/articles/${second._id}/read`).set('Cookie', reader);
+
+        const res = await request(app()).get('/users/me/read-history').set('Cookie', reader);
+
+        expect(res.status).toBe(200);
+        expect(res.body.map(a => a.title)).toEqual(['The later read', 'The earlier read']);
+        expect(res.body[0]).toHaveProperty('readAt');
+    });
+
+    it('drops an article once it is marked unread', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const { body: article } = await createArticle(authorToken);
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await request(app()).post(`/articles/${article._id}/read`).set('Cookie', reader);
+        await request(app()).delete(`/articles/${article._id}/read`).set('Cookie', reader);
+
+        const res = await request(app()).get('/users/me/read-history').set('Cookie', reader);
+        expect(res.body).toEqual([]);
+    });
+
+    it('leaves out an article that is no longer published', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const { body: article } = await createArticle(authorToken);
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await request(app()).post(`/articles/${article._id}/read`).set('Cookie', reader);
+
+        await request(app())
+            .put(`/articles/${article._id}`)
+            .set('Cookie', authorToken)
+            .send({ ...articleFixture, status: 'draft' });
+
+        const res = await request(app()).get('/users/me/read-history').set('Cookie', reader);
+        expect(res.body).toEqual([]);
+    });
+
+    it('is emptied by a reset', async () => {
+        const { token: authorToken } = await registerAndToken();
+        const { body: article } = await createArticle(authorToken);
+
+        const { token: reader } = await registerAndToken(userFixtures.secondary);
+        await request(app()).post(`/articles/${article._id}/read`).set('Cookie', reader);
+
+        const reset = await request(app()).delete('/users/me/read-history').set('Cookie', reader);
+        expect(reset.body.cleared).toBe(1);
+
+        const res = await request(app()).get('/users/me/read-history').set('Cookie', reader);
+        expect(res.body).toEqual([]);
+    });
+});
+
 describe('Article delete cascade', () => {
     it('removes every interaction when an article is deleted', async () => {
         const { token: ownerToken } = await registerAndToken();
