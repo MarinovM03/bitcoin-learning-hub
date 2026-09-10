@@ -37,6 +37,7 @@ const DcaCalculator = lazy(() => import("./components/dca-calculator/DcaCalculat
 const AddressDemystifier = lazy(() => import("./components/address-demystifier/AddressDemystifier"));
 const MultisigExplainer = lazy(() => import("./components/multisig-explainer/MultisigExplainer"));
 const SatsConverter = lazy(() => import("./components/sats-converter/SatsConverter"));
+const TransactionExplainer = lazy(() => import("./components/transaction-explainer/TransactionExplainer"));
 const SearchPage = lazy(() => import("./components/search-page/SearchPage"));
 const Admin = lazy(() => import("./components/admin/Admin"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword"));
@@ -71,6 +72,7 @@ function App() {
                         <Route path="/glossary/:termId" element={<GlossaryDetails />} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/dca" element={<DcaCalculator />} />
+                        <Route path="/tx" element={<TransactionExplainer />} />
                         <Route path="/address" element={<AddressDemystifier />} />
                         <Route path="/multisig" element={<MultisigExplainer />} />
                         <Route path="/converter" element={<SatsConverter />} />

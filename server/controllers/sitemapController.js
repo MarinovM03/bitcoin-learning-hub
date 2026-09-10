@@ -18,6 +18,7 @@ const STATIC_ROUTES = [
     { path: '/glossary', changefreq: 'weekly', priority: '0.8' },
     { path: '/collections', changefreq: 'weekly', priority: '0.8' },
     { path: '/dca', changefreq: 'monthly', priority: '0.6' },
+    { path: '/tx', changefreq: 'monthly', priority: '0.6' },
     { path: '/address', changefreq: 'monthly', priority: '0.6' },
     { path: '/multisig', changefreq: 'monthly', priority: '0.6' },
     { path: '/converter', changefreq: 'monthly', priority: '0.6' },

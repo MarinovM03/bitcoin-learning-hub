@@ -1,4 +1,4 @@
-import { ArrowLeftRight, LineChart, FileSearch, Users } from 'lucide-react';
+import { ArrowLeftRight, LineChart, FileSearch, Receipt, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavTool {
@@ -23,6 +23,13 @@ export const TOOLS: NavTool[] = [
         short: 'DCA',
         description: 'Backtest dollar-cost-averaging strategies',
         Icon: LineChart,
+    },
+    {
+        to: '/tx',
+        label: 'Transaction Explainer',
+        short: 'Transaction',
+        description: 'Read what a transaction actually did',
+        Icon: Receipt,
     },
     {
         to: '/address',
