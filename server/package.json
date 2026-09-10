@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "backfill:verified": "node scripts/backfillEmailVerified.js",
     "backfill:moderation": "node scripts/backfillModeration.js",
+    "backfill:slugs": "node scripts/backfillArticleSlugs.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "migrate:collections": "node scripts/migrateSeriesToCollections.js"
