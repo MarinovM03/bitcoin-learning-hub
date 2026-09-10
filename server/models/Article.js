@@ -6,6 +6,14 @@ const articleSchema = new mongoose.Schema({
         required: true,
         minLength: 5,
     },
+    slug: {
+        type: String,
+        required: true,
+    },
+    previousSlugs: {
+        type: [String],
+        default: [],
+    },
     category: {
         type: String,
         required: true,
@@ -67,6 +75,10 @@ const articleSchema = new mongoose.Schema({
         required: true,
     },
 }, { timestamps: true });
+
+articleSchema.index({ slug: 1 }, { unique: true });
+
+articleSchema.index({ previousSlugs: 1 });
 
 articleSchema.index({ status: 1, createdAt: -1 });
 

@@ -43,6 +43,7 @@ import { createReportSchema, resolveReportSchema } from './validators/reportSche
 import { updateUserRoleSchema, updateUserTrustSchema, rejectArticleSchema } from './validators/adminSchemas.js';
 import {
     articleIdParam,
+    articleRefParam,
     termIdParam,
     commentIdParam,
     userIdParam,
@@ -64,7 +65,7 @@ router.get('/articles/trending', articleController.getTrending);
 router.get('/articles', articleController.getAll);
 router.get('/articles/:articleId/related', validate({ params: articleIdParam }), articleController.getRelated);
 router.get('/articles/:articleId/collections', validate({ params: articleIdParam }), collectionController.getForArticle);
-router.get('/articles/:articleId', validate({ params: articleIdParam }), articleController.getOne);
+router.get('/articles/:articleId', validate({ params: articleRefParam }), articleController.getOne);
 router.post('/articles/:articleId/quiz/check', validate({ params: articleIdParam, body: checkQuizAnswerSchema }), articleController.checkQuizAnswer);
 router.post('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markRead);
 router.delete('/articles/:articleId/read', requireAuth, validate({ params: articleIdParam }), articleController.markUnread);

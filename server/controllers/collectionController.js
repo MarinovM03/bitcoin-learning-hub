@@ -6,7 +6,7 @@ import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slugify.js';
 
-const CARD_FIELDS = 'title summary imageUrl category difficulty readingTime views status _ownerId';
+const CARD_FIELDS = 'title slug summary imageUrl category difficulty readingTime views status _ownerId';
 
 const ownedArticleIds = async (ids, ownerId) => {
     if (!Array.isArray(ids) || ids.length === 0) return [];
@@ -91,7 +91,7 @@ export const getForArticle = asyncHandler(async (req, res) => {
     const { articleId } = req.params;
 
     const collections = await Collection.find({ articles: articleId })
-        .populate({ path: 'articles', select: 'title status' })
+        .populate({ path: 'articles', select: 'title slug status' })
         .lean();
 
     const memberships = collections.map(collection => {
@@ -104,7 +104,7 @@ export const getForArticle = asyncHandler(async (req, res) => {
             slug: collection.slug,
             total: parts.length,
             position: position + 1,
-            parts: parts.map(({ _id, title }) => ({ _id, title })),
+            parts: parts.map(({ _id, title, slug }) => ({ _id, title, slug })),
             prev: position > 0 ? parts[position - 1] : null,
             next: position >= 0 && position < parts.length - 1 ? parts[position + 1] : null,
         };
@@ -118,7 +118,7 @@ export const create = asyncHandler(async (req, res) => {
 
     const collection = await Collection.create({
         title,
-        slug: await uniqueSlug(Collection, title),
+        slug: await uniqueSlug(Collection, title, null, 'collection'),
         description: description?.trim() || '',
         coverImage: coverImage?.trim() || '',
         articles: await ownedArticleIds(articles, req.user._id),
@@ -143,7 +143,7 @@ export const update = asyncHandler(async (req, res) => {
     if (articles !== undefined) updateData.articles = await ownedArticleIds(articles, req.user._id);
     if (title !== undefined && title !== existing.title) {
         updateData.title = title;
-        updateData.slug = await uniqueSlug(Collection, title, collectionId);
+        updateData.slug = await uniqueSlug(Collection, title, collectionId, 'collection');
 
         if (updateData.slug !== existing.slug) {
             updateData.previousSlugs = [

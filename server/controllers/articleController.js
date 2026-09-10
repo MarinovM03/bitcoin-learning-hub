@@ -10,6 +10,7 @@ import { clampSearchTerm } from '../utils/searchTerm.js';
 import { cascadeArticleDelete } from '../utils/cascadeArticles.js';
 import { isArticleVisibleTo } from '../utils/articleAccess.js';
 import { canPublishDirectly } from '../utils/trust.js';
+import { uniqueSlug } from '../utils/slugify.js';
 
 const calculateReadingTime = (content) => {
     if (!content) return 1;
@@ -73,6 +74,7 @@ export const create = asyncHandler(async (req, res) => {
 
     const newArticle = await Article.create({
         title,
+        slug: await uniqueSlug(Article, title, null, 'article'),
         category,
         difficulty: difficulty || 'Beginner',
         imageUrl,
@@ -88,16 +90,18 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const getOne = asyncHandler(async (req, res) => {
-    const { articleId } = req.params;
+    const { articleId: ref } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(articleId)) {
-        throw new AppError(404, 'Article not found');
-    }
+    const lookup = mongoose.Types.ObjectId.isValid(ref)
+        ? { _id: ref }
+        : { $or: [{ slug: ref }, { previousSlugs: ref }] };
 
-    const article = await Article.findById(articleId).populate('_ownerId', 'username profilePicture');
+    const article = await Article.findOne(lookup).populate('_ownerId', 'username profilePicture');
     if (!isArticleVisibleTo(article, req.user?._id)) {
         throw new AppError(404, 'Article not found');
     }
+
+    const articleId = article._id;
 
     const ownerId = article._ownerId?._id ?? article._ownerId;
     const isOwner = req.user && String(req.user._id) === String(ownerId);
@@ -178,7 +182,7 @@ export const markUnread = asyncHandler(async (req, res) => {
 
 export const getReadHistory = asyncHandler(async (req, res) => {
     const entries = await ReadArticle.find({ _ownerId: req.user._id })
-        .populate('articleId', 'title category imageUrl summary difficulty readingTime views status createdAt')
+        .populate('articleId', 'title slug category imageUrl summary difficulty readingTime views status createdAt')
         .sort({ createdAt: -1 })
         .limit(60)
         .lean();
@@ -214,7 +218,7 @@ export const getRelated = asyncHandler(async (req, res) => {
     })
         .sort({ createdAt: -1 })
         .limit(3)
-        .select('title summary imageUrl category _id');
+        .select('title slug summary imageUrl category _id');
 
     res.json(related);
 });
@@ -260,7 +264,6 @@ export const update = asyncHandler(async (req, res) => {
     }
 
     const updateData = {};
-    if (title !== undefined) updateData.title = title;
     if (category !== undefined) updateData.category = category;
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
     if (summary !== undefined) updateData.summary = summary;
@@ -272,9 +275,24 @@ export const update = asyncHandler(async (req, res) => {
     if (Array.isArray(quiz)) updateData.quiz = quiz;
 
     const existing = await Article.findOne({ _id: articleId, _ownerId: req.user._id })
-        .select('status');
+        .select('status title slug previousSlugs');
     if (!existing) {
         throw new AppError(403, 'Forbidden');
+    }
+
+    if (title !== undefined) {
+        updateData.title = title;
+
+        if (title !== existing.title) {
+            updateData.slug = await uniqueSlug(Article, title, articleId, 'article');
+
+            if (updateData.slug !== existing.slug) {
+                updateData.previousSlugs = [
+                    ...existing.previousSlugs.filter(s => s !== updateData.slug),
+                    existing.slug,
+                ].slice(-20);
+            }
+        }
     }
 
     if (canPublishDirectly(req.authUser)) {
