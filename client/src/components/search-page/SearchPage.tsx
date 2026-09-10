@@ -9,6 +9,7 @@ import PageMeta from "../page-meta/PageMeta";
 import HighlightText from "../common/HighlightText";
 import { ARTICLE_CATEGORIES } from "../../utils/categories";
 import { ARTICLE_DIFFICULTIES } from "../../utils/difficulties";
+import { articlePath } from "../../utils/articlePath";
 
 const FULL_LIMIT = 25;
 
@@ -271,7 +272,7 @@ export default function SearchPage() {
                                     {results.articles.map(article => (
                                         <Link
                                             key={article._id}
-                                            to={`/articles/${article._id}/details`}
+                                            to={articlePath(article)}
                                             className="search-page-result"
                                         >
                                             <div className="search-page-result-body">

@@ -8,6 +8,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 import { DEFAULT_AVATAR, handleAvatarError } from '../../utils/imageHelpers';
 import { formatDateTime } from '../../utils/formatters';
+import { articlePath } from '../../utils/articlePath';
 
 const PAGE_LIMIT = 20;
 export default function AdminComments() {
@@ -80,7 +81,7 @@ export default function AdminComments() {
                                     </div>
                                     {article && (
                                         <Link
-                                            to={`/articles/${article._id}/details`}
+                                            to={articlePath(article)}
                                             className="admin-comment-article-link"
                                             title={article.title}
                                         >

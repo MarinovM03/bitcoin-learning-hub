@@ -5,6 +5,7 @@ import PageMeta from "../page-meta/PageMeta";
 import { useMyBookmarks } from "../../hooks/queries/useBookmarks";
 import { useToggleBookmark } from "../../hooks/mutations/useBookmarkMutations";
 import { toast } from "../../lib/toast";
+import { articlePath } from "../../utils/articlePath";
 
 export default function Bookmarks() {
     const { data: articles = [], isPending: isLoading } = useMyBookmarks();
@@ -69,7 +70,7 @@ export default function Bookmarks() {
                                 </div>
                                 <div className="my-article-card-actions">
                                     <Link
-                                        to={`/articles/${article._id}/details`}
+                                        to={articlePath(article)}
                                         className="my-article-btn my-article-btn--view"
                                     >
                                         View

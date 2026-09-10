@@ -3,6 +3,7 @@ import type { SyntheticEvent } from "react";
 import { Link } from "react-router";
 import { formatViews } from "../../utils/formatters";
 import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from "../../utils/imageHelpers";
+import { articlePath } from "../../utils/articlePath";
 import Skeleton from "../skeleton/Skeleton";
 import type { Article, ArticleOwnerRef } from "../../types";
 
@@ -24,7 +25,7 @@ export default function ArticleCard({ article, readLabel = "Read Article →", s
 
     return (
         <Link
-            to={`/articles/${article._id}/details`}
+            to={articlePath(article)}
             className="catalog-card"
         >
             <div className="catalog-card-img-wrap">

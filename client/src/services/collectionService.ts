@@ -49,9 +49,9 @@ export interface ArticleMembership {
     slug: string;
     total: number;
     position: number;
-    parts: { _id: string; title: string }[];
-    prev: { _id: string; title: string } | null;
-    next: { _id: string; title: string } | null;
+    parts: { _id: string; title: string; slug?: string }[];
+    prev: { _id: string; title: string; slug?: string } | null;
+    next: { _id: string; title: string; slug?: string } | null;
 }
 
 export interface CollectionWriteData {

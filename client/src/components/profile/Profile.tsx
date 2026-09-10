@@ -23,6 +23,7 @@ import { queryKeys } from "../../lib/queryKeys";
 import Skeleton from "../skeleton/Skeleton";
 import { DEFAULT_AVATAR, handleAvatarError, handleImgError } from "../../utils/imageHelpers";
 import { formatMonthYear, timeAgo } from "../../utils/formatters";
+import { articlePath } from "../../utils/articlePath";
 import { toast } from "../../lib/toast";
 
 const QUICK_LINKS = [
@@ -185,7 +186,7 @@ export default function Profile() {
                                 {readHistory.map(article => (
                                     <li key={article._id}>
                                         <Link
-                                            to={`/articles/${article._id}/details`}
+                                            to={articlePath(article)}
                                             className="read-history-row"
                                         >
                                             <img

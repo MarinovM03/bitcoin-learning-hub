@@ -5,6 +5,7 @@ import { useCollection } from '../../hooks/queries/useCollections';
 import { useAuth } from '../../contexts/AuthContext';
 import ArticleCardSkeleton from '../article-card-skeleton/ArticleCardSkeleton';
 import { handleImgError } from '../../utils/imageHelpers';
+import { articlePath } from '../../utils/articlePath';
 import FollowButton from '../follow-button/FollowButton';
 import NotFound from '../not-found/NotFound';
 import PageMeta from '../page-meta/PageMeta';
@@ -91,7 +92,7 @@ export default function CollectionDetails() {
                         {collection.articles.map((article, index) => (
                             <li key={article._id}>
                                 <Link
-                                    to={`/articles/${article._id}/details`}
+                                    to={articlePath(article)}
                                     className="collection-part"
                                 >
                                     <span className="collection-part-number">{index + 1}</span>

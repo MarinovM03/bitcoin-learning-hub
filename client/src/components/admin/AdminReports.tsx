@@ -12,6 +12,7 @@ import type { AdminReportRow, ReportStatus } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
 import { formatDateTime } from '../../utils/formatters';
+import { articlePath, articlePathFromId } from '../../utils/articlePath';
 import { toast } from '../../lib/toast';
 
 const PAGE_LIMIT = 20;
@@ -71,9 +72,11 @@ export default function AdminReports() {
     };
 
     const targetLink = (report: AdminReportRow) => {
-        if (report.targetType === 'article') return `/articles/${report.targetId}/details`;
+        if (report.targetType === 'article') {
+            return articlePath({ _id: report.targetId, slug: report.target?.slug });
+        }
         if (report.targetType === 'glossary') return `/glossary/${report.targetId}`;
-        return report.target?.articleId ? `/articles/${report.target.articleId}/details` : null;
+        return report.target?.articleId ? articlePathFromId(report.target.articleId) : null;
     };
 
     if (!data) {

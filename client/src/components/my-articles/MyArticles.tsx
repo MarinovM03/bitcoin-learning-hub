@@ -9,6 +9,7 @@ import PageMeta from "../page-meta/PageMeta";
 import { useMyArticles } from "../../hooks/queries/useArticles";
 import { useDeleteArticle } from "../../hooks/mutations/useArticleMutations";
 import { toast } from "../../lib/toast";
+import { articlePath } from "../../utils/articlePath";
 import type { SyntheticEvent } from "react";
 
 const handleImgError = (e: SyntheticEvent<HTMLImageElement>) => {
@@ -215,7 +216,7 @@ export default function MyArticles() {
                                             <div className="my-articles-page-card-footer">
                                                 {activeTab === 'published' && (
                                                     <Link
-                                                        to={`/articles/${article._id}/details`}
+                                                        to={articlePath(article)}
                                                         className="my-articles-page-btn my-articles-page-btn--view"
                                                     >
                                                         View

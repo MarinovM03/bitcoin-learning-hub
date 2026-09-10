@@ -7,6 +7,7 @@ import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import type { AdminArticleRow } from '../../services/adminService';
 import ConfirmModal from '../common/ConfirmModal';
 import Spinner from '../spinner/Spinner';
+import { articlePath } from '../../utils/articlePath';
 
 const PAGE_LIMIT = 20;
 
@@ -120,7 +121,7 @@ export default function AdminArticles() {
                                     <td>
                                         <div className="admin-row-actions">
                                             <Link
-                                                to={`/articles/${article._id}/details`}
+                                                to={articlePath(article)}
                                                 className="admin-row-btn"
                                                 title="View article"
                                             >

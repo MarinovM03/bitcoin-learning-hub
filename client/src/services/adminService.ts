@@ -174,7 +174,7 @@ export interface AdminReportRow {
     status: ReportStatus;
     createdAt: string;
     _reporterId: { _id: string; username: string } | null;
-    target: { label: string; status?: string; articleId?: string } | null;
+    target: { label: string; status?: string; articleId?: string; slug?: string } | null;
 }
 
 export interface AdminReportsResponse {

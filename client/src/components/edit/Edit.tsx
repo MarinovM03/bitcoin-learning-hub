@@ -11,6 +11,7 @@ import NotFound from '../not-found/NotFound';
 import PageMeta from '../page-meta/PageMeta';
 import { createArticleSchema } from '../../validators/articleSchemas';
 import { toast } from '../../lib/toast';
+import { articlePath } from '../../utils/articlePath';
 import type { QuizFormQuestion, ArticleStatus, ArticleCategory } from '../../types';
 
 export default function Edit() {
@@ -88,7 +89,7 @@ export default function Edit() {
                 navigate('/my-articles');
                 return;
             }
-            navigate(status === 'draft' ? '/my-articles' : `/articles/${articleId}/details`);
+            navigate(status === 'draft' ? '/my-articles' : articlePath(saved));
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
         }

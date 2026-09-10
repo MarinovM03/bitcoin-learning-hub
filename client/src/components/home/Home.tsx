@@ -11,6 +11,7 @@ import PageMeta from "../page-meta/PageMeta";
 import { useArticles, useTrendingArticles } from "../../hooks/queries/useArticles";
 import { TOOLS } from "../../utils/navTools";
 import { handleImgError } from "../../utils/imageHelpers";
+import { articlePath } from "../../utils/articlePath";
 import { useJsonLd } from "../../hooks/useJsonLd";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -194,7 +195,7 @@ export default function Home() {
                 ) : (
                     <div className="magazine-grid">
                         {featured && (
-                            <Link to={`/articles/${featured._id}/details`} className="magazine-featured">
+                            <Link to={articlePath(featured)} className="magazine-featured">
                                 <img
                                     src={featured.imageUrl}
                                     alt={featured.title}
@@ -215,7 +216,7 @@ export default function Home() {
                                 {rest.map(article => (
                                     <Link
                                         key={article._id}
-                                        to={`/articles/${article._id}/details`}
+                                        to={articlePath(article)}
                                         className="magazine-small-card"
                                     >
                                         <img
@@ -253,7 +254,7 @@ export default function Home() {
                         {trendingArticles.map((article, index) => (
                             <Link
                                 key={article._id}
-                                to={`/articles/${article._id}/details`}
+                                to={articlePath(article)}
                                 className="trending-card"
                             >
                                 <div className="trending-rank">#{index + 1}</div>

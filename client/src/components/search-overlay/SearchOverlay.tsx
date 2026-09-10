@@ -8,6 +8,7 @@ import HighlightText from "../common/HighlightText";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { useBackdropClose } from "../../hooks/useBackdropClose";
 import { useScrollLock } from "../../hooks/useScrollLock";
+import { articlePath } from "../../utils/articlePath";
 
 const DEBOUNCE_MS = 300;
 const QUICK_LIMIT = 5;
@@ -77,7 +78,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     }, [query]);
 
     const flatItems = useMemo(() => [
-        ...results.articles.map(a => ({ kind: 'article', _id: a._id, to: `/articles/${a._id}/details` })),
+        ...results.articles.map(a => ({ kind: 'article', _id: a._id, to: articlePath(a) })),
         ...results.glossary.map(g => ({ kind: 'glossary', _id: g._id, to: `/glossary/${g._id}` })),
     ], [results]);
 
@@ -188,7 +189,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
                                                 <li key={article._id}>
                                                     <Link
                                                         id={`search-overlay-item-${article._id}`}
-                                                        to={`/articles/${article._id}/details`}
+                                                        to={articlePath(article)}
                                                         className={itemClassName(flatIndex)}
                                                         onClick={onClose}
                                                         ref={isActive ? activeItemRef : undefined}
