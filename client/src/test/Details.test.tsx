@@ -10,8 +10,11 @@ const ARTICLE_ID = '6a70f390ded8b6af8d8e0225';
 const OWNER_ID = '6a70f390ded8b6af8d8e0111';
 const OTHER_ID = '6a70f390ded8b6af8d8e0222';
 
+const ARTICLE_SLUG = 'what-a-utxo-actually-is';
+
 const article = {
     _id: ARTICLE_ID,
+    slug: ARTICLE_SLUG,
     title: 'What a UTXO actually is',
     summary: 'Unspent transaction outputs, explained plainly.',
     content: '# UTXOs\n\nBitcoin has no balances, only unspent outputs.',
@@ -33,12 +36,14 @@ const json = (body: unknown, status = 200) =>
 
 const routeFetch = (articleResponse: () => Response) => (input: RequestInfo | URL) => {
     const url = String(input);
-    if (/\/articles\/[a-f0-9]+\/related/.test(url)) return Promise.resolve(json([]));
-    if (/\/articles\/[a-f0-9]+\/collections/.test(url)) return Promise.resolve(json([]));
-    if (/\/articles\/[a-f0-9]+$/.test(url)) return Promise.resolve(articleResponse());
+    if (/\/articles\/[a-z0-9-]+\/related/.test(url)) return Promise.resolve(json([]));
+    if (/\/articles\/[a-z0-9-]+\/collections/.test(url)) return Promise.resolve(json([]));
+    if (/\/articles\/[a-z0-9-]+$/.test(url)) return Promise.resolve(articleResponse());
     if (url.includes('/likes/')) return Promise.resolve(json({ totalLikes: 3, likedByMe: false }));
     if (url.includes('/bookmarks')) return Promise.resolve(json([]));
-    if (url.includes('/comments/')) return Promise.resolve(json([]));
+    if (url.includes('/comments/')) {
+        return Promise.resolve(json({ comments: [], total: 0, page: 1, totalPages: 0 }));
+    }
     return Promise.resolve(json({}));
 };
 
@@ -50,13 +55,14 @@ const signIn = (userId: string) =>
 
 const NotFoundProbe = () => <div>not-found-page</div>;
 
-const renderDetails = () =>
+const renderDetails = (entry = `/articles/${ARTICLE_SLUG}`) =>
     render(
-        <MemoryRouter initialEntries={[`/articles/${ARTICLE_ID}/details`]}>
+        <MemoryRouter initialEntries={[entry]}>
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
                     <Routes>
-                        <Route path="/articles/:articleId/details" element={<Details />} />
+                        <Route path="/articles/:articleRef" element={<Details />} />
+                        <Route path="/articles/:articleRef/details" element={<Details />} />
                         <Route path="/not-found" element={<NotFoundProbe />} />
                     </Routes>
                 </AuthProvider>
@@ -131,5 +137,16 @@ describe('Details', () => {
         );
 
         expect(screen.queryByText('not-found-page')).not.toBeInTheDocument();
+    });
+
+    it('rewrites an id address to the readable one', async () => {
+        vi.spyOn(globalThis, 'fetch').mockImplementation(routeFetch(() => json(article)));
+
+        renderDetails(`/articles/${ARTICLE_ID}/details`);
+
+        expect(await screen.findByText(article.title)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(window.location.pathname).toBe(`/articles/${ARTICLE_SLUG}`);
+        });
     });
 });
