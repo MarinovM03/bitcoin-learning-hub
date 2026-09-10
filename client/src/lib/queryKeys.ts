@@ -50,6 +50,10 @@ export const queryKeys = {
         preview: (articleId?: string) => ['admin', 'preview', articleId],
         reports: (params: unknown) => ['admin', 'reports', params],
     },
+    transactions: {
+        all: ['transactions'],
+        detail: (txid?: string) => ['transactions', txid],
+    },
     market: {
         binance: ['market', 'binance'],
         global: ['market', 'global'],
