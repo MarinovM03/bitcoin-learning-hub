@@ -1,219 +1,315 @@
 # 🪙 Bitcoin Learning Hub
 
-A full-stack Single Page Application (SPA) built with **ReactJS + TypeScript** and **Node.js/Express**. Bitcoin Learning Hub is an educational platform where users can read and contribute articles about Bitcoin, follow multi-part article series, explore a community-driven glossary of cryptocurrency terms, use live on-chain and market tools, and engage in article discussions through a comments system.
+**Community-written Bitcoin education — in-depth articles, an A–Z glossary, and live market and on-chain tools, in one place.**
+
+[![CI](https://github.com/MarinovM03/bitcoin-learning-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/MarinovM03/bitcoin-learning-hub/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F7931A.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D22-339933.svg)](.node-version)
 
 ---
 
-## 📋 Project Description
+## Contents
 
-Bitcoin Learning Hub provides a structured, dark-themed interface for learning about Bitcoin and cryptocurrency. The platform supports full user authentication, content ownership, live market data, on-chain tools, and community interaction features.
-
-- **Guests** can browse articles, read article details, explore the glossary, use every tool, and view comments.
-- **Logged-in users** can create articles, contribute glossary terms, post comments, save drafts, like and bookmark articles.
-- **Authors** have full control (Edit/Delete) over their own articles, glossary terms, and comments.
-- **Admins** moderate the platform from a dedicated dashboard — promote or demote users, delete any content, and feature standout articles on the home page.
-
----
-
-## ✨ Features
-
-### Public Area (Guest)
-- **Home Page** — Hero section with platform tools panel, live Bitcoin market stats bar, halving countdown timer, Fear & Greed Index widget, an "On This Day in Bitcoin" historical events widget, latest articles feed, and a "Trending This Week" section.
-- **Articles Catalog** — Browse all articles with server-side search, category filtering, difficulty tag filter, sort by latest or most viewed, and smart pagination.
-- **Article Details** — Full article view with reading progress bar, drop-cap typography, reading time, view counter, like count, related articles sidebar, and a comments section.
-- **Author Profiles** — Public profile pages showing an author's published articles and total likes received.
-- **Glossary** — Searchable, alphabetically grouped A-Z list of Bitcoin terms with category filtering, letter rail scroll-spy, and dedicated term detail pages with prev/next navigation and related terms.
-- **Global Search** — `Ctrl+K` / `⌘ K` search overlay with arrow-key navigation, plus a dedicated search page covering articles and glossary terms with shareable URL filters by category, difficulty, and reading time.
-- **Article Quizzes** — "Test Your Knowledge" quizzes at the end of articles, graded by the server with instant per-question feedback and a final score breakdown.
-- **Authentication** — Login by email or username, and Register with full validation. Show/hide password toggles on every password field, a full `Forgot password?` email flow with single-use expiring reset links, and clear feedback when a session expires mid-request.
-
-### Private Area (Logged-in User)
-- **Create Article** — Submit new content with title, summary, content, category, and image URL. Choose to publish immediately or save as a draft.
-- **Article Drafts** — Save works-in-progress as drafts. Drafts are private and never appear in the public catalog.
-- **My Articles Page** — Dedicated page with a full grid view of all published articles and drafts, with edit and delete actions.
-- **Like Articles** — Toggle a like on any article you did not author. One like per user per article.
-- **Bookmark Articles** — Save articles to a personal bookmarks list for later reading.
-- **Post Comments** — Join the discussion on any article with a 500-character limit and live character counter.
-- **Contribute Glossary Terms** — Add new terms with a definition and category.
-- **Route Guards** — Protected routes prevent unauthorized access to Create, Edit, Profile, Bookmarks, and My Articles pages.
-
-### Bitcoin Tools
-- **Sats / BTC / USD Converter** — Three linked inputs that convert between satoshis, BTC, and USD live against the current BTC spot price, with common preset amounts.
-- **DCA Calculator** — Simulate dollar-cost-averaging strategies against historical BTC price data and visualize returns.
-- **Mempool Visualizer** — Live view of the Bitcoin mempool powered by public explorers, with transaction activity, fee tiers, and block space stats.
-- **Address Demystifier** — Paste any Bitcoin address to identify its format (Legacy, P2SH, SegWit, Taproot, Lightning, Testnet), read a plain-English explanation, and jump to the address on mempool.space.
-- **Multisig Explainer** — Interactive walkthrough of multi-signature wallets with visual breakdowns of M-of-N thresholds and common real-world setups.
-
-### Author Capabilities (Owner)
-- **Edit Article** — Update any article you created. Choose to save as draft or publish directly from the edit page.
-- **Delete Article** — Remove any article you created.
-- **Delete Comments** — Remove your own comments.
-- **Delete Glossary Terms** — Remove glossary terms you contributed.
-
-### User Profile
-- **Edit Profile** — Update username, email, and profile picture URL.
-- **Username Change Lock** — Username changes are locked for 30 days after each change.
-- **Change Password** — Dedicated dialog that confirms your current password, validates the new one, and signs out every other device on success.
-- **Delete Account** — Password-confirmed "Danger Zone" dialog that permanently removes the account and all of its content.
-- **Reset Reading History** — Clear every "marked as read" flag in one click, with a confirmation modal to prevent accidents.
-- **Stats Overview** — At-a-glance count of published articles, saved drafts, and total likes received.
-
-### Admin Area
-- **Stats Dashboard** — Totals and last-7-days deltas for users, articles, comments, glossary terms, bookmarks, and likes.
-- **User Management** — Paginated, searchable list of users with role promotion/demotion and full account deletion (which cascades through articles, comments, bookmarks, likes, glossary terms, reading history, and reports).
-- **Article Moderation** — Paginated list with search, hard-delete for any article, and a one-click toggle to feature an article on the home page.
-- **Comment Moderation** — Paginated feed of every comment with article context and one-click removal.
-
-### UI/UX
-- **Reading Progress Bar** — Thin orange bar at the top of the viewport that fills as you scroll through an article.
-- **Magazine-Style Article Layout** — Drop-cap first letter, tinted lead summary, and ornament-marked article end.
-- **Smart Paginator** — Catalog pagination shows ellipsis for large page counts (e.g. `1 … 4 5 6 … 20`).
-- **Trending This Week** — Home page section showing the most-liked articles from the past 7 days.
-- **Custom Confirmation Modals** — All delete actions use a styled, context-aware modal.
-- **Scroll to Top Button** — Accessible button that fades in after scrolling, respects `prefers-reduced-motion`.
-- **Live Bitcoin Price** — Real-time BTC/USDT ticker in the top bar, updated every 5 seconds.
-- **Bitcoin Stats Bar** — Live 24h price change, market cap, BTC dominance, and 24h volume.
-- **Halving Countdown** — Live countdown timer to the next Bitcoin halving event.
-- **Fear & Greed Index** — Live market sentiment widget powered by CoinStats.
-- **Responsive Navbar** — Desktop, tablet, and mobile breakpoints with a portal-rendered full-screen mobile menu.
-- **Tools Dropdown** — Consolidated hover/click dropdown in the navbar grouping every Bitcoin tool (Converter, DCA, Address, Mempool, Multisig) behind one entry point.
-- **Loading Spinners** — Bitcoin-themed spinner shown during all async data fetches.
-- **Toast Notifications** — Unified success/error/info notifications driven by a small singleton store, so mutations, background failures, and the session-expired flow all report through one consistent surface.
-- **Form Loading States** — All submit buttons disable and show feedback text while requests are in flight.
-- **Smooth Scroll Effects** — The article read-progress bar batches updates through `requestAnimationFrame` so it stays at one update per frame even on long scrolls.
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Scripts](#scripts)
+- [Testing](#testing)
+- [Security](#security)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🛠️ Technologies Used
+## Overview
+
+Bitcoin is badly served by the material written about it: exchange blogs selling something, forum threads assuming you already know, and documentation written for engineers. Bitcoin Learning Hub is a place to publish and read the explanation you wish you had found first.
+
+Anyone can read. Signed-in readers can like, bookmark, comment, take quizzes and follow the authors they trust. Authors write articles and gather them into ordered reading paths. Admins review what new authors submit before it goes public.
+
+**Roles at a glance**
+
+| | Read & browse | Comment, like, follow | Publish | Moderate |
+| :--- | :---: | :---: | :---: | :---: |
+| Guest | ✅ | — | — | — |
+| Reader *(confirmed email)* | ✅ | ✅ | — | — |
+| Author | ✅ | ✅ | ✅ | — |
+| Admin | ✅ | ✅ | ✅ | ✅ |
+
+Publishing, commenting, liking and glossary contributions all require a confirmed email address. Submissions from authors who have not yet earned publishing trust go to a moderation queue rather than straight to the site.
+
+---
+
+## Features
+
+### Reading
+- **Articles** — full-text search, category and difficulty filters, sort by newest or most read, paginated.
+- **Article pages** — readable web addresses, a reading progress bar, table of contents, reading time, view and like counts, related articles and threaded discussion.
+- **Collections** — multi-part guides in a deliberate order, with part navigation built into each article.
+- **Glossary** — A–Z terms with search, category filter, a letter rail that tracks your scroll position, and prev/next navigation between terms.
+- **Global search** — `Ctrl+K` / `⌘K` overlay with keyboard navigation, plus a results page with shareable filters.
+- **Quizzes** — end-of-article questions graded server-side, with per-question feedback and a final score.
+- **Author profiles** — published work, collections, likes received and follower count.
+
+### Accounts
+- **Your Feed** — everything published by the accounts and collections you follow, filterable to a single author.
+- **Following** — follow and unfollow authors and collections, managed from your profile.
+- **Reading history** — mark articles as read and watch the list build up.
+- **Bookmarks** — a private saved-for-later list.
+- **Profile** — avatar, username (locked for 30 days after a change), email, password and account deletion.
+
+### Writing
+- **Markdown editor** with live preview, draft support and an optional quiz builder.
+- **My Articles** — everything you have written, with review status, edit and delete.
+- **My Collections** — create collections, reorder their parts and set a cover image.
+- **Glossary contributions** — add terms with a definition and category.
+
+### Bitcoin tools
+- **Sats / BTC / USD converter** — three linked inputs against the live spot price.
+- **DCA calculator** — backtest dollar-cost averaging against historical price data.
+- **Address lookup** — identify any address format (Legacy, P2SH, SegWit, Taproot, Lightning, Testnet) with a plain-English explanation.
+- **Multisig explainer** — an interactive walkthrough of M-of-N thresholds and common setups.
+
+### Live data
+Real-time BTC price, 24-hour change, market cap, dominance and volume; a countdown to the next halving; a Fear & Greed sentiment gauge; and an "On This Day in Bitcoin" panel.
+
+### Administration
+- **Dashboard** — platform totals with seven-day deltas.
+- **Moderation queue** — approve or reject submissions with a note back to the author.
+- **Reports** — triage what readers flag on articles, comments and glossary terms.
+- **Users** — search, promote, grant publishing trust, or delete an account and everything it created.
+- **Content** — remove any article, comment, collection or term, and feature an article on the home page.
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
 | :--- | :--- |
-| Frontend Library | ReactJS 19 + TypeScript |
+| UI | React 19 + TypeScript |
 | Routing | React Router v7 |
-| Server State | TanStack Query (React Query) |
-| Client State | React Context API |
-| Forms & Validation | react-hook-form + Zod (shared schemas client and server) |
-| Build Tool | Vite |
-| Backend Runtime | Node.js |
-| Backend Framework | Express.js v5 |
+| Server state | TanStack Query |
+| Client state | React Context |
+| Forms & validation | react-hook-form + Zod *(schemas shared with the API)* |
+| Build | Vite |
+| Runtime | Node.js 22 |
+| API | Express 5 |
 | Database | MongoDB via Mongoose |
-| Authentication | JWT + bcrypt |
-| Transactional Email | Resend |
-| Testing | Vitest + Testing Library (client), Vitest + Supertest + mongodb-memory-server (API) |
-| Styling | Pure CSS (no frameworks) |
+| Auth | JWT in an httpOnly cookie + bcrypt |
+| Email | Resend |
+| Testing | Vitest + Testing Library (UI) · Vitest + Supertest + mongodb-memory-server (API) |
+| Styling | Plain CSS, no framework |
 | Icons | lucide-react |
-| Live Market Data | Binance API, CoinGecko API, CoinStats API |
-| On-Chain Data | mempool.space (explorer links and live mempool feeds) |
+| Market data | Binance, CoinGecko, CoinStats |
+| On-chain | mempool.space |
 
 ---
 
-## 🔒 Security & Hardening
+## Architecture
 
-- **Helmet** baseline headers and a strict CORS allow-list driven by `CLIENT_URL`.
-- **Required-env startup check** — the server refuses to boot when critical config is missing or weak, so a degraded process can never silently ship.
-- **Reverse-proxy aware** — configured to resolve real client addresses behind Render/Heroku/Fly/nginx so rate limiting and view de-duplication operate on the right key.
-- **Tiered rate limiting** — separate per-client limiters for authentication endpoints and for state-changing requests.
-- **Per-account login lockout** — repeated failed sign-in attempts temporarily lock the account regardless of source IP. The counter resets on the next successful sign-in.
-- **Password reset by email** — single-use reset links that expire after 30 minutes; a successful reset signs out every existing session.
-- **Re-authentication for sensitive changes** — changing the account email or password, or deleting the account, always requires the current password.
-- **Defensive input handling** — request payloads, URL parameters, and query strings are sanitized and type-coerced before they reach the database layer.
-- **Indexed text search** — article search runs against a weighted text index instead of scanning the collection.
-- **Sanitized markdown rendering** — every article body and glossary definition passes through `rehype-sanitize` before reaching the DOM.
-- **bcrypt password hashing** with a tuned work factor.
-- **JWT auth** — signed tokens with an enforced expiry, validated on every request and revalidated client-side before each call.
-- **Tight ownership checks** — every edit/delete handler scopes the query by owner so users can only touch their own content.
-- **Health probe** — `GET /health` reports DB connectivity and process uptime for hosting platforms and uptime monitors.
+Two independently deployable applications in one repository.
 
----
+```
+bitcoin-learning-hub/
+├── client/     React SPA — static build, deployed to a CDN
+├── server/     Express REST API — deployed as a long-running Node process
+└── .github/    CI — lint, test and build on every push and pull request
+```
 
-## 🛣️ Application Routes
+The client is a static bundle that talks to the API over CORS with credentials. The API owns all authorisation; the client never decides what a user may do, only what to show them.
 
-| Path | Description | Access |
-| :--- | :--- | :--- |
-| `/` | Home Page | Public |
-| `/login` | User Login | Guest only |
-| `/register` | User Registration | Guest only |
-| `/forgot-password` | Password Reset Request | Guest only |
-| `/reset-password` | Set a New Password (from email link) | Guest only |
-| `/articles` | Articles Catalog | Public |
-| `/articles/:id/details` | Article Details + Comments | Public |
-| `/articles/create` | Create Article | Authenticated |
-| `/articles/:id/edit` | Edit Article | Owner only |
-| `/glossary` | Bitcoin Glossary | Public |
-| `/glossary/:id` | Glossary Term Details | Public |
-| `/search` | Global Search Results | Public |
-| `/converter` | Sats / BTC / USD Converter | Public |
-| `/dca` | DCA Calculator | Public |
-| `/mempool` | Mempool Visualizer | Public |
-| `/address` | Address Demystifier | Public |
-| `/multisig` | Multisig Explainer | Public |
-| `/users/:id` | Public Author Profile | Public |
-| `/profile` | User Profile & Settings | Authenticated |
-| `/my-articles` | My Articles Manager | Authenticated |
-| `/bookmarks` | Saved Bookmarks | Authenticated |
-| `/admin` | Admin Dashboard (Stats, Users, Articles, Comments) | Admin only |
-| `/health` | Health Probe (server only) | Public |
-| `*` | 404 Not Found | Public |
+A few decisions worth knowing about:
+
+- **Validation schemas are written once in Zod** and used by both the form layer and the API, so the browser and the server agree on what a valid article is.
+- **Server state lives in TanStack Query**, not in context. Mutations invalidate the specific keys they affect rather than clearing the cache.
+- **Content is addressed by readable slugs** (`/articles/what-is-bitcoin`). Renaming keeps the old address working, so published links never rot.
+- **Sitemap and RSS are generated by the API** from live data rather than built into the bundle.
+- **Sessions are httpOnly cookies**, so the token is never reachable from JavaScript.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Node.js v18+
-- MongoDB (local or Atlas)
 
-### 1. Clone the repository
+- **Node.js 22+** (see [`.node-version`](.node-version))
+- **MongoDB** — a local instance or a free MongoDB Atlas cluster
+
+### 1. Clone
+
 ```bash
 git clone https://github.com/MarinovM03/bitcoin-learning-hub.git
 cd bitcoin-learning-hub
 ```
 
-### 2. Set up the backend
+### 2. Start the API
+
 ```bash
 cd server
+npm install
 ```
-Create a `.env` file in the `server/` directory:
-```
-MONGO_URI=<your_mongodb_connection_string>
-JWT_SECRET=<generate_with_openssl_rand_base64_48>
+
+Create `server/.env`:
+
+```ini
+MONGO_URI=mongodb://127.0.0.1:27017/bitcoin-hub
+JWT_SECRET=<generate with: openssl rand -base64 48>
 CLIENT_URL=http://localhost:5173
 PORT=5000
-
-# Optional: comma-separated list of emails auto-promoted to admin on register
-ADMIN_EMAILS=
-
-# Optional: Resend API key for password reset emails.
-# Without it, reset links are printed to the server console instead.
-RESEND_API_KEY=
-# Optional: verified sender, e.g. "Bitcoin Learning Hub <noreply@yourdomain.com>"
-EMAIL_FROM=
 ```
-> The server fails fast at startup if `MONGO_URI`, `CLIENT_URL`, or `JWT_SECRET` are missing. `JWT_SECRET` has a minimum length requirement — generate one with `openssl rand -base64 48`.
-Install dependencies and start:
+
 ```bash
-npm install
 npm run dev
 ```
-The server will run on `http://localhost:5000`.
 
-### 3. Set up the frontend
+The API runs on `http://localhost:5000`. It refuses to start if `MONGO_URI`, `CLIENT_URL` or `JWT_SECRET` are missing, so a half-configured process can never quietly serve traffic.
+
+### 3. Start the client
+
 ```bash
 cd client
 npm install
 npm run dev
 ```
-The app will run on `http://localhost:5173`.
 
-### 4. Run the test suites
+The app runs on `http://localhost:5173` and expects the API on port 5000 by default.
+
+### 4. Create an account
+
+Register through the UI. Publishing and commenting need a confirmed email address — without `RESEND_API_KEY` set, and in any non-production run, the confirmation email is printed to the API console. Copy the link from your terminal into the browser.
+
+To give your first account admin rights, add its email to `ADMIN_EMAILS` in `server/.env` before registering.
+
+### Upgrading an existing database
+
+Articles are addressed by slug. Give articles created before that one, with the server stopped:
+
 ```bash
-cd server && npm test   # API integration tests (in-memory MongoDB)
-cd client && npm test   # component and unit tests
+cd server && npm run backfill:slugs
 ```
 
 ---
 
-## 👤 Author
+## Environment Variables
 
-**Martin Marinov**
-GitHub: [@MarinovM03](https://github.com/MarinovM03)
+### `server/.env`
+
+| Variable | Required | Description |
+| :--- | :---: | :--- |
+| `MONGO_URI` | ✅ | MongoDB connection string. |
+| `JWT_SECRET` | ✅ | Session signing secret. Minimum length enforced at startup — generate with `openssl rand -base64 48`. |
+| `CLIENT_URL` | ✅ | Origin allowed by CORS and used to build links in outgoing email. |
+| `PORT` | | API port. Defaults to `5000`. |
+| `ADMIN_EMAILS` | | Comma-separated emails promoted to admin on registration. |
+| `RESEND_API_KEY` | | Enables real email delivery. Without it, messages are printed to the console. |
+| `EMAIL_FROM` | | Verified sender, e.g. `Bitcoin Learning Hub <noreply@yourdomain.com>`. Required for delivery to addresses other than your own. |
+| `COOKIE_SAMESITE` | | Session cookie `SameSite` policy. Defaults to `lax`; set to `none` when the site and API sit on different domains. |
+| `COOKIE_SECURE` | | Force the `Secure` flag. Defaults to on in production, and whenever `SameSite=None`. |
+
+### `client/.env`
+
+| Variable | Required | Description |
+| :--- | :---: | :--- |
+| `VITE_API_URL` | for builds | API origin. Also fixes the CSP `connect-src` and the sitemap URL in `robots.txt`. |
+| `VITE_SITE_URL` | recommended | Public site origin, used to make social preview image URLs absolute. |
+
+Both are validated at build time — a malformed value fails the build rather than shipping.
+
+---
+
+## Scripts
+
+### Server
+
+| Command | What it does |
+| :--- | :--- |
+| `npm run dev` | Start with file watching. |
+| `npm start` | Start once. |
+| `npm run lint` | ESLint. |
+| `npm test` | API tests against an in-memory MongoDB. |
+| `npm run test:watch` | Same, in watch mode. |
+| `npm run backfill:slugs` | Give existing articles a readable address. |
+| `npm run backfill:verified` | Mark pre-existing accounts as confirmed. |
+| `npm run backfill:moderation` | Populate moderation fields on older content. |
+| `npm run migrate:collections` | Convert legacy article series into collections. |
+
+### Client
+
+| Command | What it does |
+| :--- | :--- |
+| `npm run dev` | Vite dev server with HMR. |
+| `npm run build` | Type-check and build to `dist/`. |
+| `npm run preview` | Serve the production build locally. |
+| `npm run lint` | ESLint. |
+| `npm run typecheck` | TypeScript, no emit. |
+| `npm test` | Component and unit tests. |
+
+---
+
+## Testing
+
+```bash
+cd server && npm test    # API integration tests, real routes against in-memory MongoDB
+cd client && npm test    # component and unit tests in jsdom
+```
+
+The API suite exercises the actual Express app through Supertest against a real MongoDB instance started in-process, so routing, validation, authorisation and database behaviour are all covered rather than mocked.
+
+CI runs on every push and pull request to `main`: lint and tests for the API, and lint, type-check, tests and a production build for the client.
+
+---
+
+## Security
+
+The platform holds accounts and user-written content, so the API is written on the assumption that any request may be hostile.
+
+- **Sessions** are signed JWTs in httpOnly, same-site cookies, revocable per session and across all devices.
+- **Passwords** are bcrypt-hashed. Changing your email or password, or deleting your account, requires the current password.
+- **Sign-in throttling** locks an account after repeated failures regardless of where they come from, and rate limits apply separately to authentication, writes and reads.
+- **Every input is validated** against a schema before it reaches the database, and unknown keys are stripped rather than trusted.
+- **Ownership is enforced in the query**, so an edit or delete can only ever match content the requester owns.
+- **User-written markdown is sanitised** before rendering; no raw HTML from users reaches the DOM.
+- **Response headers** set a strict Content-Security-Policy, deny framing, and enable HSTS.
+- **Email confirmation** gates publishing, commenting, liking and glossary contributions.
+
+Found something? Please report it privately by opening a [security advisory](https://github.com/MarinovM03/bitcoin-learning-hub/security/advisories/new) rather than a public issue.
+
+---
+
+## Deployment
+
+The two applications deploy separately.
+
+**Client** — any static host. The repository ships Netlify configuration in `client/public/`: `_redirects` for SPA routing and `_headers` for security and cache headers. Build with `npm run build` and publish `client/dist/`, with `VITE_API_URL` and `VITE_SITE_URL` set in the host's build environment.
+
+**API** — any platform that runs a Node process (Render, Railway, Fly). Set the environment variables above, point `CLIENT_URL` at the deployed site, and use `GET /health` as the health check — it reports database connectivity, not just process liveness. The API is proxy-aware, so rate limiting and view counting use the real client address behind a load balancer.
+
+---
+
+## Roadmap
+
+- **Lightning value flows** — tip an author for an article, and sats prizes on quizzes. Non-custodial: the platform never holds anyone's funds.
+- **Image uploads** — for avatars, article covers and collection covers, alongside the existing URL field.
+- **Transaction Explainer** — paste a transaction ID and read what it actually did, in plain English.
+- **Live block feed** — new blocks as they are found, with fees and space used.
+- **Scam sandbox** — safe, annotated walkthroughs of real scam patterns.
+- **Learning résumé** — a shareable record of what you have read and the quizzes you have passed.
+
+---
+
+## Contributing
+
+Bug reports and small fixes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, code style and commit conventions.
+
+---
+
+## License
+
+[MIT](LICENSE) © Martin Marinov
+
+**GitHub:** [@MarinovM03](https://github.com/MarinovM03)
