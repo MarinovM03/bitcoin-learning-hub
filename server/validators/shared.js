@@ -15,6 +15,10 @@ export const slug = z
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid address')
     .max(90, 'Invalid address');
 
+export const txidParam = z.object({
+    txid: z.string().regex(/^[0-9a-fA-F]{64}$/, 'A transaction ID is 64 hexadecimal characters'),
+});
+
 export const articleIdParam = z.object({ articleId: objectId });
 export const articleRefParam = z.object({ articleId: z.union([objectId, slug]) });
 export const termIdParam = z.object({ termId: objectId });

@@ -13,6 +13,7 @@ import * as adminController from './controllers/adminController.js';
 import * as searchController from './controllers/searchController.js';
 import * as reportController from './controllers/reportController.js';
 import * as marketController from './controllers/marketController.js';
+import * as transactionController from './controllers/transactionController.js';
 import * as sitemapController from './controllers/sitemapController.js';
 import * as rssController from './controllers/rssController.js';
 import * as collectionController from './controllers/collectionController.js';
@@ -44,6 +45,7 @@ import { updateUserRoleSchema, updateUserTrustSchema, rejectArticleSchema } from
 import {
     articleIdParam,
     articleRefParam,
+    txidParam,
     termIdParam,
     commentIdParam,
     userIdParam,
@@ -163,7 +165,8 @@ router.get('/rss.xml', rssController.getRssFeed);
 // Search route
 router.get('/search', searchController.search);
 
-// Market data proxy
+// Market and on-chain data proxies
 router.get('/proxy/btc-global', marketController.getBtcGlobal);
+router.get('/proxy/tx/:txid', validate({ params: txidParam }), transactionController.getTransaction);
 
 export default router;
