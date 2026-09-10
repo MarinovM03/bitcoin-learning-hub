@@ -13,7 +13,7 @@ export const resetRssCache = () => {
 };
 
 const item = (article, base) => {
-    const url = `${base}/articles/${article._id}/details`;
+    const url = `${base}/articles/${article.slug}`;
     return [
         '    <item>',
         `      <title>${escapeXml(article.title)}</title>`,
@@ -35,7 +35,7 @@ export const getRssFeed = asyncHandler(async (_req, res) => {
 
     const base = clientBaseUrl();
     const articles = await Article.find({ status: 'published' })
-        .select('title summary category createdAt')
+        .select('title slug summary category createdAt')
         .sort({ createdAt: -1 })
         .limit(FEED_LIMIT)
         .lean();

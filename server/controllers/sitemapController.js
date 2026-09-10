@@ -41,7 +41,7 @@ export const getSitemap = asyncHandler(async (_req, res) => {
 
     const base = clientBaseUrl();
     const [articles, terms, collections] = await Promise.all([
-        Article.find({ status: 'published' }).select('updatedAt').sort({ updatedAt: -1 }).lean(),
+        Article.find({ status: 'published' }).select('slug updatedAt').sort({ updatedAt: -1 }).lean(),
         GlossaryTerm.find({ status: 'published' }).select('updatedAt').sort({ updatedAt: -1 }).lean(),
         Collection.find().select('slug updatedAt').sort({ updatedAt: -1 }).lean(),
     ]);
@@ -53,7 +53,7 @@ export const getSitemap = asyncHandler(async (_req, res) => {
             priority: route.priority,
         })),
         ...articles.map((article) => ({
-            loc: `${base}/articles/${article._id}/details`,
+            loc: `${base}/articles/${article.slug}`,
             lastmod: article.updatedAt,
             changefreq: 'weekly',
             priority: '0.8',
