@@ -152,7 +152,7 @@ export const adminListArticles = asyncHandler(async (req, res) => {
 
     const [articles, total] = await Promise.all([
         Article.find(filter)
-            .select('title category status featured views createdAt _ownerId')
+            .select('title slug category status featured views createdAt _ownerId')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limitNum)
@@ -320,14 +320,14 @@ const snapshotTargets = async (reports) => {
     }
 
     const [articles, comments, terms, collections] = await Promise.all([
-        Article.find({ _id: { $in: idsByType.article } }).select('title status').lean(),
+        Article.find({ _id: { $in: idsByType.article } }).select('title slug status').lean(),
         Comment.find({ _id: { $in: idsByType.comment } }).select('text articleId').lean(),
         GlossaryTerm.find({ _id: { $in: idsByType.glossary } }).select('term status').lean(),
         Collection.find({ _id: { $in: idsByType.collection } }).select('title slug').lean(),
     ]);
 
     const lookup = new Map();
-    for (const a of articles) lookup.set(`article:${a._id}`, { label: a.title, status: a.status });
+    for (const a of articles) lookup.set(`article:${a._id}`, { label: a.title, status: a.status, slug: a.slug });
     for (const c of comments) lookup.set(`comment:${c._id}`, { label: c.text, articleId: c.articleId });
     for (const t of terms) lookup.set(`glossary:${t._id}`, { label: t.term, status: t.status });
     for (const c of collections) lookup.set(`collection:${c._id}`, { label: c.title, slug: c.slug });

@@ -11,7 +11,7 @@ const TARGET_MODELS = {
     collection: Collection,
 };
 
-const FEED_CARD_FIELDS = 'title summary imageUrl category difficulty readingTime views createdAt _ownerId';
+const FEED_CARD_FIELDS = 'title slug summary imageUrl category difficulty readingTime views createdAt _ownerId';
 
 export const toggle = asyncHandler(async (req, res) => {
     const { targetType, targetId } = req.body;

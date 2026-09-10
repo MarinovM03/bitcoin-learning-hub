@@ -61,7 +61,7 @@ export const search = asyncHandler(async (req, res) => {
 
     const pattern = new RegExp(escapeRegex(rawQuery), 'i');
     const overfetch = limit * 3;
-    const articleProjection = { title: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 };
+    const articleProjection = { title: 1, slug: 1, summary: 1, content: 1, category: 1, difficulty: 1, imageUrl: 1, readingTime: 1, _ownerId: 1 };
 
     const sharedArticleFilter = { status: 'published' };
     if (category) sharedArticleFilter.category = category;

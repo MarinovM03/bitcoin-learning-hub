@@ -26,7 +26,7 @@ export const toggle = asyncHandler(async (req, res) => {
 
 export const getMyBookmarks = asyncHandler(async (req, res) => {
     const bookmarks = await Bookmark.find({ _ownerId: req.user._id })
-        .populate('articleId', 'title category imageUrl summary difficulty readingTime views status createdAt')
+        .populate('articleId', 'title slug category imageUrl summary difficulty readingTime views status createdAt')
         .sort({ createdAt: -1 });
 
     const articles = bookmarks
