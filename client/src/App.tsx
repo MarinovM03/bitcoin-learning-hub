@@ -64,7 +64,8 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/articles" element={<Catalog />} />
-                        <Route path="/articles/:articleId/details" element={<Details />} />
+                        <Route path="/articles/:articleRef" element={<Details />} />
+                        <Route path="/articles/:articleRef/details" element={<Details />} />
                         <Route path="/users/:userId" element={<AuthorProfile />} />
                         <Route path="/glossary" element={<Glossary />} />
                         <Route path="/glossary/:termId" element={<GlossaryDetails />} />

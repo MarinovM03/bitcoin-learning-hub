@@ -21,6 +21,7 @@ import ArticleToc from "../article-toc/ArticleToc";
 import { extractHeadings } from "../../utils/markdownToc";
 import { formatViews, formatDate } from '../../utils/formatters';
 import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
+import { articlePath } from '../../utils/articlePath';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 import { toast } from "../../lib/toast";
@@ -28,10 +29,12 @@ import { useJsonLd } from "../../hooks/useJsonLd";
 
 export default function Details() {
     const navigate = useNavigate();
-    const { articleId } = useParams();
+    const { articleRef } = useParams();
     const { userId, isAuthenticated, isEmailVerified } = useAuth();
 
-    const { data: article, isPending, isError } = useArticle(articleId);
+    const { data: article, isPending, isError } = useArticle(articleRef);
+    const articleId = article?._id;
+
     const { data: relatedArticles = [] } = useRelatedArticles(articleId);
     const { data: memberships = [] } = useArticleCollections(articleId);
     const { data: likeSummary } = useLikeSummary(articleId);
@@ -53,6 +56,16 @@ export default function Details() {
     const [showReportModal, setShowReportModal] = useState(false);
     const [readProgress, setReadProgress] = useState(0);
     const [copied, setCopied] = useState(false);
+
+    const canonicalSlug = article?.slug;
+
+    useEffect(() => {
+        if (!canonicalSlug) return;
+        const canonical = `/articles/${canonicalSlug}`;
+        if (window.location.pathname !== canonical) {
+            window.history.replaceState(null, '', canonical);
+        }
+    }, [canonicalSlug]);
 
     useEffect(() => {
         let rafId = 0;
@@ -111,7 +124,7 @@ export default function Details() {
                 url: `${window.location.origin}/icon-512.png`,
             },
         },
-        mainEntityOfPage: `${window.location.origin}${window.location.pathname}`,
+        mainEntityOfPage: `${window.location.origin}/articles/${article.slug}`,
     } : null);
 
     useJsonLd(article ? {
@@ -295,7 +308,7 @@ export default function Details() {
                             <nav className="series-prev-next" aria-label="Collection navigation">
                                 {prevPart ? (
                                     <Link
-                                        to={`/articles/${prevPart._id}/details`}
+                                        to={articlePath(prevPart)}
                                         className="series-prev-next__link series-prev-next__link--prev"
                                     >
                                         <ChevronLeft size={18} strokeWidth={2.25} />
@@ -307,7 +320,7 @@ export default function Details() {
                                 ) : <span />}
                                 {nextPart ? (
                                     <Link
-                                        to={`/articles/${nextPart._id}/details`}
+                                        to={articlePath(nextPart)}
                                         className="series-prev-next__link series-prev-next__link--next"
                                     >
                                         <span className="series-prev-next__label">
@@ -411,7 +424,7 @@ export default function Details() {
                                                     </span>
                                                 ) : (
                                                     <Link
-                                                        to={`/articles/${part._id}/details`}
+                                                        to={articlePath(part)}
                                                         className="details-series-link"
                                                     >
                                                         <span className="details-series-part">Part {index + 1}</span>
@@ -545,7 +558,7 @@ export default function Details() {
                                     {relatedArticles.map(rel => (
                                         <Link
                                             key={rel._id}
-                                            to={`/articles/${rel._id}/details`}
+                                            to={articlePath(rel)}
                                             className="details-related-card"
                                         >
                                             <img

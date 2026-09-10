@@ -34,6 +34,8 @@ export interface ArticleOwnerRef {
 export interface Article {
     _id: string;
     title: string;
+    slug: string;
+    previousSlugs?: string[];
     category: ArticleCategory;
     difficulty: ArticleDifficulty;
     imageUrl: string;
@@ -56,5 +58,5 @@ export interface ArticleDetail extends Omit<Article, '_ownerId'> {
 
 export type ArticleDraft = Omit<
     Article,
-    '_id' | '_ownerId' | 'views' | 'readingTime' | 'createdAt' | 'updatedAt'
+    '_id' | 'slug' | 'previousSlugs' | '_ownerId' | 'views' | 'readingTime' | 'createdAt' | 'updatedAt'
 >;
