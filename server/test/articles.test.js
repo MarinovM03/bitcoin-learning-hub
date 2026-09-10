@@ -98,9 +98,80 @@ describe('GET /articles/:id', () => {
         expect(asOther.status).toBe(404);
     });
 
-    it('returns 400 for an invalid id', async () => {
-        const res = await request(app()).get('/articles/not-an-id');
+    it('returns 404 for an address that matches nothing', async () => {
+        const res = await request(app()).get('/articles/not-an-article');
+        expect(res.status).toBe(404);
+    });
+
+    it('returns 400 for an address that is not slug-shaped', async () => {
+        const res = await request(app()).get('/articles/Not%20A%20Slug');
         expect(res.status).toBe(400);
+    });
+});
+
+describe('article addresses', () => {
+    it('derives a readable address from the title', async () => {
+        const { token } = await registerAndToken();
+        const res = await createArticle(token, { title: 'What Is Bitcoin, Really?' });
+
+        expect(res.status).toBe(201);
+        expect(res.body.slug).toBe('what-is-bitcoin-really');
+    });
+
+    it('keeps addresses unique across articles', async () => {
+        const { token } = await registerAndToken();
+        await createArticle(token, { title: 'Running a node' });
+        const second = await createArticle(token, { title: 'Running a node' });
+
+        expect(second.body.slug).toBe('running-a-node-2');
+    });
+
+    it('serves an article by its address', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token, { title: 'Fee estimation explained' });
+
+        const res = await request(app()).get('/articles/fee-estimation-explained');
+        expect(res.status).toBe(200);
+        expect(String(res.body._id)).toBe(String(article._id));
+    });
+
+    it('still serves an article by its id', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token, { title: 'Addressed by id' });
+
+        const res = await request(app()).get(`/articles/${article._id}`);
+        expect(res.status).toBe(200);
+        expect(res.body.slug).toBe('addressed-by-id');
+    });
+
+    it('keeps the old address working after a rename', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token, { title: 'The original title' });
+
+        const renamed = await request(app())
+            .put(`/articles/${article._id}`)
+            .set('Cookie', token)
+            .send({ ...articleFixture, title: 'The replacement title' });
+
+        expect(renamed.status).toBe(200);
+        expect(renamed.body.slug).toBe('the-replacement-title');
+
+        const viaOld = await request(app()).get('/articles/the-original-title');
+        expect(viaOld.status).toBe(200);
+        expect(viaOld.body.slug).toBe('the-replacement-title');
+    });
+
+    it('leaves the address alone when the title does not change', async () => {
+        const { token } = await registerAndToken();
+        const { body: article } = await createArticle(token, { title: 'A steady title' });
+
+        const updated = await request(app())
+            .put(`/articles/${article._id}`)
+            .set('Cookie', token)
+            .send({ ...articleFixture, title: 'A steady title', summary: 'A fresh summary for it.' });
+
+        expect(updated.body.slug).toBe('a-steady-title');
+        expect(updated.body.previousSlugs).toEqual([]);
     });
 });
 

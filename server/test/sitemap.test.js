@@ -31,9 +31,9 @@ describe('GET /sitemap.xml', () => {
         expect(pending.body.status).toBe('pending');
 
         const res = await fetchSitemap();
-        expect(res.text).toContain(`/articles/${published.body._id}/details`);
-        expect(res.text).not.toContain(String(draft.body._id));
-        expect(res.text).not.toContain(String(pending.body._id));
+        expect(res.text).toContain(`/articles/${published.body.slug}`);
+        expect(res.text).not.toContain(draft.body.slug);
+        expect(res.text).not.toContain(pending.body.slug);
     });
 
     it('lists approved glossary terms only', async () => {

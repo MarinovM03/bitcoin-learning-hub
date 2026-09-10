@@ -33,9 +33,9 @@ describe('GET /rss.xml', () => {
         const res = await fetchFeed();
 
         expect(res.text).toContain('Readable in a feed');
-        expect(res.text).toContain(`/articles/${published.body._id}/details`);
-        expect(res.text).not.toContain(String(draft.body._id));
-        expect(res.text).not.toContain(String(pending.body._id));
+        expect(res.text).toContain(`/articles/${published.body.slug}`);
+        expect(res.text).not.toContain(draft.body.slug);
+        expect(res.text).not.toContain(pending.body.slug);
     });
 
     it('escapes titles that would otherwise break the XML', async () => {
