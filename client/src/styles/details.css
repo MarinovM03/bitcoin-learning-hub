@@ -531,6 +531,70 @@
     gap: 0.8rem;
 }
 
+.details-tools-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.2rem;
+}
+
+.details-tools-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.details-tool-card {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    min-width: 0;
+}
+
+.details-tool-card:hover {
+    border-color: var(--btc-orange);
+    transform: translateX(3px);
+}
+
+.details-tool-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    flex-shrink: 0;
+}
+
+.details-tool-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.details-tool-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: white;
+}
+
+.details-tool-answers {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
 .details-related-list {
     display: flex;
     flex-direction: column;
