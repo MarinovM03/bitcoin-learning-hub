@@ -192,7 +192,7 @@ export const getModerationQueue = asyncHandler(async (req, res) => {
 
     const [articles, articleTotal, terms, termTotal] = await Promise.all([
         Article.find({ status: 'pending' })
-            .select('title category difficulty summary imageUrl readingTime createdAt _ownerId')
+            .select('title slug category difficulty summary imageUrl readingTime wordCount createdAt _ownerId')
             .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limitNum)

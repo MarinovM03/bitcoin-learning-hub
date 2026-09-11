@@ -6,7 +6,7 @@ import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slugify.js';
 
-const CARD_FIELDS = 'title slug summary imageUrl category difficulty readingTime views status _ownerId';
+const CARD_FIELDS = 'title slug summary imageUrl category difficulty readingTime wordCount views status _ownerId';
 
 const ownedArticleIds = async (ids, ownerId) => {
     if (!Array.isArray(ids) || ids.length === 0) return [];
