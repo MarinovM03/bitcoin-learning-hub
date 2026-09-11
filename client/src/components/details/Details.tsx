@@ -6,6 +6,7 @@ import { useArticle, useRelatedArticles } from '../../hooks/queries/useArticles'
 import { useArticleCollections } from '../../hooks/queries/useCollections';
 import { useLikeSummary } from '../../hooks/queries/useLikes';
 import { useMyBookmarks } from '../../hooks/queries/useBookmarks';
+import { useGlossaryTerms } from '../../hooks/queries/useGlossary';
 import { useToggleLike } from '../../hooks/mutations/useLikeMutations';
 import { useToggleBookmark } from '../../hooks/mutations/useBookmarkMutations';
 import { useMarkRead, useMarkUnread, useDeleteArticle } from '../../hooks/mutations/useArticleMutations';
@@ -22,6 +23,7 @@ import { extractHeadings } from "../../utils/markdownToc";
 import { formatViews, formatDate } from '../../utils/formatters';
 import { handleImgError, handleAvatarError, DEFAULT_AVATAR } from '../../utils/imageHelpers';
 import { articlePath } from '../../utils/articlePath';
+import { relatedTools } from '../../utils/relatedTools';
 import PageMeta from "../page-meta/PageMeta";
 import MarkdownContent from "../markdown-content/MarkdownContent";
 import { toast } from "../../lib/toast";
@@ -39,6 +41,7 @@ export default function Details() {
     const { data: memberships = [] } = useArticleCollections(articleId);
     const { data: likeSummary } = useLikeSummary(articleId);
     const { data: myBookmarks } = useMyBookmarks(isAuthenticated);
+    const { data: glossaryTerms } = useGlossaryTerms();
 
     const toggleLikeMutation = useToggleLike();
     const toggleBookmarkMutation = useToggleBookmark();
@@ -138,6 +141,11 @@ export default function Details() {
     } : null);
 
     const tocHeadings = useMemo(() => extractHeadings(article?.content), [article?.content]);
+
+    const suggestedTools = useMemo(
+        () => relatedTools(article?.title, article?.content),
+        [article?.title, article?.content],
+    );
 
     const ownerId = article?._ownerId?._id;
     const ownerUsername = article?._ownerId?.username;
@@ -288,7 +296,9 @@ export default function Details() {
                                 {article.readingTime ?? 1} min read
                             </span>
                             <span className="details-reading-time">
-                                {article.content?.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} words
+                                {(article.wordCount
+                                    || article.content?.trim().split(/\s+/).filter(Boolean).length
+                                    || 0).toLocaleString()} words
                             </span>
                             {membership && (
                                 <Link to={`/collections/${membership.slug}`} className="series-inline-badge">
@@ -301,7 +311,7 @@ export default function Details() {
                         <p className="details-summary">{article.summary}</p>
 
                         <div className="details-content" id="article-body">
-                            <MarkdownContent content={article.content} />
+                            <MarkdownContent content={article.content} glossary={glossaryTerms} />
                         </div>
 
                         {membership && (prevPart || nextPart) && (
@@ -550,6 +560,25 @@ export default function Details() {
                                 )}
                             </div>
                         </div>
+
+                        {suggestedTools.length > 0 && (
+                            <div className="details-tools-panel">
+                                <span className="details-action-panel-title">Try it yourself</span>
+                                <div className="details-tools-list">
+                                    {suggestedTools.map(({ to, label, answers, Icon }) => (
+                                        <Link key={to} to={to} className="details-tool-card">
+                                            <span className="details-tool-icon">
+                                                <Icon size={17} strokeWidth={2} />
+                                            </span>
+                                            <span className="details-tool-body">
+                                                <span className="details-tool-label">{label}</span>
+                                                <span className="details-tool-answers">{answers}</span>
+                                            </span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {relatedArticles.length > 0 && (
                             <div className="details-related-panel">
