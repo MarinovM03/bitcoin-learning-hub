@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import { TOOLS } from '../../utils/navTools';
 
 export default function ToolsDropdown() {
@@ -68,6 +68,10 @@ export default function ToolsDropdown() {
                             </span>
                         </NavLink>
                     ))}
+                    <NavLink to="/tools" className="tools-dropdown-all" role="menuitem">
+                        All tools
+                        <ArrowRight size={13} strokeWidth={2.5} />
+                    </NavLink>
                 </div>
             )}
         </div>

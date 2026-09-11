@@ -485,6 +485,26 @@
     line-height: 1.35;
 }
 
+.tools-dropdown-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+    padding: 0.7rem;
+    border-top: 1px solid var(--border-light);
+    color: var(--btc-orange);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    transition: background-color 0.2s ease;
+}
+
+.tools-dropdown-all:hover {
+    background-color: var(--btc-orange-dim);
+}
+
 .navbar-mobile-auth {
     display: flex;
     gap: 0.75rem;

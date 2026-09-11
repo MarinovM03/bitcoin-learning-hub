@@ -1,0 +1,136 @@
+#tools-page {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.tools-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.tools-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 5px 12px;
+    border: 1px solid rgba(247, 147, 26, 0.28);
+    border-radius: 999px;
+    color: var(--btc-orange);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 0.9rem;
+}
+
+.tools-header h1 {
+    font-size: 2.1rem;
+    color: white;
+    margin: 0 0 0.6rem 0;
+    line-height: 1.15;
+}
+
+.tools-subtitle {
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.tool-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.tool-card:hover {
+    border-color: var(--btc-orange);
+    transform: translateY(-3px);
+}
+
+.tool-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background-color: var(--btc-orange-dim);
+    color: var(--btc-orange);
+    margin-bottom: 1rem;
+}
+
+.tool-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.45rem 0;
+}
+
+.tool-card-question {
+    margin: 0 0 0.75rem 0;
+    color: var(--btc-orange);
+    font-size: 0.88rem;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.tool-card-detail {
+    margin: 0 0 1.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.tool-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border-light);
+    color: var(--btc-orange);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.tool-card-cta svg {
+    transition: transform 0.2s ease;
+}
+
+.tool-card:hover .tool-card-cta svg {
+    transform: translateX(3px);
+}
+
+.tools-note {
+    margin-top: 1.5rem;
+    padding: 1.1rem 1.4rem;
+    background-color: var(--btc-orange-dim);
+    border: 1px solid rgba(247, 147, 26, 0.22);
+    border-radius: 12px;
+}
+
+.tools-note p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 560px) {
+    .tools-header h1 {
+        font-size: 1.7rem;
+    }
+}

@@ -29,6 +29,8 @@ export default function Footer() {
                     </div>
                     <div className="footer-nav-group">
                         <span className="footer-nav-label">Tools</span>
+                        <Link to="/tools" className="footer-nav-link">All Tools</Link>
+                        <Link to="/tx" className="footer-nav-link">Transaction Explainer</Link>
                         <Link to="/dca" className="footer-nav-link">DCA Calculator</Link>
                         <Link to="/address" className="footer-nav-link">Address Lookup</Link>
                     </div>
