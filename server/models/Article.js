@@ -42,6 +42,10 @@ const articleSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
+    wordCount: {
+        type: Number,
+        default: 0,
+    },
     views: {
         type: Number,
         default: 0,

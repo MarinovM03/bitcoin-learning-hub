@@ -12,11 +12,12 @@ import { isArticleVisibleTo } from '../utils/articleAccess.js';
 import { canPublishDirectly } from '../utils/trust.js';
 import { uniqueSlug } from '../utils/slugify.js';
 
-const calculateReadingTime = (content) => {
-    if (!content) return 1;
-    const wordCount = content.trim().split(/\s+/).length;
-    return Math.max(1, Math.round(wordCount / 200));
+const countWords = (content) => {
+    if (!content) return 0;
+    return content.trim().split(/\s+/).filter(Boolean).length;
 };
+
+const calculateReadingTime = (content) => Math.max(1, Math.round(countWords(content) / 200));
 
 const resolveSubmissionStatus = (requestedStatus, author) => {
     if (requestedStatus === 'draft') return 'draft';
@@ -81,6 +82,7 @@ export const create = asyncHandler(async (req, res) => {
         summary,
         content,
         readingTime: calculateReadingTime(content),
+        wordCount: countWords(content),
         status: resolveSubmissionStatus(status, req.authUser),
         quiz: Array.isArray(quiz) ? quiz : [],
         _ownerId: req.user._id
@@ -182,7 +184,7 @@ export const markUnread = asyncHandler(async (req, res) => {
 
 export const getReadHistory = asyncHandler(async (req, res) => {
     const entries = await ReadArticle.find({ _ownerId: req.user._id })
-        .populate('articleId', 'title slug category imageUrl summary difficulty readingTime views status createdAt')
+        .populate('articleId', 'title slug category imageUrl summary difficulty readingTime wordCount views status createdAt')
         .sort({ createdAt: -1 })
         .limit(60)
         .lean();
@@ -270,6 +272,7 @@ export const update = asyncHandler(async (req, res) => {
     if (content !== undefined) {
         updateData.content = content;
         updateData.readingTime = calculateReadingTime(content);
+        updateData.wordCount = countWords(content);
     }
     if (difficulty) updateData.difficulty = difficulty;
     if (Array.isArray(quiz)) updateData.quiz = quiz;
