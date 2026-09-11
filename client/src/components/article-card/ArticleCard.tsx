@@ -9,7 +9,7 @@ import type { Article, ArticleOwnerRef } from "../../types";
 
 type ArticleCardArticle =
     Pick<Article, '_id' | 'title' | 'category' | 'imageUrl' | 'summary'>
-    & Partial<Pick<Article, 'difficulty' | 'readingTime' | 'views'>>
+    & Partial<Pick<Article, 'difficulty' | 'readingTime' | 'wordCount' | 'views'>>
     & { _ownerId?: string | ArticleOwnerRef };
 
 interface ArticleCardProps {
@@ -67,6 +67,9 @@ export default function ArticleCard({ article, readLabel = "Read Article →", s
                 <p className="catalog-card-summary">{article.summary}</p>
                 <div className="catalog-card-footer">
                     <span className="catalog-card-meta">{article.readingTime ?? 1} min read</span>
+                    {!!article.wordCount && (
+                        <span className="catalog-card-meta">{article.wordCount.toLocaleString()} words</span>
+                    )}
                     <span className="catalog-card-meta">{formatViews(article.views ?? 0)} views</span>
                     <span className="catalog-card-read">{readLabel}</span>
                 </div>

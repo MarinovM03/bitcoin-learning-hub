@@ -42,6 +42,7 @@ export interface Article {
     summary: string;
     content?: string;
     readingTime: number;
+    wordCount?: number;
     views: number;
     status: ArticleStatus;
     moderationNote?: string;
